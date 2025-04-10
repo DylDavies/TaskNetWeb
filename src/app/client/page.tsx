@@ -1,9 +1,16 @@
 import Link from "next/link";
+import "./client.css";
+
 
 export default function Page(){
     return(
         <>
-            <h1>This is the client page</h1>
+            <body>
+
+                <img src="your-logo.png" alt="Logo" className="logo"></img>
+                <h1>Hello Client</h1>
+
+            <footer>
             <nav>
                 <Link href="/freelancer">link to freelancer</Link> {" "}
                 <br></br>
@@ -13,6 +20,9 @@ export default function Page(){
                 <br></br>
                 <Link href="/admin">link to admin</Link> {" "}
             </nav>
+            </footer>
+
+            </body>
         </>
     )
 }
