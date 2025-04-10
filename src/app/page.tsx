@@ -1,7 +1,7 @@
 "use client";
 
 import { getCurrentUser, googlePopupAuth, googleSignout } from "./auth/auth";
-import SideBar from "./components/sidebar/SideBar";
+//import SideBar from "./components/sidebar/SideBar";
 import "./components/sidebar/sidebar.css";
 import {useRouter} from "next/navigation"
 
@@ -30,7 +30,7 @@ export default function Home() {
   }
 
   /* testing side bar */
-  const items = [{ name: "Client" }, { name: "Logout" }];
+  //const items = [{ name: "Client" }, { name: "Logout" }];
   
 
   return (

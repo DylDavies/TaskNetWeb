@@ -1,6 +1,5 @@
 import Link from "next/link";
 import "./freelancer.css";
-import logo from './Logo.png'
 
 export default function Page(){
     return(
