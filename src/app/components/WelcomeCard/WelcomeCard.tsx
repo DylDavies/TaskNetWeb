@@ -2,7 +2,7 @@ import React from "react";
 
 type Props = {
   username: string;
-  type: String;
+  type: string;
 };
 
 const WelcomeCard: React.FC<Props> = ({ username, type}) => {
