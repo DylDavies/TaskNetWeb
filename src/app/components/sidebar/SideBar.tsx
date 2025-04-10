@@ -37,7 +37,7 @@ interface Props {
 */
 const SideBar: React.FC<Props> = ({ items }) => {
   return (
-    <aside className="w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0 sidebar">
+    <aside className="z-20 hidden w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0 sidebar">
       <section className="py-4 text-gray-500 dark:text-gray-400">
         <a
           className="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200"

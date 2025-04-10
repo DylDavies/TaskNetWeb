@@ -1,8 +1,13 @@
 "use client";
 
 import { getCurrentUser, googlePopupAuth, googleSignout } from "./auth/auth";
+import React, { useState } from "react";
 import SideBar from "./components/sidebar/SideBar";
 import "./components/sidebar/sidebar.css";
+import Button from "./components/button/Button";
+import "./components/button/Button.css";
+import InputBar from "./components/inputbar/InputBar";
+import "./components/inputbar/inputBar.css";
 
 export default function Home() {
   async function signinClick() {
@@ -28,6 +33,17 @@ export default function Home() {
   /* testing side bar */
   const items = [{ name: "Client" }, { name: "Logout" }];
 
+  const Clickable = () => {
+    console.log("Button clicked!");
+    // This is a demo
+  };
+
+  const [inputValue, setInputValue] = useState("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
   return (
     <main>
       <button
@@ -49,7 +65,12 @@ export default function Home() {
         Sign in with google
       </button>
 
-      <SideBar items={items} />
+      <Button caption="Click this button" onClick={Clickable} />
+      <InputBar
+        placeholder="Enter some stuff"
+        value={inputValue}
+        onChange={handleChange}
+      />
     </main>
   );
 }
