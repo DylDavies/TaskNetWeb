@@ -34,33 +34,14 @@ export default function Home() {
   
 
   return (
-    <main>
-      <button
-        onClick={signinClick}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-      >
-        Sign in with google
-      </button>
-      <button
-        onClick={signoutClick}
-        className="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-      >
-        Sign in with google
-      </button>
-      <button
-        onClick={currentUserClick}
-        className="bg-orange-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-      >
-        Sign in with google
-      </button>
-
-      <SideBar items={items} />
-    </main>
-    <body>
-      <h1 className = "heading">TaskNet</h1>
-        <button onClick={signinClick} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
-        <button onClick={signoutClick} className="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign out</button>
-        <button onClick={currentUserClick} className="bg-orange-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
-     </body>
+    <>
+      <body>
+       <h1 className = "heading">TaskNet</h1>
+         <button onClick={signinClick} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
+         <button onClick={signoutClick} className="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign out</button>
+         <button onClick={currentUserClick} className="bg-orange-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
+      </body>
+    </>
+    
   );
 }
