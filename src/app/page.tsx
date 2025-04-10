@@ -1,8 +1,11 @@
 "use client";
 
 import { getCurrentUser, googlePopupAuth, googleSignout } from "./auth/auth";
+import PendingCard from "./components/PendingCard/PendingCard";
 import SideBar from "./components/sidebar/SideBar";
+import "./components/PendingCard/PendingCard.css";
 import "./components/sidebar/sidebar.css";
+import WelcomeCard from "./components/WelcomeCard/WelcomeCard";
 
 export default function Home() {
   async function signinClick() {
@@ -30,6 +33,7 @@ export default function Home() {
 
   return (
     <main>
+      <WelcomeCard username="Alex" type="freelancer" />
       <button
         onClick={signinClick}
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
@@ -42,6 +46,7 @@ export default function Home() {
       >
         Sign in with google
       </button>
+      <PendingCard />
       <button
         onClick={currentUserClick}
         className="bg-orange-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
