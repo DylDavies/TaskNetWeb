@@ -1,5 +1,6 @@
 import _1 from "firebase/app";
 import auth, { Auth } from "firebase/auth";
+import navigation from "next/navigation";
 import ApiService from "../../src/app/services/ApiService";
 import { getCurrentUser, signin, googleSignout } from "@/app/auth/auth";
 
@@ -10,9 +11,16 @@ jest.mock("firebase/auth", () => {
         getAuth: jest.fn(),
         GoogleAuthProvider: jest.fn(),
         signInWithPopup: jest.fn(),
-        signOut: jest.fn()
+        signOut: jest.fn(),
+        signInWithCustomToken: jest.fn()
     }
 });
+
+jest.mock("next/navigation", () => {
+    return {
+        redirect: jest.fn()
+    }
+})
 
 jest.mock("../../src/app/services/ApiService")
 
@@ -21,12 +29,12 @@ describe("Authentication tests", () => {
         jest.mocked(ApiService).mockClear();
     })
 
-    describe("Google Popup", () => {
-        it("should call all relevant functions", async () => {
+    describe("Google Signin", () => {
+        it("should call all relevant functions (no __session)", async () => {
             const getIdTokenMock = jest.fn();
 
-            // @ts-ignore
-            jest.mocked(auth.signInWithPopup).mockResolvedValue({ user: { getIdToken: getIdTokenMock } });
+            (auth.signInWithPopup as jest.Mock).mockResolvedValue({ user: { getIdToken: getIdTokenMock } });
+            (ApiService.sessionExists as jest.Mock).mockReturnValue({presence: false});
 
             await signin();
 
@@ -36,11 +44,22 @@ describe("Authentication tests", () => {
             expect(getIdTokenMock).toHaveBeenCalled();
         });
 
+        it("should call all relevant functions (with __session)", async () => {
+            (ApiService.sessionExists as jest.Mock).mockReturnValue({presence: true, customToken: "mockCustomToken"});
+            (auth.getAuth as jest.Mock).mockReturnValue("mockAuth");
+
+            await signin();
+
+            expect(auth.getAuth).toHaveBeenCalled();
+
+            expect(auth.signInWithCustomToken).toHaveBeenCalledWith("mockAuth", "mockCustomToken");
+        });
+
         it("should handle error when signInWithPopup fails", async () => {
             global.console.error = jest.fn();
 
-            // @ts-ignore
-            jest.mocked(auth.signInWithPopup).mockRejectedValue(new Error("auth/email-already-exists"));
+            (auth.signInWithPopup as jest.Mock).mockRejectedValue(new Error("auth/email-already-exists"));
+            (ApiService.sessionExists as jest.Mock).mockReturnValue({presence: false});
 
             await signin();
 
@@ -48,6 +67,25 @@ describe("Authentication tests", () => {
             expect(auth.signInWithPopup).toHaveBeenCalled();
             expect(jest.mocked(global.console.error).mock.calls[0][0].message).toBe("auth/email-already-exists");
 
+        });
+
+        describe("Redirection tests", () => {
+            it("should redirect with redirectPage and __session", async () => {
+                (ApiService.sessionExists as jest.Mock).mockReturnValue({presence: true, customToken: "mockCustomToken"});
+
+                await signin("mockRedirectPage");
+
+                expect(navigation.redirect).toHaveBeenCalledWith("mockRedirectPage");
+            });
+
+            it("should redirect with redirectPage and no __session", async () => {
+                (auth.signInWithPopup as jest.Mock).mockResolvedValue({ user: { getIdToken: jest.fn() } });
+                (ApiService.sessionExists as jest.Mock).mockReturnValue({presence: false});
+
+                await signin("mockRedirectPage");
+
+                expect(navigation.redirect).toHaveBeenCalledWith("mockRedirectPage");
+            });
         });
     })
 

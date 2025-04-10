@@ -1,6 +1,3 @@
-import { signInWithCustomToken, getAuth } from "firebase/auth";
-import { app } from "../firebase";
-
 export default class ApiService {
     static BASE_URL = "http://localhost:1020";
 
@@ -20,7 +17,7 @@ export default class ApiService {
 
             return { presence, customToken };
         } catch (error) {
-            console.error();
+            console.error(error);
             return { presence: false };
         }
     }

@@ -9,6 +9,28 @@ describe("API Service tests", () => {
         jest.clearAllMocks();
     });
 
+    describe("Session", () => {
+        it("should return presence = false on error", async () => {
+            global.fetch = jest.fn().mockRejectedValue(new Error("API Error"));
+            global.console.error = jest.fn();
+
+            let result = await ApiService.sessionExists();
+
+            expect(jest.mocked(global.console.error).mock.calls[0][0].message).toBe("API Error");
+            expect(result).toMatchObject({presence: false});
+        });
+
+        it("should return presence and customToken", async () => {
+            global.fetch = jest.fn().mockResolvedValue({
+                json: jest.fn().mockResolvedValue({presence: true, customToken: "mockCustomToken"})
+            });
+
+            let result = await ApiService.sessionExists();
+            
+            expect(result).toMatchObject({presence: true, customToken: "mockCustomToken"});
+        })
+    });
+
     describe("Login", () => {
         it("should receive 200 OK on valid idToken", async () => {
             global.fetch = jest.fn().mockResolvedValue({
