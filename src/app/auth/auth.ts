@@ -1,17 +1,18 @@
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 import { app } from "../Firebase";
+import ApiService from "../services/ApiService";
 
 const provider = new GoogleAuthProvider();
 
-async function googlePopupAuth(): Promise<string | undefined> {
+async function googlePopupAuth(): Promise<void> {
+    // TODO: Add checks for already being logged in
+
     const auth = getAuth(app);
 
     try {
         const result = await signInWithPopup(auth, provider);
 
-        const creds = GoogleAuthProvider.credentialFromResult(result);
-
-        return creds?.accessToken;
+        ApiService.login(await result.user.getIdToken())
     } catch (error) {
         throw error;
     }
