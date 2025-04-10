@@ -1,5 +1,29 @@
+import { signInWithCustomToken, getAuth } from "firebase/auth";
+import { app } from "../firebase";
+
 export default class ApiService {
     static BASE_URL = "http://localhost:1020";
+
+    static async sessionExists(): Promise<{presence: boolean, customToken?: string}> {
+        try {
+            let result = await fetch(`${ApiService.BASE_URL}/auth/session`, {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                credentials: "include",
+                mode: "cors"
+            });
+
+            let { presence, customToken } = await result.json();
+
+            return { presence, customToken };
+        } catch (error) {
+            console.error();
+            return { presence: false };
+        }
+    }
 
     static login(idToken: string): void {
         // TODO: add error handling

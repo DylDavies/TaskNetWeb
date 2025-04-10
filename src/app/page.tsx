@@ -1,11 +1,11 @@
 'use client';
 
-import { getCurrentUser, googlePopupAuth, googleSignout } from "./auth/auth";
+import { getCurrentUser, signin, googleSignout } from "./auth/auth";
 import Button from "./components/Button/Button";
 
 export default function Home() {
   function signinClick() {
-    googlePopupAuth();
+    signin();
   }
 
   function signoutClick() {

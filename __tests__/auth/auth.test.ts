@@ -1,7 +1,7 @@
 import _1 from "firebase/app";
-import auth, { Auth, User } from "firebase/auth";
+import auth, { Auth } from "firebase/auth";
 import ApiService from "../../src/app/services/ApiService";
-import { getCurrentUser, googlePopupAuth, googleSignout } from "@/app/auth/auth";
+import { getCurrentUser, signin, googleSignout } from "@/app/auth/auth";
 
 jest.mock("firebase/app");
 
@@ -28,7 +28,7 @@ describe("Authentication tests", () => {
             // @ts-ignore
             jest.mocked(auth.signInWithPopup).mockResolvedValue({ user: { getIdToken: getIdTokenMock } });
 
-            await googlePopupAuth();
+            await signin();
 
             expect(auth.getAuth).toHaveBeenCalled();
             expect(auth.signInWithPopup).toHaveBeenCalled();
@@ -42,7 +42,7 @@ describe("Authentication tests", () => {
             // @ts-ignore
             jest.mocked(auth.signInWithPopup).mockRejectedValue(new Error("auth/email-already-exists"));
 
-            await googlePopupAuth();
+            await signin();
 
             expect(auth.getAuth).toHaveBeenCalled();
             expect(auth.signInWithPopup).toHaveBeenCalled();
