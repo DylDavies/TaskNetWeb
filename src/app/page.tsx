@@ -2,7 +2,7 @@
 
 import { getCurrentUser, googlePopupAuth, googleSignout } from "./auth/auth";
 import React, { useState } from "react";
-import SideBar from "./components/sidebar/SideBar";
+/*import SideBar from "./components/sidebar/SideBar";*/
 import "./components/sidebar/sidebar.css";
 import Button from "./components/button/Button";
 import "./components/button/Button.css";
@@ -33,7 +33,8 @@ export default function Home() {
   }
 
   /* testing side bar */
-  const items = [{ name: "Client" }, { name: "Logout" }];
+
+  /*const items = [{ name: "Client" }, { name: "Logout" }];*/
 
   const Clickable = () => {
     console.log("Button clicked!");
