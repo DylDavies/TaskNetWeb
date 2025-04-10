@@ -1,7 +1,7 @@
 import _1 from "firebase/app";
-import auth, { Auth } from "firebase/auth";
+import auth, { Auth, User } from "firebase/auth";
 import ApiService from "../../src/app/services/ApiService";
-import { googlePopupAuth } from "@/app/auth/auth";
+import { getCurrentUser, googlePopupAuth, googleSignout } from "@/app/auth/auth";
 
 jest.mock("firebase/app");
 
@@ -22,15 +22,57 @@ describe("Authentication tests", () => {
     })
 
     describe("Google Popup", () => {
-        it("should call all relevant functions", () => {
-            googlePopupAuth();
+        it("should call all relevant functions", async () => {
+            const getIdTokenMock = jest.fn();
 
             // @ts-ignore
-            jest.mocked(auth.signInWithPopup).mockResolvedValue({ user: { getIdToken: jest.fn() } });
+            jest.mocked(auth.signInWithPopup).mockResolvedValue({ user: { getIdToken: getIdTokenMock } });
+
+            await googlePopupAuth();
 
             expect(auth.getAuth).toHaveBeenCalled();
             expect(auth.signInWithPopup).toHaveBeenCalled();
             expect(ApiService.login).toHaveBeenCalled();
+            expect(getIdTokenMock).toHaveBeenCalled();
+        });
+
+        it("should handle error when signInWithPopup fails", async () => {
+            global.console.error = jest.fn();
+
+            // @ts-ignore
+            jest.mocked(auth.signInWithPopup).mockRejectedValue(new Error("auth/email-already-exists"));
+
+            await googlePopupAuth();
+
+            expect(auth.getAuth).toHaveBeenCalled();
+            expect(auth.signInWithPopup).toHaveBeenCalled();
+            expect(jest.mocked(global.console.error).mock.calls[0][0].message).toBe("auth/email-already-exists");
+
         });
     })
+
+    describe("Google signout", () => {
+        it("should call all relevant functions", () => {
+            googleSignout();
+
+            expect(auth.getAuth).toHaveBeenCalled();
+            expect(auth.signOut).toHaveBeenCalled();
+        });
+    });
+
+    describe("Current user", () => {
+        it("should return current user", () => {
+            const testData = {
+                currentUser: {
+                    uid: "mockUId"
+                }
+            }
+            jest.mocked(auth.getAuth).mockReturnValue(testData as unknown as Auth);
+
+            let user = getCurrentUser();
+
+            expect(auth.getAuth).toHaveBeenCalled();
+            expect(user).toBe(testData.currentUser);
+        });
+    });
 })

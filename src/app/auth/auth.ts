@@ -1,5 +1,5 @@
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
-import { app } from "../Firebase";
+import { app } from "../firebase";
 import ApiService from "../services/ApiService";
 
 const provider = new GoogleAuthProvider();
@@ -14,7 +14,7 @@ async function googlePopupAuth(): Promise<void> {
 
         ApiService.login(await result.user.getIdToken())
     } catch (error) {
-        throw error;
+        console.error(error);
     }
 }
 
