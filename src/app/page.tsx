@@ -8,6 +8,8 @@ import Button from "./components/button/Button";
 import "./components/button/Button.css";
 import InputBar from "./components/inputbar/InputBar";
 import "./components/inputbar/inputBar.css";
+import SearchBar from "./components/searchbar/SearchBar";
+import "./components/searchbar/SearchBar.css";
 
 export default function Home() {
   async function signinClick() {
@@ -68,6 +70,12 @@ export default function Home() {
       <Button caption="Click this button" onClick={Clickable} />
       <InputBar
         placeholder="Enter some stuff"
+        value={inputValue}
+        onChange={handleChange}
+      />
+
+      <SearchBar
+        placeholder="Search for projects"
         value={inputValue}
         onChange={handleChange}
       />
