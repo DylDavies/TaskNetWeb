@@ -1,12 +1,13 @@
 import Link from "next/link";
 import "./freelancer.css";
+import logo from './Logo.png'
 
 export default function Page(){
     return(
         <>
             <body>
 
-                <img src="your-logo.png" alt="Logo" className="logo"></img>
+                <img src="/images/Logo.png" alt="Logo" className="logo"></img>
                 <h1>Hello freelancer</h1>
 
             <footer>

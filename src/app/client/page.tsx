@@ -7,7 +7,7 @@ export default function Page(){
         <>
             <body>
 
-                <img src="your-logo.png" alt="Logo" className="logo"></img>
+                <img src="./client/Logo.png" alt="Logo" className="logo"></img>
                 <h1>Hello Client</h1>
 
             <footer>
