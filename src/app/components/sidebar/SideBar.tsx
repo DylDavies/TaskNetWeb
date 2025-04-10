@@ -1,5 +1,22 @@
 import React from "react";
 
+/*
+------NOTE TO USER OF THIS COMPONENT-----
+  This component dynamically renders items onto the sidebar 
+  using list components, to do so:
+
+  Create a list of item name objects for example:
+
+  const items = [{ name: "Client" }, { name: "Logout" }];
+
+  and create the component:
+
+  <SideBar items={items} />
+
+  passing in the props
+
+*/
+
 interface Props {
   items: { name: string }[];
 }
