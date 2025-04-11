@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 
 /*
 ------NOTE TO USER OF THIS COMPONENT-----
@@ -18,7 +19,7 @@ import React from "react";
 */
 
 interface Props {
-  items: { name: string }[];
+  items: { name: string; href: string }[];
 }
 /*
 
@@ -37,17 +38,17 @@ interface Props {
 */
 const SideBar: React.FC<Props> = ({ items }) => {
   return (
-    <aside className="z-20 hidden w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0 sidebar">
+    <aside className="z-20 hidden w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0 sidebar box">
       <section className="py-4 text-gray-500 dark:text-gray-400">
         <a
           className="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200"
           href="#"
-        >
-          TaskNet
-        </a>
+        ></a>
         <ul className="mt-6 list">
           {items.map((item, index) => (
-            <li key={index}>{item.name}</li>
+            <li key={index}>
+              <Link href={item.href}>{item.name}</Link>
+            </li>
           ))}
         </ul>
       </section>
