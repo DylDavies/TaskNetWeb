@@ -1,19 +1,19 @@
 'use client';
 
-import { getCurrentUser, signin, googleSignout } from "./auth/auth";
+import AuthService from "./services/AuthService";
 import Button from "./components/Button/Button";
 
 export default function Home() {
   function signinClick() {
-    signin();
+    AuthService.signin();
   }
 
   function signoutClick() {
-    googleSignout();
+    AuthService.googleSignout();
   }
 
   function currentUserClick() {
-    const user = getCurrentUser();
+    const user = AuthService.getCurrentUser();
 
     console.log("User", user);
   }

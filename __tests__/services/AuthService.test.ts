@@ -2,7 +2,7 @@ import _1 from "firebase/app";
 import auth, { Auth } from "firebase/auth";
 import navigation from "next/navigation";
 import ApiService from "../../src/app/services/ApiService";
-import { getCurrentUser, signin, googleSignout } from "@/app/auth/auth";
+import AuthService from "@/app/services/AuthService";
 
 jest.mock("firebase/app");
 
@@ -36,7 +36,7 @@ describe("Authentication tests", () => {
             (auth.signInWithPopup as jest.Mock).mockResolvedValue({ user: { getIdToken: getIdTokenMock } });
             (ApiService.sessionExists as jest.Mock).mockReturnValue({presence: false});
 
-            await signin();
+            await AuthService.signin();
 
             expect(auth.getAuth).toHaveBeenCalled();
             expect(auth.signInWithPopup).toHaveBeenCalled();
@@ -48,7 +48,7 @@ describe("Authentication tests", () => {
             (ApiService.sessionExists as jest.Mock).mockReturnValue({presence: true, customToken: "mockCustomToken"});
             (auth.getAuth as jest.Mock).mockReturnValue("mockAuth");
 
-            await signin();
+            await AuthService.signin();
 
             expect(auth.getAuth).toHaveBeenCalled();
 
@@ -61,7 +61,7 @@ describe("Authentication tests", () => {
             (auth.signInWithPopup as jest.Mock).mockRejectedValue(new Error("auth/email-already-exists"));
             (ApiService.sessionExists as jest.Mock).mockReturnValue({presence: false});
 
-            await signin();
+            await AuthService.signin();
 
             expect(auth.getAuth).toHaveBeenCalled();
             expect(auth.signInWithPopup).toHaveBeenCalled();
@@ -73,7 +73,7 @@ describe("Authentication tests", () => {
             it("should redirect with redirectPage and __session", async () => {
                 (ApiService.sessionExists as jest.Mock).mockReturnValue({presence: true, customToken: "mockCustomToken"});
 
-                await signin("mockRedirectPage");
+                await AuthService.signin("mockRedirectPage");
 
                 expect(navigation.redirect).toHaveBeenCalledWith("mockRedirectPage");
             });
@@ -82,7 +82,7 @@ describe("Authentication tests", () => {
                 (auth.signInWithPopup as jest.Mock).mockResolvedValue({ user: { getIdToken: jest.fn() } });
                 (ApiService.sessionExists as jest.Mock).mockReturnValue({presence: false});
 
-                await signin("mockRedirectPage");
+                await AuthService.signin("mockRedirectPage");
 
                 expect(navigation.redirect).toHaveBeenCalledWith("mockRedirectPage");
             });
@@ -91,7 +91,7 @@ describe("Authentication tests", () => {
 
     describe("Google signout", () => {
         it("should call all relevant functions", () => {
-            googleSignout();
+            AuthService.googleSignout();
 
             expect(auth.getAuth).toHaveBeenCalled();
             expect(auth.signOut).toHaveBeenCalled();
@@ -107,7 +107,7 @@ describe("Authentication tests", () => {
             }
             jest.mocked(auth.getAuth).mockReturnValue(testData as unknown as Auth);
 
-            let user = getCurrentUser();
+            let user = AuthService.getCurrentUser();
 
             expect(auth.getAuth).toHaveBeenCalled();
             expect(user).toBe(testData.currentUser);
