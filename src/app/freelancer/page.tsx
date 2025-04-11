@@ -9,7 +9,7 @@ import "../components/button/Button.css";
 
 const links = [{ name: "Client", href:"/client" },{name: "Home",href:"/"}, {name: "Client",href:"/client"}, {name: "Admin",href:"/admin"}];
 
-
+//this is a comment
 export default function Page(){
     return(
         <>
