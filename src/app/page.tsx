@@ -3,7 +3,7 @@
 import AuthService from "./services/AuthService";
 import Button from "./components/Button/Button";
 //>>>>>>> dev
-import React, { useState } from "react";
+import React from "react";
 import "./components/sidebar/sidebar.css";
 import "./components/button/Button.css";
 import InputBar from "./components/inputbar/InputBar";
