@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Heading from "../components/Heading/heading";
+import Header from "../components/Header/header";
 import WelcomeCard from "../components/WelcomeCard/WelcomeCard";
 import "../components/WelcomeCard/WelcomeCard.css";
 import SideBar from "../components/sidebar/SideBar";
@@ -14,7 +14,7 @@ export default function Page(){
         <body className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
             
             <header className="w-full bg-orange-500 ">
-                <Heading />
+                <Header usertype={"client"} name={"Alex"} />
             </header>
 
             <main className="flex-1 flex dark:bg-[#cdd5f6]">
@@ -23,7 +23,7 @@ export default function Page(){
 
                 </section>
                 <section className="flex-1 p-4 flex items-start justify-center">
-                    <WelcomeCard username="May" type="client" />
+                    <WelcomeCard username="Alex" type="client" />
                 </section>
                 
 

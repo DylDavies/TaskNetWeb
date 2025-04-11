@@ -44,15 +44,13 @@ const SideBar: React.FC<Props> = ({ items }) => {
           className="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200"
           href="#"
         >
-          TaskNet
+          
         </a>
         <ul className="mt-6 list">
           {items.map((item, index) => (
             <li key={index}>
               <Link href={item.href}>
-              
                   {item.name}
-                
               </Link>
               
             </li>
