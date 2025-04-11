@@ -1,0 +1,20 @@
+.searchbar{
+    width: 200px;
+    height: 38px;
+}
+
+.searchbar::placeholder {
+    color: #bdbecb;
+  }
+  
+  .searchbar:hover {
+    box-shadow: 0 0 0 2.5px #b9bac5, 0px 0px 25px -15px #000;
+  }
+  
+  .searchbar:active {
+    transform: scale(0.95);
+  }
+  
+  .searchbar:focus {
+    box-shadow: 0 0 0 2.5px #2f303d;
+  }
