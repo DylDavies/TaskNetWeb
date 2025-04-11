@@ -51,6 +51,9 @@ jobs:
         with:
           name: node-app
 
+      - name: Lis zip folders
+        run: unzip -l release.zip
+
       - name: Unzip artifact for deployment
         run: unzip release.zip
       
