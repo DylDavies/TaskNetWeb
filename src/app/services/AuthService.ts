@@ -1,7 +1,13 @@
+'use client';
+
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, signInWithCustomToken } from "firebase/auth";
 import { redirect } from 'next/navigation'
-import { app } from "../firebase";
+import { app, db } from "../firebase";
 import ApiService from "./ApiService";
+import ActiveUser from "../interfaces/ActiveUser.interface";
+import { doc, getDoc } from "firebase/firestore";
+import UserData from "../interfaces/UserData.interface";
+import { getUser } from "../server/services/DatabaseService";
 
 const provider = new GoogleAuthProvider();
 
@@ -9,7 +15,7 @@ export default class AuthService {
     static async signin(redirectPage?: string): Promise<boolean> {
         const auth = getAuth(app);
     
-        let session = await ApiService.sessionExists();
+        const session = await ApiService.sessionExists();
     
         if (session.presence && session.customToken) {
             signInWithCustomToken(auth, session.customToken);
@@ -36,9 +42,18 @@ export default class AuthService {
         signOut(auth);
     }
 
-    static getCurrentUser() {
+    static async getCurrentUser(): Promise<ActiveUser | null> {
         const auth = getAuth(app);
     
-        return auth.currentUser;
+        if (!auth.currentUser) return null;
+
+        let userData = await getUser(auth.currentUser.uid);
+
+        if (!userData) return null;
+
+        return {
+            authUser: auth.currentUser,
+            userData
+        }
     }
 }

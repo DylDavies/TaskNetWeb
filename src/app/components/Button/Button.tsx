@@ -1,7 +1,7 @@
 interface Props {
     text: string,
     func: () => void,
-    color: String
+    color: string
 }
 
 export default function Button({text, func, color}: Props) {

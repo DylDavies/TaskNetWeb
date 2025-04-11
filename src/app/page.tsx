@@ -12,8 +12,8 @@ export default function Home() {
     AuthService.googleSignout();
   }
 
-  function currentUserClick() {
-    const user = AuthService.getCurrentUser();
+  async function currentUserClick() {
+    const user = await AuthService.getCurrentUser();
 
     console.log("User", user);
   }

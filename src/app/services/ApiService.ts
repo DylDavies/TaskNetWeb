@@ -3,7 +3,7 @@ export default class ApiService {
 
     static async sessionExists(): Promise<{presence: boolean, customToken?: string}> {
         try {
-            let result = await fetch(`${ApiService.BASE_URL}/auth/session`, {
+            const result = await fetch(`${ApiService.BASE_URL}/auth/session`, {
                 method: "POST",
                 headers: {
                     'Accept': 'application/json',
@@ -13,7 +13,7 @@ export default class ApiService {
                 mode: "cors"
             });
 
-            let { presence, customToken } = await result.json();
+            const { presence, customToken } = await result.json();
 
             return { presence, customToken };
         } catch (error) {
