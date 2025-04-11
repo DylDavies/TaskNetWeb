@@ -20,20 +20,20 @@ export default function Home() {
     router.push("/freelancer"); //will have to make dynamic to go to seperate pages
   }
 
-  function signoutClick() {
+  /*function signoutClick() {
     googleSignout();
-  }
+  }*/
 
-  function currentUserClick() {
+  /*function currentUserClick() {
     const user = getCurrentUser();
 
     console.log("User", user);
-  }
+  }*/
 
   /* testing side bar */
 
   //const items = [{ name: "Client" }, { name: "Logout" }];
-  const items = [{ name: "Client" }, { name: "Logout" }];
+ // const items = [{ name: "Client" }, { name: "Logout" }];
 
   /*const Clickable = () => {
     console.log("Button clicked!");
