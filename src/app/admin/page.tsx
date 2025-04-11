@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Header from "../components/Header/header";
 import WelcomeCard from "../components/WelcomeCard/WelcomeCard";
-import "../components/WelcomeCard/WelcomeCard.css";
+
 import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
 
