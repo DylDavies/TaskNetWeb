@@ -8,6 +8,8 @@ import SearchBar from "../components/searchbar/SearchBar";
 import "../components/searchbar/SearchBar.css";
 import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
+import "../components/Header/Header.css";
+import "./global.css";
 import Link from "next/link";
 
 const links = [
@@ -56,7 +58,6 @@ const userData = [
 
 export default function Page() {
   const [searchQuery, setSearchQuery] = useState("");
-
   return (
     <>
       <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
@@ -64,7 +65,7 @@ export default function Page() {
           <Header name="Admin" usertype="Admin" />
         </header>
 
-        <main className="flex flex-1 dark:bg-[#cdd5f6]">
+        <main className="flex flex-1 dark:bg-[#cdd5f6] bg-color">
           <aside className="w-64">
             <SideBar items={links} />
           </aside>
@@ -92,7 +93,7 @@ export default function Page() {
           </section>
         </main>
 
-        <footer className="bg-[#f75509] py-4 flex justify-center">
+        <footer className="bg-[#f75509] py-4 flex justify-center dark:bg-gray-900 box-footer">
           <section className="space-x-8 text-center">
             <Link href="/freelancer" className="hover:text-[#1dbf73]">
               Freelancer
