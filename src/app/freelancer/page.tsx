@@ -1,5 +1,4 @@
 import Link from "next/link";
-//import "./freelancer.css";
 import Header from "../components/Header/header";
 import WelcomeCard from "../components/WelcomeCard/WelcomeCard";
 import "../components/WelcomeCard/WelcomeCard.css";
