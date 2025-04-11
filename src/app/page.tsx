@@ -10,6 +10,9 @@ import InputBar from "./components/inputbar/InputBar";
 import "./components/inputbar/inputBar.css";
 import SearchBar from "./components/searchbar/SearchBar";
 import "./components/searchbar/SearchBar.css";
+import SideBar from "./components/sidebar/SideBar";
+import PendingCard from "./components/PendingCard/PendingCard";
+import Header from "./components/Header/header";
 
 export default function Home() {
   async function signinClick() {
@@ -34,7 +37,7 @@ export default function Home() {
 
   /* testing side bar */
 
-  /*const items = [{ name: "Client" }, { name: "Logout" }];*/
+  const items = [{ name: "Client" }, { name: "Logout" }];
 
   const Clickable = () => {
     console.log("Button clicked!");
@@ -48,7 +51,10 @@ export default function Home() {
   };
 
   return (
+    
     <main>
+      <Header name="Alex" usertype="Freelancer"/>
+    
       <button
         onClick={signinClick}
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
@@ -80,6 +86,8 @@ export default function Home() {
         value={inputValue}
         onChange={handleChange}
       />
+      <SideBar items={items}/>
+      <PendingCard/>
     </main>
   );
 }
