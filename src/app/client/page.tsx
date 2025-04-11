@@ -2,7 +2,7 @@
 import Header from "../components/Header/header";
 import WelcomeCard from "../components/WelcomeCard/WelcomeCard";
 import Button from "../components/Button/Button";
-import "../components/button/Button.css";
+import "../components/Button/Button.css";
 import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
 
