@@ -43,6 +43,7 @@ jobs:
     needs: build
     environment:
       name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     
     steps:
       - name: Download artifact from build job
@@ -52,22 +53,12 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
-
-      - name: Deploy using Kudu ZipDeploy API
-        env:
-          AZURE_PUBLISH_PROFILE: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_87AC31E09D394EBA9C14222FF4930CBA }}
-        run: |
-          # Install XML parser
-          sudo apt-get update && sudo apt-get install -y libxml2-utils
-
-          # Extract values from publish profile
-          PUBLISH_URL=$(echo "$AZURE_PUBLISH_PROFILE" | xmllint --xpath "string(//publishProfile[contains(@publishUrl, '.scm.azurewebsites.net')]/publishUrl)" - | sed 's/:443$//')
-          USERNAME=$(echo "$AZURE_PUBLISH_PROFILE" | xmllint --xpath "string(//publishProfile[contains(@publishUrl, '.scm.azurewebsites.net')]/userName)" -)
-          PASSWORD=$(echo "$AZURE_PUBLISH_PROFILE" | xmllint --xpath "string(//publishProfile[contains(@publishUrl, '.scm.azurewebsites.net')]/userPWD)" -)
-
-            echo "Deploying to: $PUBLISH_URL"
-
-          # Push ZIP to Kudu zipdeploy API
-          curl -X POST -u "$USERNAME:$PASSWORD" \
-            -T release.zip \
-            "https://$PUBLISH_URL/api/zipdeploy"
+      
+      - name: 'Deploy to Azure Web App'
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'TaskNetWeb'
+          slot-name: 'Production'
+          package: .
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_87AC31E09D394EBA9C14222FF4930CBA }}
