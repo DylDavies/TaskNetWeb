@@ -1,4 +1,4 @@
-"use client"; // is this a problem?
+"use client"; 
 import React from "react";
 
 interface User {
