@@ -1,10 +1,10 @@
 //import Link from "next/link";
 import Header from "../components/Header/header";
 import WelcomeCard from "../components/WelcomeCard/WelcomeCard";
-import "../components/Button/Button.css";
+import "../components/button/Button.css";
 import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
-import Button from "../components/Button/Button";
+import Button from "../components/button/Button";
 
 const links = [{ name: "Client", href:"/client" }, { name: "freelancer",href:"/freelancer" },{name: "Home",href:"/"}, {name: "Client",href:"/client"}, {name: "Admin",href:"/admin"}];
 
