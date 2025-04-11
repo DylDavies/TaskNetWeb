@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "node_modules/next/dist/bin/next start",
+    "start": "npx next start",
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch"
