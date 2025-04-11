@@ -25,6 +25,38 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.logo {
+  width: 250px;
+  height: auto;
+  margin-bottom: 0px;
+}
+
+.gsi-material-button {
+  background-color: #131314; 
+  color: #fff;               
+  border: 1px solid #747775;    
+  border-radius: 9999px;     
+  font-weight: 500;
+  padding: 0 16px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.gsi-material-button:hover {
+  background-color: white; 
+  color: #131314; 
+;
+}
+
+.gsi-material-button .gsi-material-button-icon svg {
+  width: 18px;
+  height: 18px;
+}
 .heading{
   font-weight: bold;
 
