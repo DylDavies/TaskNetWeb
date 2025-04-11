@@ -61,7 +61,7 @@ jobs:
           sudo apt-get update && sudo apt-get install -y libxml2-utils
 
           # Extract values from publish profile
-          PUBLISH_URL=$(echo "$AZURE_PUBLISH_PROFILE" | xmllint --xpath "string(//publishProfile[@publishMethod='MSDeploy']/publishUrl)" -)
+          PUBLISH_URL=$(echo "$AZURE_PUBLISH_PROFILE" | xmllint --xpath "string(//publishProfile[@publishMethod='MSDeploy']/publishUrl)" - | sed 's/:443$//')
           USERNAME=$(echo "$AZURE_PUBLISH_PROFILE" | xmllint --xpath "string(//publishProfile[@publishMethod='MSDeploy']/userName)" -)
           PASSWORD=$(echo "$AZURE_PUBLISH_PROFILE" | xmllint --xpath "string(//publishProfile[@publishMethod='MSDeploy']/userPWD)" -)
 
