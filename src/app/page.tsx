@@ -52,9 +52,9 @@ export default function Home() {
     console.log("User", user);
   }
 
-  function Clickable() {
-    console.log("Button clicked!");
-  }
+  //function Clickable() {
+    //console.log("Button clicked!");
+  //}
 
   //const items = [{ name: "Client" }, { name: "Logout" }];
 
