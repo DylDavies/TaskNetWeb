@@ -1,7 +1,7 @@
-import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
-import { app } from "../Firebase";
+//import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
+//import { app } from "../Firebase";
 
-const provider = new GoogleAuthProvider();
+//const provider = new GoogleAuthProvider();
 
 {/*async function googlePopupAuth(): Promise<string | undefined> {
     const auth = getAuth(app);
