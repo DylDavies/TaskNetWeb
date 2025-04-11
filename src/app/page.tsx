@@ -3,28 +3,28 @@
 import { getCurrentUser, googlePopupAuth, googleSignout } from "./auth/auth";
 import React, { useState } from "react";
 import "./components/sidebar/sidebar.css";
-import Button from "./components/button/Button";
+//import Button from "./components/button/Button";
 import "./components/button/Button.css";
-import InputBar from "./components/inputbar/InputBar";
+//import InputBar from "./components/inputbar/InputBar";
 import "./components/inputbar/inputBar.css";
-import SearchBar from "./components/searchbar/SearchBar";
+//import SearchBar from "./components/searchbar/SearchBar";
 import "./components/searchbar/SearchBar.css";
-import WelcomeCard from "./components/WelcomeCard/WelcomeCard";
+//import WelcomeCard from "./components/WelcomeCard/WelcomeCard";
 import "./components/WelcomeCard/WelcomeCard.css";
 //import SideBar from "./components/sidebar/SideBar";
 import "./components/sidebar/sidebar.css";
-import PendingCard from "./components/PendingCard/PendingCard";
+//import PendingCard from "./components/PendingCard/PendingCard";
 import "./components/PendingCard/PendingCard.css";
 import {useRouter} from "next/navigation"
 
-// <button onClick={signinClick} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
-// <button onClick={signoutClick} className="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
-// <button onClick={currentUserClick} className="bg-orange-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
+ //<button onClick={signinClick} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
+ //<button onClick={signoutClick} className="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
+ //<button onClick={currentUserClick} className="bg-orange-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
 
 export default function Home() {
   const router = useRouter();
 
-  async function signinClick() {
+  /*async function signinClick() {
     const accessToken = await googlePopupAuth();
 
     console.log(accessToken);
@@ -33,11 +33,11 @@ export default function Home() {
 
     console.log(user);
     router.push("/freelancer"); //will have to make dynamic to go to seperate pages
-  }
+  }*/
 
-  function signoutClick() {
+  /*function signoutClick() {
     googleSignout();
-  }
+  }*/
 
   function currentUserClick() {
     const user = getCurrentUser();
@@ -49,16 +49,16 @@ export default function Home() {
 
   //const items = [{ name: "Client" }, { name: "Logout" }];
 
-  const Clickable = () => {
+  /*const Clickable = () => {
     console.log("Button clicked!");
     // This is a demo
-  };
+  };*/
 
-  const [inputValue, setInputValue] = useState("");
+  //const [inputValue, setInputValue] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  /*const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
-  };
+  };*/
   //const items = [{ name: "Client" }, { name: "Logout" }]
   
 
