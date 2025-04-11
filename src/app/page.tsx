@@ -5,7 +5,6 @@ import Button from "./components/Button/Button";
 import React, { useState } from "react";
 /*import SideBar from "./components/sidebar/SideBar";*/
 import "./components/sidebar/sidebar.css";
-import Button from "./components/button/Button";
 import "./components/button/Button.css";
 import InputBar from "./components/inputbar/InputBar";
 import "./components/inputbar/inputBar.css";
