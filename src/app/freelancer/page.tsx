@@ -4,12 +4,12 @@ import "./freelancer.css";
 export default function Page(){
     return(
         <>
-            <body>
+            <body className ="freelancer-body">
 
                 <img src="/images/Logo.png" alt="Logo" className="logo"></img>
                 <h1>Hello freelancer</h1>
 
-            <footer>
+            <footer className = "freelancer-footer">
             <nav>
                 <Link href="/freelancer">link to freelancer</Link> {" "}
                 <br></br>

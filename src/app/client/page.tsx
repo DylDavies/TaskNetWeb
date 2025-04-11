@@ -1,16 +1,17 @@
 import Link from "next/link";
 import "./client.css";
+import "../globals.css";
 
 
 export default function Page(){
     return(
         <>
-            <body>
+            <body className = "client-body">
 
                 <img src="./client/Logo.png" alt="Logo" className="logo"></img>
                 <h1>Hello Client</h1>
 
-            <footer>
+            <footer className = "client-footer">
             <nav>
                 <Link href="/freelancer">link to freelancer</Link> {" "}
                 <br></br>

@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-body {
+.freelancer-body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
@@ -28,14 +28,14 @@ body {
     margin-bottom: 30px;
   }
   
-  h1 {
+  .freelancer-heading {
     font-size: 2.5rem;
     font-weight: bold;
     text-align: center;
   }
   
   /* Footer Navigation */
-  footer {
+  .freelancer-footer {
     position: absolute;
     bottom: 0;
     width: 100%;
@@ -46,13 +46,13 @@ body {
     gap: 40px;
   }
   
-  footer a {
+  .freelancer-footer a {
     color: white;
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s;
   }
   
-  footer a:hover {
+  .freelancer-footer a:hover {
     color: #1dbf73; /* Optional: adds Fiverr green-style hover */
   }
