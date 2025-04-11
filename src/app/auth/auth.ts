@@ -3,7 +3,7 @@ import { app } from "../Firebase";
 
 const provider = new GoogleAuthProvider();
 
-async function googlePopupAuth(): Promise<string | undefined> {
+{/*async function googlePopupAuth(): Promise<string | undefined> {
     const auth = getAuth(app);
 
     try {
@@ -29,4 +29,4 @@ function getCurrentUser() {
     return auth.currentUser;
 }
 
-export { googlePopupAuth, googleSignout, getCurrentUser };
+export { googlePopupAuth, googleSignout, getCurrentUser };*/}

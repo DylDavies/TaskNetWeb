@@ -1,6 +1,6 @@
 'use client';
 
-import { getCurrentUser, googlePopupAuth, googleSignout } from "./auth/auth";
+//import { getCurrentUser, googlePopupAuth, googleSignout } from "./auth/auth";
 
 // <button onClick={signinClick} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
 // <button onClick={signoutClick} className="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
