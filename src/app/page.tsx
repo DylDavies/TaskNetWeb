@@ -10,8 +10,9 @@ import InputBar from "./components/inputbar/InputBar";
 import "./components/inputbar/inputBar.css";
 import SearchBar from "./components/searchbar/SearchBar";
 import "./components/searchbar/SearchBar.css";
+/*
 import SideBar from "./components/sidebar/SideBar";
-import PendingCard from "./components/PendingCard/PendingCard";
+import PendingCard from "./components/PendingCard/PendingCard";*/
 import Header from "./components/Header/header";
 
 export default function Home() {
@@ -37,7 +38,7 @@ export default function Home() {
 
   /* testing side bar */
 
-  const items = [{ name: "Client" }, { name: "Logout" }];
+  //const items = [{ name: "Client" }, { name: "Logout" }];
 
   const Clickable = () => {
     console.log("Button clicked!");
