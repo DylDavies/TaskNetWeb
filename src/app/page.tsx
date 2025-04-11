@@ -7,7 +7,7 @@ import { getCurrentUser, googlePopupAuth, googleSignout } from "./auth/auth";
 // <button onClick={currentUserClick} className="bg-orange-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
 
 export default function Home() {
-  async function signinClick() {
+  {/*async function signinClick() {
     const accessToken = await googlePopupAuth();
 
     console.log(accessToken);
@@ -25,7 +25,7 @@ export default function Home() {
     const user = getCurrentUser();
 
     console.log("User", user);
-  }
+  }*/}
 
   return (
 <main className="flex h-screen">
