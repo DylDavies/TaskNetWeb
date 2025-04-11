@@ -12,10 +12,10 @@ import React from "react";
 //>>>>>>> dev
 import "./components/sidebar/sidebar.css";
 import "./components/button/Button.css";
-import InputBar from "./components/inputbar/InputBar";
-import "./components/inputbar/inputBar.css";
-import SearchBar from "./components/searchbar/SearchBar";
-import "./components/searchbar/SearchBar.css";
+//import InputBar from "./components/inputbar/InputBar";
+//import "./components/inputbar/inputBar.css";
+//import SearchBar from "./components/searchbar/SearchBar";
+//import "./components/searchbar/SearchBar.css";
 //import SideBar from "./components/sidebar/SideBar";
 import PendingCard from "./components/PendingCard/PendingCard";
 import Header from "./components/Header/header";
@@ -88,17 +88,7 @@ export default function Home() {
       </button>
 
       <Button caption="Click this button" onClick={Clickable} />
-      <InputBar
-        placeholder="Enter some stuff"
-        value={inputValue}
-        onChange={handleChange}
-      />
-
-      <SearchBar
-        placeholder="Search for projects"
-        value={inputValue}
-        onChange={handleChange}
-      />
+     
 
       <PendingCard />
     </main>
