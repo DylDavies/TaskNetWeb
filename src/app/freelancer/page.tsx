@@ -4,7 +4,7 @@ import Header from "../components/Header/header";
 import WelcomeCard from "../components/WelcomeCard/WelcomeCard";
 import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
-import Button from "../components/button/Button";
+import Button from "../components/Button/Button";
 import "../components/button/Button.css";
 
 const links = [{ name: "Client", href:"/client" },{name: "Home",href:"/"}, {name: "Client",href:"/client"}, {name: "Admin",href:"/admin"}];
@@ -13,7 +13,7 @@ const links = [{ name: "Client", href:"/client" },{name: "Home",href:"/"}, {name
 export default function Page(){
     return(
         <>
-        <body className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
+        <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
             
             <header className="w-full bg-orange-500 ">
                 <Header name = "Alex" usertype="Freelancer" />
@@ -35,7 +35,7 @@ export default function Page(){
             <footer className="dark:bg-slate-500 py-4 flex justify-end">
                 <Button caption={"Log out"}/>
             </footer>
-        </body>
+        </section>
         </>
     );
 }

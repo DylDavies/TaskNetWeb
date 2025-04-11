@@ -3,6 +3,9 @@
 import { getCurrentUser, googlePopupAuth } from "./auth/auth";
 //import React, { useState } from "react";
 import {useRouter} from "next/navigation"
+import Header from "./components/Header/header";
+import WelcomeCard from "./components/WelcomeCard/WelcomeCard";
+import Button from "./components/Button/Button";
 //googleSignout import
 
  
