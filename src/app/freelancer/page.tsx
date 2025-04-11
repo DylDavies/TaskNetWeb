@@ -1,5 +1,6 @@
 import Link from "next/link";
 import "./freelancer.css";
+import "../global.css";
 
 export default function Page(){
     return(
