@@ -1,33 +1,30 @@
 'use client';
 
-import { getCurrentUser, googlePopupAuth, googleSignout } from "./auth/auth";
+import AuthService from "./services/AuthService";
+import Button from "./components/Button/Button";
 
 export default function Home() {
-  async function signinClick() {
-    const accessToken = await googlePopupAuth();
+  AuthService.autoSignIn();
 
-    console.log(accessToken);
-
-    const user = getCurrentUser();
-
-    console.log(user);
+  function signinClick() {
+    AuthService.signin();
   }
 
   function signoutClick() {
-    googleSignout();
+    AuthService.googleSignout();
   }
 
-  function currentUserClick() {
-    const user = getCurrentUser();
+  async function currentUserClick() {
+    const user = await AuthService.getCurrentUser();
 
     console.log("User", user);
   }
 
   return (
     <main>
-      <button onClick={signinClick} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
-      <button onClick={signoutClick} className="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
-      <button onClick={currentUserClick} className="bg-orange-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
+      <Button func={signinClick} text="Sign in with google" color="bg-blue-500"></Button>
+      <Button func={signoutClick} text="Sign out" color="bg-red-500"></Button>
+      <Button func={currentUserClick} text="Get current user out" color="bg-orange-500"></Button>
     </main>
   );
 }
