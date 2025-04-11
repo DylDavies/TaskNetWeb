@@ -9,7 +9,7 @@ const Header  : React.FC<Props> = ({ usertype, name}) =>{
   const initial = name.charAt(0).toUpperCase();
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-900 dark:border-gray-800">
+    <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-900 dark:border-gray-800" role="heading">
       <section className="flex items-center justify-between max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-3 lg:py-4">
         {/* Left Side: Logo */}
         <section className="flex items-center gap-3 lg:gap-4">
