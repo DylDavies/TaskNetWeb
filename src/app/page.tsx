@@ -1,7 +1,7 @@
 "use client";
 
 import AuthService from "./services/AuthService";
-import Button from "./components/Button/Button";
+import Button from "./components/button/Button";
 import React, { useState } from "react";
 /*import SideBar from "./components/sidebar/SideBar";*/
 import "./components/sidebar/sidebar.css";
