@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 
 /*
 ------NOTE TO USER OF THIS COMPONENT-----
@@ -18,7 +19,7 @@ import React from "react";
 */
 
 interface Props {
-  items: { name: string }[];
+  items: { name: string; href: string }[];
 }
 /*
 
@@ -47,7 +48,14 @@ const SideBar: React.FC<Props> = ({ items }) => {
         </a>
         <ul className="mt-6 list">
           {items.map((item, index) => (
-            <li key={index}>{item.name}</li>
+            <li key={index}>
+              <Link href={item.href}>
+              
+                  {item.name}
+                
+              </Link>
+              
+            </li>
           ))}
         </ul>
       </section>
