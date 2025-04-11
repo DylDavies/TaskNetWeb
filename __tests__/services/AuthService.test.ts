@@ -23,7 +23,7 @@ jest.mock("firebase/firestore", () => {
     return {
         getFirestore: jest.fn()
     }
-})
+});
 
 jest.mock("next/navigation", () => {
     return {
@@ -31,7 +31,7 @@ jest.mock("next/navigation", () => {
     }
 })
 
-jest.mock("../../src/app/services/ApiService")
+jest.mock("../../src/app/services/ApiService");
 jest.mock("../../src/app/server/services/DatabaseService", () => ({
     getUser: jest.fn()
 }));
@@ -43,6 +43,35 @@ describe("Authentication tests", () => {
     })
 
     describe("Google Signin", () => {
+        it("auto sign in with user should stop", async () => {
+            const testData = {
+                currentUser: {
+                    uid: "mockUId"
+                }
+            }
+            jest.mocked(auth.getAuth).mockReturnValue(testData as unknown as Auth);
+            (ApiService.sessionExists as jest.Mock).mockReturnValue({presence: true, customToken: "mockCustomToken"});
+
+            await AuthService.autoSignIn();
+
+            expect(auth.getAuth).toHaveBeenCalled();
+            expect(ApiService.sessionExists).not.toHaveBeenCalled();
+        });
+
+        it("auto sign in without user call required functions", async () => {
+            const testData = {
+                currentUser: null
+            }
+            jest.mocked(auth.getAuth).mockReturnValue(testData as unknown as Auth);
+            (ApiService.sessionExists as jest.Mock).mockReturnValue({presence: true, customToken: "mockCustomToken"});
+
+            await AuthService.autoSignIn();
+
+            expect(auth.getAuth).toHaveBeenCalled();
+            expect(ApiService.sessionExists).toHaveBeenCalled();
+            expect(auth.signInWithCustomToken).toHaveBeenCalled();
+        });
+
         it("should call all relevant functions (no __session)", async () => {
             const getIdTokenMock = jest.fn();
 

@@ -4,6 +4,8 @@ import AuthService from "./services/AuthService";
 import Button from "./components/Button/Button";
 
 export default function Home() {
+  AuthService.autoSignIn();
+
   function signinClick() {
     AuthService.signin();
   }

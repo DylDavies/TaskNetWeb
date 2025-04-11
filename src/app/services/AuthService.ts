@@ -10,6 +10,18 @@ import { getUser } from "../server/services/DatabaseService";
 const provider = new GoogleAuthProvider();
 
 export default class AuthService {
+    static async autoSignIn() {
+        const auth = getAuth(app);
+
+        if (auth.currentUser) return;
+
+        const session = await ApiService.sessionExists();
+    
+        if (session.presence && session.customToken) {
+            signInWithCustomToken(auth, session.customToken);
+        }
+    }
+
     static async signin(redirectPage?: string): Promise<boolean> {
         const auth = getAuth(app);
     
