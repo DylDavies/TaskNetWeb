@@ -58,9 +58,9 @@ export default function Home() {
 
   //const items = [{ name: "Client" }, { name: "Logout" }];
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-  };
+ // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+   // setInputValue(e.target.value);
+ // };
 
   return (
     <main>
