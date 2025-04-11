@@ -1,3 +1,4 @@
+"use client"; // is this a problem?
 import React from "react";
 
 interface User {
@@ -85,7 +86,7 @@ const AdminTable: React.FC<Props> = ({ data }) => {
       <h4 className="mb-4 text-lg font-semibold text-gray-600 dark:text-gray-300">
         Administrator
       </h4>
-      <section className="w-full mb-8 overflow-hidden rounded-lg shadow-xs">
+      <section className="w-full mb-8 overflow-hidden rounded-lg shadow-xs box">
         <section className="w-full overflow-x-auto">
           <table className="w-full whitespace-no-wrap">
             <thead>

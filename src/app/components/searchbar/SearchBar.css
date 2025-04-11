@@ -1,5 +1,5 @@
 .searchbar{
-    width: 200px;
+    width: 900px;
     height: 38px;
 }
 
@@ -8,7 +8,7 @@
   }
   
   .searchbar:hover {
-    box-shadow: 0 0 0 2.5px #b9bac5, 0px 0px 25px -15px #000;
+    box-shadow: 0 0 0 2.5px #000753, 0px 0px 25px -15px #000;
   }
   
   .searchbar:active {
@@ -17,4 +17,9 @@
   
   .searchbar:focus {
     box-shadow: 0 0 0 2.5px #2f303d;
+  }
+
+
+  .box{
+    box-shadow: 2.1px 4.2px 4.2px hsl(0deg 0% 0% / 0.44);
   }

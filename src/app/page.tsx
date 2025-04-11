@@ -1,9 +1,6 @@
 "use client";
-
 import { getCurrentUser, googlePopupAuth, googleSignout } from "./auth/auth";
-<<<<<<<<< Temporary merge branch 1
 import {useRouter} from "next/navigation"
-=========
 import React, { useState } from "react";
 /*import SideBar from "./components/sidebar/SideBar";*/
 import "./components/sidebar/sidebar.css";
@@ -16,7 +13,6 @@ import "./components/searchbar/SearchBar.css";
 import SideBar from "./components/sidebar/SideBar";
 import PendingCard from "./components/PendingCard/PendingCard";
 import Header from "./components/Header/header";
->>>>>>>>> Temporary merge branch 2
 
 export default function Home() {
   async function signinClick() {

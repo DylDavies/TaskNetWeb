@@ -5,3 +5,7 @@
 .deny:hover{
     box-shadow: 0 0 3px #eee;
 }
+
+.box{
+    box-shadow: 2.1px 4.2px 4.2px hsl(0deg 0% 0% / 0.44);
+}
