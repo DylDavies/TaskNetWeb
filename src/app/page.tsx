@@ -1,9 +1,15 @@
 "use client";
 
 import AuthService from "./services/AuthService";
-import Button from "./components/Button/Button";
+//<<<<<<< feature/admin
+import Button from "./components/button/Button";
 //>>>>>>> dev
 import React from "react";
+//=======
+import Button from "./components/button/Button";
+//import React, { useState } from "react";
+/*import SideBar from "./components/sidebar/SideBar";*/
+//>>>>>>> dev
 import "./components/sidebar/sidebar.css";
 import "./components/button/Button.css";
 import InputBar from "./components/inputbar/InputBar";
