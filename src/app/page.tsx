@@ -1,8 +1,10 @@
 "use client";
-import { getCurrentUser, googlePopupAuth, googleSignout } from "./auth/auth";
+
+import AuthService from "./services/AuthService";
+import Button from "./components/Button/Button";
+//>>>>>>> dev
 import React, { useState } from "react";
 import "./components/sidebar/sidebar.css";
-import Button from "./components/button/Button";
 import "./components/button/Button.css";
 import InputBar from "./components/inputbar/InputBar";
 import "./components/inputbar/inputBar.css";
@@ -13,21 +15,34 @@ import PendingCard from "./components/PendingCard/PendingCard";
 import Header from "./components/Header/header";
 
 export default function Home() {
-  const [inputValue, setInputValue] = useState("");
+//<<<<<<< feature/admin
+ //const [inputValue, setInputValue] = useState("");
 
-  async function signinClick() {
-    const accessToken = await googlePopupAuth();
-    console.log(accessToken);
-    const user = getCurrentUser();
-    console.log(user);
+  //async function signinClick() {
+    //const accessToken = await googlePopupAuth();
+    //console.log(accessToken);
+    //const user = getCurrentUser();
+    //console.log(user);
+//=======
+  AuthService.autoSignIn();
+
+  function signinClick() {
+    AuthService.signin();
+//>>>>>>> dev
   }
 
   function signoutClick() {
-    googleSignout();
+    AuthService.googleSignout();
   }
 
+/*<<<<<<< feature/admin
   function currentUserClick() {
     const user = getCurrentUser();
+=======*/
+  async function currentUserClick() {
+    const user = await AuthService.getCurrentUser();
+
+//>>>>>>> dev
     console.log("User", user);
   }
 
