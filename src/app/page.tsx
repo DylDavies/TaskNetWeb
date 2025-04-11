@@ -15,7 +15,7 @@ import "./components/WelcomeCard/WelcomeCard.css";
 import "./components/sidebar/sidebar.css";
 //import PendingCard from "./components/PendingCard/PendingCard";
 import "./components/PendingCard/PendingCard.css";
-import {useRouter} from "next/navigation"
+//import {useRouter} from "next/navigation"
 
  //<button onClick={signinClick} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
  //<button onClick={signoutClick} className="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
@@ -49,10 +49,10 @@ export default function Home() {
 
   //const items = [{ name: "Client" }, { name: "Logout" }];
 
-  const Clickable = () => {
+  /*const Clickable = () => {
     console.log("Button clicked!");
     // This is a demo
-  };
+  };*/
 
   //const [inputValue, setInputValue] = useState("");
 
