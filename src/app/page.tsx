@@ -15,7 +15,7 @@ import "./components/WelcomeCard/WelcomeCard.css";
 import "./components/sidebar/sidebar.css";
 //import PendingCard from "./components/PendingCard/PendingCard";
 import "./components/PendingCard/PendingCard.css";
-//import {useRouter} from "next/navigation"
+import {useRouter} from "next/navigation"
 
  //<button onClick={signinClick} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
  //<button onClick={signoutClick} className="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
@@ -25,7 +25,7 @@ import PendingCard from "./components/PendingCard/PendingCard";
 import Header from "./components/Header/header";
 
 export default function Home() {
-  //const router = useRouter();
+  const router = useRouter();
 
   async function signinClick() {
     const accessToken = await googlePopupAuth();
@@ -35,7 +35,7 @@ export default function Home() {
     const user = getCurrentUser();
 
     console.log(user);
-    //router.push("/freelancer"); will have to make dynamic to go to seperate pages
+    router.push("/freelancer"); //will have to make dynamic to go to seperate pages
   }
 
   function signoutClick() {
@@ -86,7 +86,7 @@ export default function Home() {
       <section className="text-xl opacity-80 mt-4">
       <section className="text-xl opacity-80 mt-4">
       <section className="text-xl opacity-80 mt-4">
-  <button className="gsi-material-button hover:bg-white hover:text-black transition-colors duration-200">
+  <button className="gsi-material-button hover:bg-white hover:text-black transition-colors duration-200" onClick={signinClick}>
     <section className="gsi-material-button-icon">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" className="w-5 h-5">
         <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -96,14 +96,11 @@ export default function Home() {
         <path fill="none" d="M0 0h48v48H0z"/>
       </svg>
     </section>
-    <span className="gsi-material-button-contents">Continue with Google</span>
+    <section className="gsi-material-button-contents">Continue with Google</section>
   </button>
 </section>
 
 </section>
-  <button onClick={signinClick} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
- <button onClick={signoutClick} className="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
- <button onClick={currentUserClick} className="bg-orange-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
 </section>
 
 
