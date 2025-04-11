@@ -5,6 +5,7 @@ type Props = {
   name: string; // name displayed in message
 };
 
+// Dynamic, enter a usertype and name to create
 const Header  : React.FC<Props> = ({ usertype, name}) =>{
   const initial = name.charAt(0).toUpperCase();
 
