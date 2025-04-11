@@ -18,8 +18,8 @@ const PendingCard = () => {
         </p>
       </div>
     </section>
-    //</section>
   );
 };
 
+// Export the pending card for use in other parts of the program
 export default PendingCard;

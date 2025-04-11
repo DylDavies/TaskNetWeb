@@ -51,9 +51,15 @@ export default function Home() {
   };
 
   return (
+    
     <main>
+<<<<<<< HEAD
       <Header name="Alex" usertype="Freelancer" />
 
+=======
+      <Header name="Alex" usertype="Freelancer"/>
+    
+>>>>>>> 8994f12fc312262cdcee35676e015e7f9f836408
       <button
         onClick={signinClick}
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
@@ -85,8 +91,13 @@ export default function Home() {
         value={inputValue}
         onChange={handleChange}
       />
+<<<<<<< HEAD
       <SideBar items={items} />
       <PendingCard />
+=======
+      <SideBar items={items}/>
+      <PendingCard/>
+>>>>>>> 8994f12fc312262cdcee35676e015e7f9f836408
     </main>
   );
 }
