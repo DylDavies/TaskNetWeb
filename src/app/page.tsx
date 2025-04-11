@@ -1,7 +1,7 @@
 "use client";
 
 import { getCurrentUser, googlePopupAuth, googleSignout } from "./auth/auth";
-import React, { useState } from "react";
+//import React, { useState } from "react";
 import "./components/sidebar/sidebar.css";
 //import Button from "./components/button/Button";
 import "./components/button/Button.css";
@@ -22,9 +22,9 @@ import {useRouter} from "next/navigation"
  //<button onClick={currentUserClick} className="bg-orange-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
 
 export default function Home() {
-  const router = useRouter();
+  //const router = useRouter();
 
-  /*async function signinClick() {
+  async function signinClick() {
     const accessToken = await googlePopupAuth();
 
     console.log(accessToken);
@@ -32,12 +32,12 @@ export default function Home() {
     const user = getCurrentUser();
 
     console.log(user);
-    router.push("/freelancer"); //will have to make dynamic to go to seperate pages
-  }*/
+    //router.push("/freelancer"); will have to make dynamic to go to seperate pages
+  }
 
-  /*function signoutClick() {
+  function signoutClick() {
     googleSignout();
-  }*/
+  }
 
   function currentUserClick() {
     const user = getCurrentUser();
@@ -49,17 +49,17 @@ export default function Home() {
 
   //const items = [{ name: "Client" }, { name: "Logout" }];
 
-  /*const Clickable = () => {
+  const Clickable = () => {
     console.log("Button clicked!");
     // This is a demo
-  };*/
+  };
 
   //const [inputValue, setInputValue] = useState("");
 
   /*const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };*/
-  //const items = [{ name: "Client" }, { name: "Logout" }]
+ //const items = [{ name: "Client" }, { name: "Logout" }]
   
 
   return (
@@ -97,7 +97,9 @@ export default function Home() {
 </section>
 
 </section>
-
+  <button onClick={signinClick} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
+ <button onClick={signoutClick} className="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
+ <button onClick={currentUserClick} className="bg-orange-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
 </section>
 
 
