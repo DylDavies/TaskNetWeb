@@ -2,7 +2,7 @@
 
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, signInWithCustomToken } from "firebase/auth";
 import { redirect } from 'next/navigation'
-import { app, db } from "../firebase";
+import { app } from "../firebase";
 import ApiService from "./ApiService";
 import ActiveUser from "../interfaces/ActiveUser.interface";
 import { getUser } from "../server/services/DatabaseService";
@@ -45,7 +45,7 @@ export default class AuthService {
     
         if (!auth.currentUser) return null;
 
-        let userData = await getUser(auth.currentUser.uid);
+        const userData = await getUser(auth.currentUser.uid);
 
         if (!userData) return null;
 
