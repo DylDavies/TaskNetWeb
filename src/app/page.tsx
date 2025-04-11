@@ -11,6 +11,12 @@ import InputBar from "./components/inputbar/InputBar";
 import "./components/inputbar/inputBar.css";
 import SearchBar from "./components/searchbar/SearchBar";
 import "./components/searchbar/SearchBar.css";
+import WelcomeCard from "./components/WelcomeCard/WelcomeCard";
+import "./components/WelcomeCard/WelcomeCard.css";
+import SideBar from "./components/sidebar/SideBar";
+import "./components/sidebar/sidebar.css";
+import PendingCard from "./components/PendingCard/PendingCard";
+import "./components/PendingCard/PendingCard.css";
 import {useRouter} from "next/navigation"
 
 export default function Home() {
@@ -39,7 +45,7 @@ export default function Home() {
 
   /* testing side bar */
 
-  /*const items = [{ name: "Client" }, { name: "Logout" }];*/
+  const items = [{ name: "Client" }, { name: "Logout" }];
 
   const Clickable = () => {
     console.log("Button clicked!");
@@ -51,7 +57,7 @@ export default function Home() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
-  //const items = [{ name: "Client" }, { name: "Logout" }];
+  //const items = [{ name: "Client" }, { name: "Logout" }]
   
 
   return (
@@ -74,6 +80,7 @@ export default function Home() {
       >
         Sign in with google
       </button>
+      <PendingCard/>
 
       <Button caption="Click this button" onClick={Clickable} />
       <InputBar
@@ -87,6 +94,12 @@ export default function Home() {
         value={inputValue}
         onChange={handleChange}
       />
+
+      <WelcomeCard username={""} type={""}/>
+
+      <SideBar items={items}/>
+
+      
     </main>
     
     
