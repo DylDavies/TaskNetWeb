@@ -2,7 +2,10 @@ import _1 from "firebase/app";
 import auth, { Auth } from "firebase/auth";
 import navigation from "next/navigation";
 import ApiService from "../../src/app/services/ApiService";
+import { getUser } from "../../src/app/server/services/DatabaseService";
 import AuthService from "@/app/services/AuthService";
+import UserStatus from "@/app/enums/UserStatus.enum";
+import UserType from "@/app/enums/UserType.enum";
 
 jest.mock("firebase/app");
 
@@ -12,9 +15,15 @@ jest.mock("firebase/auth", () => {
         GoogleAuthProvider: jest.fn(),
         signInWithPopup: jest.fn(),
         signOut: jest.fn(),
-        signInWithCustomToken: jest.fn()
+        signInWithCustomToken: jest.fn(),
     }
 });
+
+jest.mock("firebase/firestore", () => {
+    return {
+        getFirestore: jest.fn()
+    }
+})
 
 jest.mock("next/navigation", () => {
     return {
@@ -23,10 +32,14 @@ jest.mock("next/navigation", () => {
 })
 
 jest.mock("../../src/app/services/ApiService")
+jest.mock("../../src/app/server/services/DatabaseService", () => ({
+    getUser: jest.fn()
+}));
 
 describe("Authentication tests", () => {
     beforeEach(() => {
         jest.mocked(ApiService).mockClear();
+        jest.mocked(getUser).mockClear();
     })
 
     describe("Google Signin", () => {
@@ -99,18 +112,49 @@ describe("Authentication tests", () => {
     });
 
     describe("Current user", () => {
-        it("should return current user", () => {
+        it("should return current user", async () => {
             const testData = {
                 currentUser: {
                     uid: "mockUId"
                 }
             }
             jest.mocked(auth.getAuth).mockReturnValue(testData as unknown as Auth);
+            jest.mocked(getUser).mockResolvedValue({status: UserStatus.Pending, type: UserType.None});
 
-            let user = AuthService.getCurrentUser();
+            let user = await AuthService.getCurrentUser();
 
             expect(auth.getAuth).toHaveBeenCalled();
-            expect(user).toBe(testData.currentUser);
+            expect(user).toMatchObject({
+                authUser: testData.currentUser,
+                userData: {status: UserStatus.Pending, type: UserType.None}
+            });
+        });
+
+        it("should return null if no current user", async () => {
+            const testData = {
+                currentUser: null
+            }
+            jest.mocked(auth.getAuth).mockReturnValue(testData as unknown as Auth);
+
+            let user = await AuthService.getCurrentUser();
+
+            expect(auth.getAuth).toHaveBeenCalled();
+            expect(user).toBe(null);
+        });
+
+        it("should return null if database doesn't return user", async () => {
+            const testData = {
+                currentUser: {
+                    uid: "mockUId"
+                }
+            }
+            jest.mocked(auth.getAuth).mockReturnValue(testData as unknown as Auth);
+            jest.mocked(getUser).mockResolvedValue(null);
+
+            let user = await AuthService.getCurrentUser();
+
+            expect(auth.getAuth).toHaveBeenCalled();
+            expect(user).toBe(null);
         });
     });
 })

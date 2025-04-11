@@ -5,8 +5,6 @@ import { redirect } from 'next/navigation'
 import { app, db } from "../firebase";
 import ApiService from "./ApiService";
 import ActiveUser from "../interfaces/ActiveUser.interface";
-import { doc, getDoc } from "firebase/firestore";
-import UserData from "../interfaces/UserData.interface";
 import { getUser } from "../server/services/DatabaseService";
 
 const provider = new GoogleAuthProvider();
