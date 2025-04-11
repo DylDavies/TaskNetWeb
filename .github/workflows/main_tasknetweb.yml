@@ -61,11 +61,13 @@ jobs:
           sudo apt-get update && sudo apt-get install -y libxml2-utils
 
           # Extract values from publish profile
-          PUBLISH_URL=$(echo "$AZURE_PUBLISH_PROFILE" | xmllint --xpath "string(//publishProfile[@publishMethod='MSDeploy']/publishUrl)" - | sed 's/:443$//')
-          USERNAME=$(echo "$AZURE_PUBLISH_PROFILE" | xmllint --xpath "string(//publishProfile[@publishMethod='MSDeploy']/userName)" -)
-          PASSWORD=$(echo "$AZURE_PUBLISH_PROFILE" | xmllint --xpath "string(//publishProfile[@publishMethod='MSDeploy']/userPWD)" -)
+          PUBLISH_URL=$(echo "$AZURE_PUBLISH_PROFILE" | xmllint --xpath "string(//publishProfile[contains(@publishUrl, '.scm.azurewebsites.net')]/publishUrl)" - | sed 's/:443$//')
+          USERNAME=$(echo "$AZURE_PUBLISH_PROFILE" | xmllint --xpath "string(//publishProfile[contains(@publishUrl, '.scm.azurewebsites.net')]/userName)" -)
+          PASSWORD=$(echo "$AZURE_PUBLISH_PROFILE" | xmllint --xpath "string(//publishProfile[contains(@publishUrl, '.scm.azurewebsites.net')]/userPWD)" -)
+
+            echo "Deploying to: $PUBLISH_URL"
 
           # Push ZIP to Kudu zipdeploy API
           curl -X POST -u "$USERNAME:$PASSWORD" \
             -T release.zip \
-            https://$PUBLISH_URL/api/zipdeploy
+            "https://$PUBLISH_URL/api/zipdeploy"
