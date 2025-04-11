@@ -1,6 +1,9 @@
 "use client";
 
 import { getCurrentUser, googlePopupAuth, googleSignout } from "./auth/auth";
+<<<<<<<<< Temporary merge branch 1
+import {useRouter} from "next/navigation"
+=========
 import React, { useState } from "react";
 /*import SideBar from "./components/sidebar/SideBar";*/
 import "./components/sidebar/sidebar.css";
@@ -10,10 +13,10 @@ import InputBar from "./components/inputbar/InputBar";
 import "./components/inputbar/inputBar.css";
 import SearchBar from "./components/searchbar/SearchBar";
 import "./components/searchbar/SearchBar.css";
-/*
 import SideBar from "./components/sidebar/SideBar";
-import PendingCard from "./components/PendingCard/PendingCard";*/
+import PendingCard from "./components/PendingCard/PendingCard";
 import Header from "./components/Header/header";
+>>>>>>>>> Temporary merge branch 2
 
 export default function Home() {
   async function signinClick() {
@@ -38,23 +41,34 @@ export default function Home() {
 
   /* testing side bar */
 
-  //const items = [{ name: "Client" }, { name: "Logout" }];
+  const items = [{ name: "Client" }, { name: "Logout" }];
 
-  const Clickable = () => {
+  /*const Clickable = () => {
     console.log("Button clicked!");
     // This is a demo
-  };
+  };*/
 
-  const [inputValue, setInputValue] = useState("");
+  //const [inputValue, setInputValue] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  /*const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
-  };
+  };*/
+ //const items = [{ name: "Client" }, { name: "Logout" }]
+  
 
   return (
+<<<<<<<<< Temporary merge branch 1
+    <body>
+      <h1 className = "heading">TaskNet</h1>
+        <button onClick={signinClick} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
+        <button onClick={signoutClick} className="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign out</button>
+        <button onClick={currentUserClick} className="bg-orange-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in with google</button>
+     </body>
+=========
+    
     <main>
-      <Header name="Alex" usertype="Freelancer" />
-
+      <Header name="Alex" usertype="Freelancer"/>
+    
       <button
         onClick={signinClick}
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
@@ -86,6 +100,9 @@ export default function Home() {
         value={inputValue}
         onChange={handleChange}
       />
+      <SideBar items={items}/>
+      <PendingCard/>
     </main>
+>>>>>>>>> Temporary merge branch 2
   );
 }

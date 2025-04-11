@@ -14,7 +14,7 @@ const Header  : React.FC<Props> = ({ usertype, name}) =>{
       <section className="flex items-center justify-between max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-3 lg:py-4">
         {/* Left Side: Logo */}
         <section className="flex items-center gap-3 lg:gap-4">
-          <img src="/logo.svg" alt="TaskNet Logo" className="w-8 h-8 sm:w-9 sm:h-9" />
+          <img src="/images/Logo.png" alt="TaskNet Logo" className="w-8 h-8 sm:w-9 sm:h-9" />
           <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">TaskNet</h1>
         </section>
 
