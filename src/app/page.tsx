@@ -2,7 +2,7 @@
 
 import AuthService from "./services/AuthService";
 //<<<<<<< feature/admin
-import Button from "./components/button/Button";
+//import Button from "./components/button/Button";
 //>>>>>>> dev
 import React from "react";
 //=======
@@ -86,8 +86,6 @@ export default function Home() {
       >
         Get Current User
       </button>
-
-      <Button caption="Click this button" onClick={Clickable} />
      
 
       <PendingCard />
