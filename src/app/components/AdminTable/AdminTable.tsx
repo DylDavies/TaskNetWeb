@@ -1,5 +1,6 @@
 "use client";
-import React from "react";
+import { approveUser, denyUser } from "@/app/server/services/DatabaseService";
+import React, { useEffect, useId, useState } from "react";
 
 interface User {
   uid: string;
@@ -13,14 +14,40 @@ interface User {
 interface Props {
   data: User[];
 }
-
 const AdminTable: React.FC<Props> = ({ data }) => {
-  const handleApprove = (name: string) => {
-    console.log(`Approved: ${name}`);
+  //console.log(`The data is: ${JSON.stringify(data, null, 2)}`); //sanity check
+  const [pendingUsers, setPendingUsers] = useState<User[]>(data);
+
+  useEffect(() => {
+    setPendingUsers(data);
+    console.log(
+      "Updated pending users with new data:",
+      JSON.stringify(data, null, 2)
+    );
+  }, [data]);
+
+  const handleApprove = async (uid: string) => {
+    try {
+      await approveUser(uid);
+      setPendingUsers((currentUser) =>
+        currentUser.filter((user) => user.uid != uid)
+      ); // for updating table when approved
+      console.log(`Successfully approved user ${uid}`);
+    } catch (error) {
+      console.error(`Error when trying to approve user ${error}`);
+    }
   };
 
-  const handleDeny = (name: string) => {
-    console.log(`Denied: ${name}`);
+  const handleDeny = async (uid: string) => {
+    try {
+      await denyUser(uid);
+      setPendingUsers((currentUser) =>
+        currentUser.filter((user) => user.uid != uid)
+      ); // for updating table when approved
+      console.log(`Successfully Denied user ${uid}`);
+    } catch (error) {
+      console.error(`Error when trying to deny user ${error}`);
+    }
   };
 
   /*
@@ -101,7 +128,7 @@ const AdminTable: React.FC<Props> = ({ data }) => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-              {data.map((item, index) => (
+              {pendingUsers.map((item, index) => (
                 <tr key={index} className="text-gray-700 dark:text-gray-400">
                   <td className="px-4 py-3">
                     <section className="flex items-center text-sm">

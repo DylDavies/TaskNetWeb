@@ -69,10 +69,11 @@ export default function Page() {
 
   const [pendingUsers, setPendingUsers] = useState<User[]>([]);
 
+  // To update the admin table after the Admin approves or denies user
   useEffect(() => {
     async function fetchPendingUsers() {
       const pendingUsers = await getPendingUsers();
-      console.log("Pending users: ", pendingUsers);
+      //console.log("Pending users: ", pendingUsers);
       setPendingUsers(pendingUsers);
     }
     fetchPendingUsers();
