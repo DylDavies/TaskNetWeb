@@ -4,8 +4,6 @@ import AuthService from "./services/AuthService";
 import React, { useEffect, useState } from "react";
 import "./components/sidebar/sidebar.css";
 import "./components/button/Button.css";
-import PendingCard from "./components/PendingCard/PendingCard";
-import Header from "./components/Header/header";
 import { getPendingUsers } from "./server/services/DatabaseService";
 
 export default function Home() {
@@ -15,24 +13,30 @@ export default function Home() {
     AuthService.signin();
   }
 
-  function signoutClick() {
-    AuthService.googleSignout();
-  }
+  // function signoutClick() {
+  //   AuthService.googleSignout();
+  // }
 
-  async function currentUserClick() {
-    const user = await AuthService.getCurrentUser();
+  // async function currentUserClick() {
+  //   const user = await AuthService.getCurrentUser();
 
-    console.log("User", user);
-  }
+  //   console.log("User", user);
+  // }
 
   /* Testing fetching pending users (START)*/
-  const [pendingUsers, setPendingUsers] = useState([]);
+  interface User {
+    uid: string;
+    status: number;
+    type: number;
+  }
+
+  const [pendingUsers, setPendingUsers] = useState<User[]>([]);
 
   useEffect(() => {
     async function fetchPendingUsers() {
       const users = await getPendingUsers();
       console.log("Pending users: ", users);
-      //setPendingUsers(users);
+      setPendingUsers(users);
     }
     fetchPendingUsers();
   }, []);
