@@ -14,6 +14,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
+    
     --background: #0a0a0a;
     --foreground: #ededed;
   }
@@ -24,3 +25,59 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.logo {
+  width: 250px;
+  height: auto;
+  margin-bottom: 0px;
+}
+
+.gsi-material-button {
+  background-color: #131314; 
+  color: #fff;               
+  border: 1px solid #747775;    
+  border-radius: 9999px;     
+  font-weight: 500;
+  padding: 0 16px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.gsi-material-button:hover {
+  background-color: white; 
+  color: #131314; 
+;
+}
+
+.gsi-material-button .gsi-material-button-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.heading{
+  font-weight: bold;
+
+}
+h1{
+  font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.bg-color{
+  background-color: rgba(30, 30, 30, 0.75); /* dark grey with no purple tint */
+  backdrop-filter: blur(6px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); /* solid black shadow */
+  border-radius: 0.75rem;     
+}
+
+
+.box-footer{
+  box-shadow: 6px 0px 0px hsl(0deg 0% 0% / 0.44);
+}
+
+
+
