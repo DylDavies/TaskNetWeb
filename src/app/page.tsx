@@ -1,10 +1,9 @@
 "use client";
 
 import AuthService from "./services/AuthService";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import "./components/sidebar/sidebar.css";
 import "./components/button/Button.css";
-import { getPendingUsers } from "./server/services/DatabaseService";
 
 export default function Home() {
   AuthService.autoSignIn();
@@ -22,25 +21,6 @@ export default function Home() {
 
   //   console.log("User", user);
   // }
-
-  /* Testing fetching pending users (START)*/
-  interface User {
-    uid: string;
-    status: number;
-    type: number;
-  }
-
-  const [pendingUsers, setPendingUsers] = useState<User[]>([]);
-
-  useEffect(() => {
-    async function fetchPendingUsers() {
-      const pendingUsers = await getPendingUsers();
-      console.log("Pending users: ", pendingUsers);
-      setPendingUsers(pendingUsers);
-    }
-    fetchPendingUsers();
-  }, []);
-  /* Testing fetching pending users (END) */
 
   return (
     <main className="flex h-screen">
