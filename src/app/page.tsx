@@ -4,8 +4,6 @@ import AuthService from "./services/AuthService";
 import React from "react";
 import "./components/sidebar/sidebar.css";
 import "./components/button/Button.css";
-import ActiveUser from "./interfaces/ActiveUser.interface";
-
 
 export default function Home() {
   AuthService.autoSignIn();
@@ -14,22 +12,14 @@ export default function Home() {
     AuthService.signin();
   }
 
-  function signoutClick() {
-    AuthService.googleSignout();
-  }
+  //function signoutClick() {
+    //AuthService.googleSignout();
+  //}
 
-  async function currentUserClick() {
-    const user = await AuthService.getCurrentUser();
-
-    console.log("User", user);
-  }
-  
-  
-  async function getGlobalUser() : Promise<ActiveUser | null>{
-    return await AuthService.getCurrentUser();
-  }
-
-
+  //async function currentUserClick() {
+    //const user = await AuthService.getCurrentUser();
+    //console.log("User", user);
+  //}
 
   return (
     <main className="flex h-screen">
@@ -68,7 +58,7 @@ export default function Home() {
   </section>
   
   </section>
-  
+
   
   
   
