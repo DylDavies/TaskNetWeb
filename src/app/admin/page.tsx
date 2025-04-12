@@ -2,22 +2,15 @@
 import { useState } from "react";
 import AdminTable from "../components/AdminTable/AdminTable";
 import "../components/AdminTable/AdminTable.css";
-import Header from "../components/Header/header";
-import "../components/WelcomeCard/WelcomeCard.css";
 import SearchBar from "../components/searchbar/SearchBar";
 import "../components/searchbar/SearchBar.css";
-import SideBar from "../components/sidebar/SideBar";
-import "../components/sidebar/sidebar.css";
-import "../components/Header/Header.css";
 import "./global.css";
 import Link from "next/link";
 import Header from "../components/Header/header";
-import WelcomeCard from "../components/WelcomeCard/WelcomeCard";
-
+import "../components/Header/Header.css";
 import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
 
-const links = [{ name: "Client", href:"/client" }, { name: "Logout",href:"/" },{name: "Home",href:"/"}, {name: "Client",href:"/client"}, {name: "Admin",href:"/admin"}];
 
 
 const links = [
