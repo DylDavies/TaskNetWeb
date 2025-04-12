@@ -1,11 +1,14 @@
-"use client"; 
+"use client";
 import React from "react";
 
 interface User {
-  name: string;
-  role: string;
-  date: string;
+  uid: string;
+  status: number;
+  type: number; // Do we not need role like freelancer and client?
 }
+/*
+  previously was name, role and date
+*/
 
 interface Props {
   data: User[];
@@ -109,9 +112,9 @@ const AdminTable: React.FC<Props> = ({ data }) => {
                         />
                       </section>
                       <section>
-                        <p className="font-semibold">{item.name}</p>
+                        <p className="font-semibold">{item.uid}</p>
                         <p className="text-xs text-gray-600 dark:text-gray-400">
-                          {item.role}
+                          {item.type}
                         </p>
                       </section>
                     </section>
@@ -124,18 +127,18 @@ const AdminTable: React.FC<Props> = ({ data }) => {
                     </strong>
                   </td>
 
-                  <td className="px-4 py-3 text-sm">{item.date}</td>
+                  <td className="px-4 py-3 text-sm">{item.type}</td>
 
                   {/* Approve and Deny buttons */}
                   <td className="px-4 py-3 text-xs space-x-2">
                     <button
-                      onClick={() => handleApprove(item.name)}
+                      onClick={() => handleApprove(item.uid)}
                       className="px-2 py-1 font-semibold leading-tight rounded-full text-green-700 bg-green-100 dark:bg-green-700 dark:text-green-100 approve"
                     >
                       Approve
                     </button>
                     <button
-                      onClick={() => handleDeny(item.name)}
+                      onClick={() => handleDeny(item.uid)}
                       className="px-2 py-1 font-semibold leading-tight rounded-full text-red-700 bg-red-100 dark:text-red-100 dark:bg-red-700 deny"
                     >
                       Deny
