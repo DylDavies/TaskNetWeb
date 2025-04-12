@@ -36,16 +36,16 @@ async function getPendingUsers(): Promise<{uid:string; status:number, type:numbe
 // 1 = Client
 // 2 = Freelancer
 // 3 = Admin
-async function setUserType(uid: String, type: number){
+async function setUserType(uid: string, type: number){
     try {
         const userRef = doc(db, "users", uid);
         await updateDoc(userRef, {
           type: type
         });
-        console.log(`User ${uid}'s type set to ${type}`);
+        console.log(`User type is`, type);
 
       } catch (error) {
-        console.error("Could not set error type", error);
+        console.error("Could not set user type", error);
         throw error;
       }
 }
