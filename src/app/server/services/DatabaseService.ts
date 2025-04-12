@@ -3,7 +3,6 @@
 import { getDoc, doc, collection, where, query, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import UserData from "../../interfaces/UserData.interface";
-import { Stint_Ultra_Condensed } from "next/font/google";
 
 async function getUser(uid: string): Promise<UserData | null> {
     const userDoc = await getDoc(doc(db, "users", uid));

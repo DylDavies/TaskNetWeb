@@ -1,6 +1,6 @@
 "use client";
 import { approveUser, denyUser } from "@/app/server/services/DatabaseService";
-import React, { useEffect, useId, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface User {
   uid: string;
