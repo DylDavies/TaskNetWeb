@@ -4,8 +4,8 @@ import AuthService from "./services/AuthService";
 import React from "react";
 import "./components/sidebar/sidebar.css";
 import "./components/button/Button.css";
-import PendingCard from "./components/PendingCard/PendingCard";
-import Header from "./components/Header/header";
+import ActiveUser from "./interfaces/ActiveUser.interface";
+
 
 export default function Home() {
   AuthService.autoSignIn();
@@ -23,6 +23,13 @@ export default function Home() {
 
     console.log("User", user);
   }
+  
+  
+  async function getGlobalUser() : Promise<ActiveUser | null>{
+    return await AuthService.getCurrentUser();
+  }
+
+
 
   return (
     <main className="flex h-screen">
