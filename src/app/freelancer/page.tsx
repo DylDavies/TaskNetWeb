@@ -1,4 +1,3 @@
-import Link from "next/link";
 //import Link from "next/link";
 //import "./freelancer.css";
 import Header from "../components/Header/header";
