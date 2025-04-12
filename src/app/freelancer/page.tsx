@@ -1,17 +1,20 @@
 import Link from "next/link";
+//import Link from "next/link";
+//import "./freelancer.css";
 import Header from "../components/Header/header";
 import WelcomeCard from "../components/WelcomeCard/WelcomeCard";
-import "../components/WelcomeCard/WelcomeCard.css";
 import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
+import Button from "../components/button/Button";
+import "../components/button/Button.css";
 
-const links = [{ name: "Client", href:"/client" }, { name: "Logout",href:"/" },{name: "Home",href:"/"}, {name: "Client",href:"/client"}, {name: "Admin",href:"/admin"}];
+const links = [{ name: "Client", href:"/client" },{name: "Home",href:"/"}, {name: "Client",href:"/client"}, {name: "Admin",href:"/admin"}];
 
-
+//this is a comment
 export default function Page(){
     return(
         <>
-        <body className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
+        <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
             
             <header className="w-full bg-orange-500 ">
                 <Header name = "Alex" usertype="Freelancer" />
@@ -30,15 +33,10 @@ export default function Page(){
             </main>
 
             
-            <footer className="bg-[#f75509] py-4 flex justify-center">
-                <nav className="space-x-8 text-center">
-                    <Link href="/freelancer" className="hover:text-[#1dbf73]">Freelancer</Link>
-                    <Link href="/" className="hover:text-[#1dbf73]">Home</Link>
-                    <Link href="/client" className="hover:text-[#1dbf73]">Client</Link>
-                    <Link href="/admin" className="hover:text-[#1dbf73]">Admin</Link>
-                </nav>
+            <footer className="dark:bg-slate-500 py-4 flex justify-end">
+                <Button caption={"Log out"}/>
             </footer>
-        </body>
+        </section>
         </>
     );
 }
