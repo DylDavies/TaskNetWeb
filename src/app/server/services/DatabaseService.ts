@@ -32,8 +32,6 @@ async function getPendingUsers(): Promise<{uid:string; status:number, type:numbe
     return pendingUsers;
 }
 
-
-
 export { getUser, getPendingUsers };
 
 

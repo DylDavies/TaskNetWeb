@@ -34,9 +34,9 @@ export default function Home() {
 
   useEffect(() => {
     async function fetchPendingUsers() {
-      const users = await getPendingUsers();
-      console.log("Pending users: ", users);
-      setPendingUsers(users);
+      const pendingUsers = await getPendingUsers();
+      console.log("Pending users: ", pendingUsers);
+      setPendingUsers(pendingUsers);
     }
     fetchPendingUsers();
   }, []);
