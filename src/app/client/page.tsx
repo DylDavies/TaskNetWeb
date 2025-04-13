@@ -5,11 +5,38 @@ import "../components/button/Button.css";
 import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
 import Button from "../components/button/Button";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import UserType from "../enums/UserType.enum";
+import AuthService from "../services/AuthService";
 
 const links = [{ name: "Client", href:"/client" }, { name: "freelancer",href:"/freelancer" },{name: "Home",href:"/"}, {name: "Client",href:"/client"}, {name: "Admin",href:"/admin"}];
 
 
 export default function Page(){
+    const [loading, setLoading] = useState(true);
+
+    const router = useRouter();
+
+    useEffect(() => {
+    
+        async function auth() {
+          let user = await AuthService.getCurrentUser();
+    
+          console.log(user?.authUser.uid);
+    
+          if (user?.userData.type !== UserType.Client) router.push("/");
+    
+          setLoading(false);
+        } 
+    
+        auth();
+      }, []);
+
+    if (loading) {
+        return (<p>Loading...</p>)
+    }
+
     return(
         <>
         <section className="min-h-screen flex flex-col dark:bg-purple-100 text-white font-sans">

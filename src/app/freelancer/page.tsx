@@ -8,6 +8,10 @@ import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import AuthService from "../services/AuthService";
+import UserType from "../enums/UserType.enum";
 
 const links = [
   { name: "Client", href: "/client" },
@@ -18,6 +22,29 @@ const links = [
 
 //this is a comment
 export default function Page() {
+  const [loading, setLoading] = useState(true);
+
+  const router = useRouter();
+
+  useEffect(() => {
+  
+      async function auth() {
+        let user = await AuthService.getCurrentUser();
+  
+        console.log(user?.authUser.uid);
+  
+        if (user?.userData.type !== UserType.Client) router.push("/");
+  
+        setLoading(false);
+      } 
+  
+      auth();
+    }, []);
+
+  if (loading) {
+      return (<p>Loading...</p>)
+  }
+
   return (
     <>
       <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
