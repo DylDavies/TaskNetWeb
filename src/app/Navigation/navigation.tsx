@@ -10,6 +10,9 @@ async function LoginRedirect(router: AppRouterInstance) {
         if(userType == UserType.None){
             //ToDo
             //redirect to the secondary login page
+              console.log("Freelancer");
+              router.push('/freelancer');
+              
         }
         else{
             Login(userType, router);
@@ -32,13 +35,15 @@ async function LoginRedirect(router: AppRouterInstance) {
               router.push('/freelancer');
               break;
             case 2:
-              console.log("");
+              console.log("Client");
+              router.push('/client');
               break;
             case 3:
-              console.log("You picked three!");
+              console.log("Admin");
+              router.push('/admin');
               break;
             default:
-              console.log("Number is out of range (0-3).");
+              console.log("Number not in usertype");
               break;
           }
 
