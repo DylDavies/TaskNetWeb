@@ -18,8 +18,8 @@ async function LoginRedirect(router: AppRouterInstance) {
             Login(userType, router);
         }
       
-    }
-  } else {
+  } 
+    else {
     console.log("No active user");
   }
 }
