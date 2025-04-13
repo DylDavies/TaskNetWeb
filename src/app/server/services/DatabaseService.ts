@@ -12,7 +12,6 @@ async function getUser(uid: string): Promise<UserData | null> {
     return userDoc.data() as UserData;
 }
 
-
 // Fetch pending users Endpoint:
 async function getPendingUsers(): Promise<{uid:string; status:number, type:number}[]>{
     const dbRef = collection(db,'users');  //db.collection('users');
@@ -32,6 +31,24 @@ async function getPendingUsers(): Promise<{uid:string; status:number, type:numbe
     return pendingUsers;
 }
 
+//Set the current users type to the given parameters:
+// 0 = undefined 
+// 1 = Client
+// 2 = Freelancer
+// 3 = Admin
+async function setUserType(uid: string, type: number){
+    try {
+        const userRef = doc(db, "users", uid);
+        await updateDoc(userRef, {
+          type: type
+        });
+        console.log(`User type is`, type);
+
+      } catch (error) {
+        console.error("Could not set user type", error);
+        throw error;
+      }
+}
 
 // Approve user Endpoint
 async function approveUser(uid:string):Promise<void>{
@@ -52,6 +69,5 @@ async function denyUser(uid:string):Promise<void>{
 }
 
 
-export { getUser, getPendingUsers, approveUser, denyUser };
-
+export { getUser, getPendingUsers, approveUser, denyUser, setUserType };
 
