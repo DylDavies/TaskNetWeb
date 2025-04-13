@@ -117,7 +117,7 @@ const sendEmail = (to: string, subject: string, text: string) => {
   };
 
   return new Promise((resolve, reject) => {
-    transporter.sendMail(mailOptions, function (error: any, info: { response: string }) {
+    transporter.sendMail(mailOptions, function (error: Error | null, info: { response: string }) {
       if (error) {
         console.error('Email send error:', error);
         reject(error);
