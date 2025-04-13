@@ -4,7 +4,6 @@ import { getDoc, doc, collection, where, query, getDocs, updateDoc } from "fireb
 import { db } from "../../firebase";
 import UserData from "../../interfaces/UserData.interface";
 import UserStatus from "@/app/enums/UserStatus.enum";
-import AuthService from "../../services/AuthService";
 
 async function getUser(uid: string): Promise<UserData | null> {
     const userDoc = await getDoc(doc(db, "users", uid));
