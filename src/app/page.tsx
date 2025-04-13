@@ -81,9 +81,9 @@ export default function Home() {
                       <path fill="none" d="M0 0h48v48H0z" />
                     </svg>
                   </section>
-                  <span className="gsi-material-button-contents">
+                  <p className="gsi-material-button-contents">
                     Continue with Google
-                  </span>
+                  </p>
                 </button>
               </section>
             </section>
