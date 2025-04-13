@@ -8,7 +8,7 @@
     border-radius: 12px;
     background-color: #26272c;
     outline: none;
-    color: #bdbecb;
+    color:white;
     transition: all 0.25s cubic-bezier(0.19, 1, 0.22, 1);
     cursor: text;
     z-index: 0;
