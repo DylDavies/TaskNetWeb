@@ -6,7 +6,6 @@ import UserData from "../../interfaces/UserData.interface";
 import UserType from "@/app/enums/UserType.enum";
 import UserStatus from "@/app/enums/UserStatus.enum";
 import AuthService from "../../services/AuthService";
-import { Router } from "react-router-dom";
 import { useRouter } from "next/router";
 
 async function getUser(uid: string): Promise<UserData | null> {
@@ -118,8 +117,8 @@ async function LoginRedirect() {
     
 }
 
-async function Login(type: UserType){
-    const router = useRouter()
+    function Login(type: UserType){
+        const router = useRouter()
         switch (type) {
             case 0:
               console.log("none");
