@@ -14,13 +14,14 @@ export default function Home() {
   async function signinClick() {
     AuthService.signin();
     LoginRedirect(router);
-    const activeUser = await AuthService.getCurrentUser();
-
+    const activeUser = await AuthService.getCurrentUser();    
     //if there is a user, will update the username
     if (activeUser) {
-      const uid = activeUser.authUser.displayName;
-      console.log(uid);
-    } else {
+      const userId = activeUser.authUser.uid;
+      console.log(userId);
+    }
+    else{
+
       console.log("No active user");
     }
   }

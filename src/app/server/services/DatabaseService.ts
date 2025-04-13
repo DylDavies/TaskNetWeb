@@ -4,7 +4,7 @@ import { getDoc, doc, collection, where, query, getDocs, updateDoc } from "fireb
 import { db } from "../../firebase";
 import UserData from "../../interfaces/UserData.interface";
 import UserStatus from "@/app/enums/UserStatus.enum";
-import AuthService from "../../services/AuthService";
+//import AuthService from "../../services/AuthService";
 import nodemailer from 'nodemailer';
 
 async function getUser(uid: string): Promise<UserData | null> {
@@ -16,7 +16,7 @@ async function getUser(uid: string): Promise<UserData | null> {
 };
 
 // Fetch pending users Endpoint:
-async function getPendingUsers(): Promise<{uid:string; status:number, type:number}[]>{
+async function getPendingUsers(): Promise<{uid:string; status:number, type:number, username:string, date:number}[]>{
     const dbRef = collection(db,'users');  //db.collection('users');
     const pending = query(dbRef,where('status', '==', UserStatus.Pending));
 
@@ -25,7 +25,9 @@ async function getPendingUsers(): Promise<{uid:string; status:number, type:numbe
     const pendingUsers = snapshot.docs.map(doc => ({
         uid: doc.id,
         status: doc.data().status,
-        type: doc.data().type
+        type: doc.data().type,
+        username: doc.data().username,
+        date: doc.data().date
         
     }));
 
@@ -72,14 +74,9 @@ async function denyUser(uid:string):Promise<void>{
 };
 
 //  This function will take in a username as a string and set update it to the current user in the database
-async function SetUserName(username: string){
+async function SetUserName(uid: string, username: string){
     try {
-        //getting the current user
-        const activeUser = await AuthService.getCurrentUser();
-
         //if there is a user, will update the username
-        if (activeUser) {
-            const uid = activeUser.authUser.uid;
             console.log("User UID: ", uid);
             const userRef = doc(db, "users", uid);
         await updateDoc(userRef, {
@@ -87,16 +84,12 @@ async function SetUserName(username: string){
         });
         console.log("Username is", username);
 
-          } else {
-            console.log("No user is currently logged in.");
-          }
 
       } catch (error) {
         console.error("Could not set username", error);
         throw error;
       };
 };
-
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.zoho.com', //  Zoho SMTP server

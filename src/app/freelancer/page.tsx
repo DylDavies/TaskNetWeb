@@ -1,3 +1,4 @@
+
 "use client";
 import Header from "../components/Header/header";
 import "../components/Header/Header.css";
@@ -8,8 +9,9 @@ import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import "./global.css";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import AuthService from "../services/AuthService";
+import ActiveUser from "../interfaces/ActiveUser.interface";
+import { useRouter } from "next/navigation";
 import UserType from "../enums/UserType.enum";
 import UserStatus from "../enums/UserStatus.enum";
 
@@ -18,9 +20,20 @@ const links = [
   { name: "Home", href: "/" }
 ];
 
-
-//UI of the freelancer page 
+//this is a comment
 export default function Page() {
+
+  const [activeUser, setActiveUser] = useState<ActiveUser>()
+    useEffect(() =>{
+        (async () => { 
+            setActiveUser(
+                await AuthService.getCurrentUser() as ActiveUser
+            )
+        })()
+    },[] );
+    
+
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   //signs the user out of google
@@ -28,7 +41,6 @@ export default function Page() {
     AuthService.googleSignout();
     router.push("/");
   }
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
   
@@ -53,9 +65,8 @@ export default function Page() {
   return (
     <>
       <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
-
-        <header>
-          <Header name="Alex" usertype="Freelancer" />
+        <header className="w-full bg-orange-500 ">
+          <Header name={activeUser?.userData.username || "Username"} usertype="Freelancer" />
         </header>
 
         <main className="flex flex-1 dark:bg-[#cdd5f6] bg-color">
@@ -67,7 +78,7 @@ export default function Page() {
 
           {/*welcome card centred right underneath the header*/}
           <section className="flex-1 p-4 flex items-start justify-center">
-            <WelcomeCard username="May" type="freelancer" />
+            <WelcomeCard username={activeUser?.userData.username || "Username"} type="freelancer" />
           </section>
         </main>
 

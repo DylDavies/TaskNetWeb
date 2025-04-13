@@ -12,9 +12,11 @@ import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import { getPendingUsers } from "../server/services/DatabaseService";
 import React, { useEffect, useState } from "react";
+import ActiveUser from "../interfaces/ActiveUser.interface";
 import AuthService from "../services/AuthService";
 import UserType from "../enums/UserType.enum";
 import { useRouter } from "next/navigation";
+
 
 const links = [
   { name: "Home", href: "/" },
@@ -76,8 +78,10 @@ export default function Page() {
   /* Testing fetching pending users (START)*/
   interface User {
     uid: string;
+    username: string;
     status: number;
-    type: number; // Do we not need role? Like freelancer, client?
+    type: number; // Do we not need role like freelancer and client?
+    date: number;
   }
 
   const [pendingUsers, setPendingUsers] = useState<User[]>([]);
@@ -102,6 +106,15 @@ export default function Page() {
 
     auth();
   }, []);
+
+  const [activeUser, setActiveUser] = useState<ActiveUser>()
+    useEffect(() =>{
+        (async () => { 
+            setActiveUser(
+                await AuthService.getCurrentUser() as ActiveUser
+            )
+        })()
+    },[] );
   /* Testing fetching pending users (END) */
 
   if (loading) {
@@ -111,8 +124,8 @@ export default function Page() {
   return (
     <>
       <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
-        <header className="w-full">
-          <Header name="Admin" usertype="Admin" />
+        <header className="w-full bg-orange-500">
+          <Header name={activeUser?.userData.username || "Admin"} usertype="Admin" />
         </header>
 
         <main className="flex flex-1 dark:bg-[#cdd5f6] bg-color">
