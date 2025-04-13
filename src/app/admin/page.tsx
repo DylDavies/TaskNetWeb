@@ -63,7 +63,6 @@ const userData = [
 ];*/
 
 export default function Page() {
-  interface User  {
   const router = useRouter();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -77,9 +76,6 @@ export default function Page() {
     type: number; // Do we not need role like freelancer and client?
     date: number;
   }
-
-  const [searchQuery, setSearchQuery] = useState("");
-
 
   const [pendingUsers, setPendingUsers] = useState<User[]>([]);
 

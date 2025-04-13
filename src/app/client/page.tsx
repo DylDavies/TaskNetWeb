@@ -14,9 +14,9 @@ import AuthService from "../services/AuthService";
 import UserStatus from "../enums/UserStatus.enum";
 
 const links = [{ name: "Client", href:"/client" }, { name: "freelancer",href:"/freelancer" },{name: "Home",href:"/"}, {name: "Client",href:"/client"}, {name: "Admin",href:"/admin"}];
-    
-export default function Page(){
 
+export default function Page(){
+    
     const [activeUser, setActiveUser] = useState<ActiveUser>()
     useEffect(() =>{
         (async () => { 
@@ -26,7 +26,7 @@ export default function Page(){
         })()
     },[] );
 
-export default function Page(){
+
     const [loading, setLoading] = useState(true);
 
     const router = useRouter();
