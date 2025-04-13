@@ -8,20 +8,23 @@ import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import "./global.css";
 import AuthService from "../services/AuthService";
+import {useRouter} from "next/navigation"
 
 //constant for links to other pages
 const links = [
   { name: "Home", href: "/" }
 ];
 
-//signs the user out of google
-function signoutClick() {
-    AuthService.googleSignout();
-  }
-
 
 //UI of the freelancer page 
 export default function Page() {
+  const router = useRouter();
+
+  //signs the user out of google
+  function signoutClick() {
+    AuthService.googleSignout();
+    router.push("/");
+  }
   return (
     <>
       <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">

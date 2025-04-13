@@ -14,6 +14,7 @@ import "../components/button/Button.css";
 import { getPendingUsers } from "../server/services/DatabaseService";
 import React, { useEffect, useState } from "react";
 import AuthService from "../services/AuthService";
+import {useRouter} from "next/navigation"
 
 const links = [
   { name: "Home", href: "/" },
@@ -24,6 +25,7 @@ const links = [
 //signs the user out of google
 function signoutClick() {
     AuthService.googleSignout();
+
   }
 
 /*
@@ -66,6 +68,14 @@ const userData = [
 ];*/
 
 export default function Page() {
+  const router = useRouter();
+  
+      //signs the user out of google
+  function signoutClick() {
+      AuthService.googleSignout();
+     router.push("/");
+  }
+
   const [searchQuery, setSearchQuery] = useState("");
 
   /* Testing fetching pending users (START)*/
