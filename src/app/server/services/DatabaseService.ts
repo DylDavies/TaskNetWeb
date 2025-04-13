@@ -4,7 +4,7 @@ import { getDoc, doc, collection, where, query, getDocs, updateDoc } from "fireb
 import { db } from "../../firebase";
 import UserData from "../../interfaces/UserData.interface";
 import UserStatus from "@/app/enums/UserStatus.enum";
-import AuthService from "../../services/AuthService";
+//import AuthService from "../../services/AuthService";
 import nodemailer from 'nodemailer';
 
 async function getUser(uid: string): Promise<UserData | null> {
