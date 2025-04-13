@@ -1,6 +1,6 @@
 "use client";
 import AuthService from "./services/AuthService";
-import React from "react";
+import React, { useState } from "react";
 import "./components/sidebar/sidebar.css";
 import "./components/button/Button.css";
 import { useRouter } from "next/navigation";
@@ -8,11 +8,16 @@ import { LoginRedirect } from "./Navigation/navigation";
 
 //Landing page UI
 export default function Home() {
-  AuthService.autoSignIn();
+  let [disabled, setDisabled] = useState(false);
+
+  // AuthService.autoSignIn();
   const router = useRouter();
 
   async function signinClick() {
-    AuthService.signin();
+    console.log("clicked")
+    setDisabled(true);
+
+    await AuthService.signin();
     LoginRedirect(router);
     const activeUser = await AuthService.getCurrentUser();    
     //if there is a user, will update the username
@@ -47,6 +52,7 @@ export default function Home() {
                 <button
                   className="gsi-material-button hover:bg-white hover:text-black transition-colors duration-200"
                   onClick={signinClick}
+                  disabled={disabled}
                 >
                   <section className="gsi-material-button-icon">
                     <svg

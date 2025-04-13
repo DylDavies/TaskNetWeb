@@ -47,7 +47,7 @@ export default function Page() {
       async function auth() {
         const user = await AuthService.getCurrentUser();
   
-        if (user?.userData.type !== UserType.Client && user?.userData.type !== UserType.Admin) router.push("/");
+        if (user?.userData.type !== UserType.Freelancer && user?.userData.type !== UserType.Admin) router.push("/");
 
         if (user?.userData.type !== UserType.Admin && user?.userData.status == UserStatus.Pending) router.push("/pending");
         if (user?.userData.type !== UserType.Admin && user?.userData.status == UserStatus.Denied) router.push("/denied");

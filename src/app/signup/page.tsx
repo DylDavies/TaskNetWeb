@@ -15,7 +15,7 @@ import { sendEmail } from "../server/services/DatabaseService";
 
 export default function Page() {
     const [inputText, setInputText] = useState("");
-    const[type, setType] = useState("");
+    const[type, setType] = useState(UserType.Client.toString());
     const router = useRouter();
   
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -149,7 +149,7 @@ export default function Page() {
                                     value={type} 
                                     onChange={handleTypeChange}
                                     >
-                                    <option className="bg-neutral-800 text-white" value={UserType.Client} >Client</option>
+                                    <option className="bg-neutral-800 text-white" value={UserType.Client}>Client</option>
                                     <option className="bg-neutral-800 text-white" value={UserType.Freelancer}>Freelancer</option>
                                 </select>
                             </section> 

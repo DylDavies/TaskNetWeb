@@ -7,6 +7,8 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 async function LoginRedirect(router: AppRouterInstance) {
     const activeUser = await AuthService.getCurrentUser();
 
+    console.log(activeUser);
+
     if(activeUser){
         const userType = activeUser.userData.type;
         if(userType == UserType.None){
