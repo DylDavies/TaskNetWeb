@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AuthService from "../services/AuthService";
 import UserType from "../enums/UserType.enum";
+import UserStatus from "../enums/UserStatus.enum";
 
 const links = [
   { name: "Client", href: "/client" },
@@ -33,6 +34,9 @@ export default function Page() {
         const user = await AuthService.getCurrentUser();
   
         if (user?.userData.type !== UserType.Client && user?.userData.type !== UserType.Admin) router.push("/");
+
+        if (user?.userData.type !== UserType.Admin && user?.userData.status == UserStatus.Pending) router.push("/pending");
+        if (user?.userData.type !== UserType.Admin && user?.userData.status == UserStatus.Denied) router.push("/denied");
   
         setLoading(false);
       } 
