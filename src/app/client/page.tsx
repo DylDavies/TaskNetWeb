@@ -18,8 +18,6 @@ const links = [{name: "Home",href:"/"}];
 
 //UI of the freelancer page
 export default function Page() {
-
-export default function Page(){
     const [loading, setLoading] = useState(true);
 
     const router = useRouter();
@@ -44,20 +42,11 @@ export default function Page(){
         return (<p>Loading...</p>)
     }
 
-    return(
-        <>
-        <section className="min-h-screen flex flex-col dark:bg-purple-100 text-white font-sans">
-            
-            <header className="w-full bg-orange-500 ">
-                <Header usertype={"client"} name={"Alex"} />
-            </header>
-
     //signs the user out of google
     function signoutClick() {
         AuthService.googleSignout();
         router.push("/");
     }
-    
 
     return (
       <>
