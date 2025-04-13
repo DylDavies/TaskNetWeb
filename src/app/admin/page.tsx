@@ -3,7 +3,6 @@ import AdminTable from "../components/AdminTable/AdminTable";
 import "../components/AdminTable/AdminTable.css";
 import SearchBar from "../components/searchbar/SearchBar";
 import "../components/searchbar/SearchBar.css";
-import Link from "next/link";
 import Header from "../components/Header/header";
 import "../components/Header/Header.css";
 import SideBar from "../components/sidebar/SideBar";
@@ -21,12 +20,6 @@ const links = [
   { name: "Client", href: "/client" },
   { name: "Freelancer", href: "/freelancer" }
 ];
-
-//signs the user out of google
-function signoutClick() {
-    AuthService.googleSignout();
-
-  }
 
 /*
 const userData = [
