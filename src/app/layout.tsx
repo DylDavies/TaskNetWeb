@@ -17,6 +17,7 @@ export const metadata: Metadata = {
   description: "Powering the future of freelance",
 };
 
+//Function making routing possible
 export default function RootLayout({
   children,
 }: Readonly<{

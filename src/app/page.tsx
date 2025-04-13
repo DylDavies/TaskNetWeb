@@ -1,26 +1,17 @@
 "use client";
-
 import AuthService from "./services/AuthService";
 import React from "react";
 import "./components/sidebar/sidebar.css";
 import "./components/button/Button.css";
 
+//Landing page UI
 export default function Home() {
   AuthService.autoSignIn();
 
+  //function to automatically sign in a user
   function signinClick() {
     AuthService.signin();
   }
-
-  // function signoutClick() {
-  //   AuthService.googleSignout();
-  // }
-
-  // async function currentUserClick() {
-  //   const user = await AuthService.getCurrentUser();
-
-  //   console.log("User", user);
-  // }
 
   return (
     <main className="flex h-screen">
