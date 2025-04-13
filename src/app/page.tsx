@@ -8,8 +8,20 @@ import "./components/button/Button.css";
 export default function Home() {
   AuthService.autoSignIn();
 
-  function signinClick() {
+  async function signinClick() {
     AuthService.signin();
+    const activeUser = await AuthService.getCurrentUser();
+    
+    //if there is a user, will update the username
+    if (activeUser) {
+      const uid = activeUser.authUser.displayName;
+      console.log(uid);
+    }
+    else{
+      console.log("No active user");
+    }
+
+    
   }
 
   // function signoutClick() {

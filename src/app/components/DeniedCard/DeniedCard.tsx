@@ -2,7 +2,7 @@ import React from "react";
 
 const DeniedCard = () => {
   return (
-    // this component is made up of an outher grey layer, an inner orange layer and a white hourglass icon 
+    // this component is made up of an outher grey layer, an inner orange layer and a white cross icon 
     <section
                 className="flex items-center justify-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800 max-w-md "
               >
@@ -31,5 +31,5 @@ const DeniedCard = () => {
   );
 };
 
-// Export the pending card for use in other parts of the program
+// Export the Denied card for use in other parts of the program
 export default DeniedCard;
