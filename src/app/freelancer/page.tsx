@@ -41,7 +41,6 @@ export default function Page() {
     AuthService.googleSignout();
     router.push("/");
   }
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
   
