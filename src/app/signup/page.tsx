@@ -1,7 +1,5 @@
 "use client";
 import React from "react";
-import Header from "../components/Header/header";
-import "../components/Header/Header.css";
 import InputBar from "../components/inputbar/InputBar";
 import "../components/inputbar/inputBar.css";
 import Button from "../components/button/Button";
