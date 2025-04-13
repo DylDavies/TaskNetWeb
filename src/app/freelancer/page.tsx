@@ -7,8 +7,11 @@ import "../components/sidebar/sidebar.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import "./global.css";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import AuthService from "../services/AuthService";
-import {useRouter} from "next/navigation"
+import UserType from "../enums/UserType.enum";
+import UserStatus from "../enums/UserStatus.enum";
 
 //constant for links to other pages
 const links = [
@@ -25,6 +28,28 @@ export default function Page() {
     AuthService.googleSignout();
     router.push("/");
   }
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+  
+      async function auth() {
+        const user = await AuthService.getCurrentUser();
+  
+        if (user?.userData.type !== UserType.Client && user?.userData.type !== UserType.Admin) router.push("/");
+
+        if (user?.userData.type !== UserType.Admin && user?.userData.status == UserStatus.Pending) router.push("/pending");
+        if (user?.userData.type !== UserType.Admin && user?.userData.status == UserStatus.Denied) router.push("/denied");
+  
+        setLoading(false);
+      } 
+  
+      auth();
+    }, []);
+
+  if (loading) {
+      return (<p>Loading...</p>)
+  }
+    
   return (
     <>
       <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">

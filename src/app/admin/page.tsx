@@ -13,7 +13,8 @@ import "../components/button/Button.css";
 import { getPendingUsers } from "../server/services/DatabaseService";
 import React, { useEffect, useState } from "react";
 import AuthService from "../services/AuthService";
-import {useRouter} from "next/navigation"
+import UserType from "../enums/UserType.enum";
+import { useRouter } from "next/navigation";
 
 const links = [
   { name: "Home", href: "/" },
@@ -62,7 +63,7 @@ const userData = [
 
 export default function Page() {
   const router = useRouter();
-  
+
       //signs the user out of google
   function signoutClick() {
       AuthService.googleSignout();
@@ -70,6 +71,7 @@ export default function Page() {
   }
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
 
   /* Testing fetching pending users (START)*/
   interface User {
@@ -87,9 +89,24 @@ export default function Page() {
       //console.log("Pending users: ", pendingUsers);
       setPendingUsers(pendingUsers);
     }
-    fetchPendingUsers();
+
+    async function auth() {
+      const user = await AuthService.getCurrentUser();
+
+      if (user?.userData.type !== UserType.Admin) router.push("/");
+
+      setLoading(false);
+
+      fetchPendingUsers();
+    } 
+
+    auth();
   }, []);
   /* Testing fetching pending users (END) */
+
+  if (loading) {
+    return (<p>Loading...</p>)
+  }
 
   return (
     <>

@@ -7,7 +7,10 @@ import "../components/sidebar/sidebar.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import AuthService from "../services/AuthService";
-import {useRouter} from "next/navigation"
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import UserType from "../enums/UserType.enum";
+import UserStatus from "../enums/UserStatus.enum";
 
 //constant for links to other pages
 const links = [{name: "Home",href:"/"}];
@@ -16,7 +19,38 @@ const links = [{name: "Home",href:"/"}];
 //UI of the freelancer page
 export default function Page() {
 
+export default function Page(){
+    const [loading, setLoading] = useState(true);
+
     const router = useRouter();
+
+    useEffect(() => {
+    
+        async function auth() {
+          const user = await AuthService.getCurrentUser();
+    
+          if (user?.userData.type !== UserType.Client && user?.userData.type !== UserType.Admin) router.push("/");
+
+          if (user?.userData.type !== UserType.Admin && user?.userData.status == UserStatus.Pending) router.push("/pending");
+          if (user?.userData.type !== UserType.Admin && user?.userData.status == UserStatus.Denied) router.push("/denied");
+    
+          setLoading(false);
+        } 
+    
+        auth();
+      }, []);
+
+    if (loading) {
+        return (<p>Loading...</p>)
+    }
+
+    return(
+        <>
+        <section className="min-h-screen flex flex-col dark:bg-purple-100 text-white font-sans">
+            
+            <header className="w-full bg-orange-500 ">
+                <Header usertype={"client"} name={"Alex"} />
+            </header>
 
     //signs the user out of google
     function signoutClick() {

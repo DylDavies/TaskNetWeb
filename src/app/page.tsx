@@ -8,9 +8,20 @@ import "./components/button/Button.css";
 export default function Home() {
   AuthService.autoSignIn();
 
-  //function to automatically sign in a user
-  function signinClick() {
+  async function signinClick() {
     AuthService.signin();
+    const activeUser = await AuthService.getCurrentUser();
+    
+    //if there is a user, will update the username
+    if (activeUser) {
+      const uid = activeUser.authUser.displayName;
+      console.log(uid);
+    }
+    else{
+      console.log("No active user");
+    }
+
+    
   }
 
   return (
@@ -60,9 +71,9 @@ export default function Home() {
                       <path fill="none" d="M0 0h48v48H0z" />
                     </svg>
                   </section>
-                  <span className="gsi-material-button-contents">
+                  <p className="gsi-material-button-contents">
                     Continue with Google
-                  </span>
+                  </p>
                 </button>
               </section>
             </section>
