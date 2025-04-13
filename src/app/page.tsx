@@ -4,18 +4,23 @@ import AuthService from "./services/AuthService";
 import React from "react";
 import "./components/sidebar/sidebar.css";
 import "./components/button/Button.css";
+import { useRouter } from "next/navigation";
+import { LoginRedirect } from "./Navigation/navigation";
 
 export default function Home() {
   AuthService.autoSignIn();
+  const router = useRouter();
 
   async function signinClick() {
     AuthService.signin();
+    LoginRedirect(router);
     const activeUser = await AuthService.getCurrentUser();
+    
     
     //if there is a user, will update the username
     if (activeUser) {
-      const uid = activeUser.authUser.displayName;
-      console.log(uid);
+      const username = activeUser.userData.username;
+      console.log(username);
     }
     else{
       console.log("No active user");

@@ -5,6 +5,7 @@ import { db } from "../../firebase";
 import UserData from "../../interfaces/UserData.interface";
 import UserStatus from "@/app/enums/UserStatus.enum";
 import AuthService from "../../services/AuthService";
+import UserType from "@/app/enums/UserType.enum";
 
 async function getUser(uid: string): Promise<UserData | null> {
     const userDoc = await getDoc(doc(db, "users", uid));
@@ -95,6 +96,7 @@ async function SetUserName(username: string){
         throw error;
       };
 };
+
 
 export { getUser, getPendingUsers, approveUser, denyUser, setUserType, SetUserName };
 
