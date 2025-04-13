@@ -6,6 +6,7 @@ interface UserData {
     status: UserStatus,
     username: string,
     date: number
+
 }
 
 export default UserData;

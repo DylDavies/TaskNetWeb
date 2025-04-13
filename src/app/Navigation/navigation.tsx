@@ -2,6 +2,7 @@ import UserType from "@/app/enums/UserType.enum";
 import AuthService from "@/app/services/AuthService";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
+
 // This function will take in a router and redirect the user to the secondary login page if they haven't already picked a usertype
 async function LoginRedirect(router: AppRouterInstance) {
     const activeUser = await AuthService.getCurrentUser();
@@ -16,12 +17,13 @@ async function LoginRedirect(router: AppRouterInstance) {
         else{
             Login(userType, router);
         }
+      
     }
-    else{
-        console.log("No active user");
-    }
-    
+  } else {
+    console.log("No active user");
+  }
 }
+
     // This function will take in a user type and a router and redirect the user to the appropriate page
     function Login(type: UserType, router: AppRouterInstance){
         switch (type) {
@@ -48,3 +50,4 @@ async function LoginRedirect(router: AppRouterInstance) {
 
 }
 export {Login, LoginRedirect}
+

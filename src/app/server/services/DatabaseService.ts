@@ -4,6 +4,8 @@ import { getDoc, doc, collection, where, query, getDocs, updateDoc } from "fireb
 import { db } from "../../firebase";
 import UserData from "../../interfaces/UserData.interface";
 import UserStatus from "@/app/enums/UserStatus.enum";
+import AuthService from "../../services/AuthService";
+import nodemailer from 'nodemailer';
 
 async function getUser(uid: string): Promise<UserData | null> {
     const userDoc = await getDoc(doc(db, "users", uid));
@@ -53,7 +55,7 @@ async function setUserType(uid: string, type: number){
       };
 };
 
-// Approve user Endpoint
+// Approve user Endpoint - Sets user status in database to 1 (permission granted)
 async function approveUser(uid:string):Promise<void>{
     const dbRef = doc(db,'users', uid);
 
@@ -62,7 +64,7 @@ async function approveUser(uid:string):Promise<void>{
     });
 };
 
-// Deny user Endpoint
+// Deny user Endpoint - Sets user status in database to 2 (permission denied)
 async function denyUser(uid:string):Promise<void>{
     const dbRef = doc(db,'users', uid);
 
@@ -89,6 +91,35 @@ async function SetUserName(uid: string, username: string){
       };
 };
 
+const transporter = nodemailer.createTransport({
+  host: 'smtp.zoho.com', //  Zoho SMTP server
+  port: 465,             // Use 465 for secure connection
+  secure: true,          // True for port 465 (SSL)
+  auth: {
+    user: 'no-reply@tasknet.tech', // Tasknet mail
+    pass: 'no-reply@TaskNet1'//process.env.ZOHO_MAIL_PASS    - maybe do this to be safe
+  }
+});
 
-export { getUser, getPendingUsers, approveUser, denyUser, setUserType, SetUserName };
+const sendEmail = (to: string, subject: string, text: string) => {
+  const mailOptions = {
+    from: '"TaskNet" <no-reply@tasknet.tech>', // sender name + email
+    to: to,
+    subject: subject,
+    text: text
+  };
 
+  return new Promise((resolve, reject) => {
+    transporter.sendMail(mailOptions, function (error: Error | null, info: { response: string }) {
+      if (error) {
+        console.error('Email send error:', error);
+        reject(error);
+      } else {
+        console.log('Email sent:', info.response);
+        resolve(info.response);
+      }
+    });
+  });
+};
+
+export { getUser, getPendingUsers, approveUser, denyUser, setUserType, SetUserName, sendEmail };
