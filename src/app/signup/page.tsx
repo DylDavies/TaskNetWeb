@@ -39,7 +39,7 @@ export default function Page() {
                             <section className="w-1/3 text-right text-lg opacity-80">Username</section>
                             <section className="w-2/3">
                             <InputBar
-                                value= "Enter your username"
+                                value= {inputText}
                                 onChange={handleInputChange}
                                 placeholder="Enter your username"
                                 type="username"
