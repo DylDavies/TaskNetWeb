@@ -23,7 +23,7 @@ const links = [
 //this is a comment
 export default function Page() {
 
-  let [activeUser, setActiveUser] = useState<ActiveUser>()
+  const [activeUser, setActiveUser] = useState<ActiveUser>()
     useEffect(() =>{
         (async () => { 
             setActiveUser(

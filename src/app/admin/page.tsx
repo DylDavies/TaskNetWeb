@@ -83,7 +83,7 @@ export default function Page() {
     fetchPendingUsers();
   }, []);
 
-  let [activeUser, setActiveUser] = useState<ActiveUser>()
+  const [activeUser, setActiveUser] = useState<ActiveUser>()
     useEffect(() =>{
         (async () => { 
             setActiveUser(

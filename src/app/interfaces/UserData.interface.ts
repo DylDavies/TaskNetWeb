@@ -3,7 +3,9 @@ import UserType from "../enums/UserType.enum";
 
 interface UserData {
     type: UserType,
-    status: UserStatus
+    status: UserStatus,
+    username: string,
+    date: number
 }
 
 export default UserData;

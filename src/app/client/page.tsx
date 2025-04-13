@@ -14,7 +14,7 @@ const links = [{ name: "Client", href:"/client" }, { name: "freelancer",href:"/f
     
 export default function Page(){
 
-    let [activeUser, setActiveUser] = useState<ActiveUser>()
+    const [activeUser, setActiveUser] = useState<ActiveUser>()
     useEffect(() =>{
         (async () => { 
             setActiveUser(
