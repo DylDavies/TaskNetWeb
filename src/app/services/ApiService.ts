@@ -1,5 +1,5 @@
 export default class ApiService {
-    static BASE_URL = "http://localhost:1020";
+    static BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
     static async sessionExists(): Promise<{presence: boolean, customToken?: string}> {
         try {

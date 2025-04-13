@@ -50,4 +50,24 @@ async function setUserType(uid: string, type: number){
       }
 }
 
-export { getUser, getPendingUsers, setUserType };
+// Approve user Endpoint
+async function approveUser(uid:string):Promise<void>{
+    const dbRef = doc(db,'users', uid);
+
+    await updateDoc(dbRef,{
+        status:1, // 1 : Approve (temp)
+    });
+}
+
+// Deny user Endpoint
+async function denyUser(uid:string):Promise<void>{
+    const dbRef = doc(db,'users', uid);
+
+    await updateDoc(dbRef,{
+        status:2, // 2 : Deny (temp)
+    });
+}
+
+
+export { getUser, getPendingUsers, approveUser, denyUser, setUserType };
+

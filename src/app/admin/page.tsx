@@ -1,17 +1,16 @@
 "use client"; // use state will crash without this
-import { useState } from "react";
 import AdminTable from "../components/AdminTable/AdminTable";
 import "../components/AdminTable/AdminTable.css";
 import SearchBar from "../components/searchbar/SearchBar";
 import "../components/searchbar/SearchBar.css";
-import "./global.css";
 import Link from "next/link";
 import Header from "../components/Header/header";
 import "../components/Header/Header.css";
 import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
-
-
+import "./global.css";
+import { getPendingUsers } from "../server/services/DatabaseService";
+import React, { useEffect, useState } from "react";
 
 const links = [
   { name: "Logout", href: "/" },
@@ -19,6 +18,7 @@ const links = [
   { name: "Client", href: "/client" },
 ];
 
+/*
 const userData = [
   {
     name: "Hans Burger",
@@ -55,10 +55,31 @@ const userData = [
     role: "client",
     date: "6/10/2020",
   },
-];
+];*/
 
 export default function Page() {
   const [searchQuery, setSearchQuery] = useState("");
+
+  /* Testing fetching pending users (START)*/
+  interface User {
+    uid: string;
+    status: number;
+    type: number; // Do we not need role? Like freelancer, client?
+  }
+
+  const [pendingUsers, setPendingUsers] = useState<User[]>([]);
+
+  // To update the admin table after the Admin approves or denies user
+  useEffect(() => {
+    async function fetchPendingUsers() {
+      const pendingUsers = await getPendingUsers();
+      //console.log("Pending users: ", pendingUsers);
+      setPendingUsers(pendingUsers);
+    }
+    fetchPendingUsers();
+  }, []);
+  /* Testing fetching pending users (END) */
+
   return (
     <>
       <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
@@ -88,7 +109,7 @@ export default function Page() {
 
               {/* AdminTable moved down */}
               <section className="w-full max-w-8xl mt-36">
-                <AdminTable data={userData} />
+                <AdminTable data={pendingUsers} />
               </section>
             </section>
           </section>

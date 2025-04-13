@@ -1,23 +1,53 @@
-"use client"; 
-import React from "react";
+"use client";
+import { approveUser, denyUser } from "@/app/server/services/DatabaseService";
+import React, { useEffect, useState } from "react";
 
 interface User {
-  name: string;
-  role: string;
-  date: string;
+  uid: string;
+  status: number;
+  type: number; // Do we not need role like freelancer and client?
 }
+/*
+  previously was name, role and date
+*/
 
 interface Props {
   data: User[];
 }
-
 const AdminTable: React.FC<Props> = ({ data }) => {
-  const handleApprove = (name: string) => {
-    console.log(`Approved: ${name}`);
+  //console.log(`The data is: ${JSON.stringify(data, null, 2)}`); //sanity check
+  const [pendingUsers, setPendingUsers] = useState<User[]>(data);
+
+  useEffect(() => {
+    setPendingUsers(data);
+    console.log(
+      "Updated pending users with new data:",
+      JSON.stringify(data, null, 2)
+    );
+  }, [data]);
+
+  const handleApprove = async (uid: string) => {
+    try {
+      await approveUser(uid);
+      setPendingUsers((currentUser) =>
+        currentUser.filter((user) => user.uid != uid)
+      ); // for updating table when approved
+      console.log(`Successfully approved user ${uid}`);
+    } catch (error) {
+      console.error(`Error when trying to approve user ${error}`);
+    }
   };
 
-  const handleDeny = (name: string) => {
-    console.log(`Denied: ${name}`);
+  const handleDeny = async (uid: string) => {
+    try {
+      await denyUser(uid);
+      setPendingUsers((currentUser) =>
+        currentUser.filter((user) => user.uid != uid)
+      ); // for updating table when approved
+      console.log(`Successfully Denied user ${uid}`);
+    } catch (error) {
+      console.error(`Error when trying to deny user ${error}`);
+    }
   };
 
   /*
@@ -98,7 +128,7 @@ const AdminTable: React.FC<Props> = ({ data }) => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-              {data.map((item, index) => (
+              {pendingUsers.map((item, index) => (
                 <tr key={index} className="text-gray-700 dark:text-gray-400">
                   <td className="px-4 py-3">
                     <section className="flex items-center text-sm">
@@ -109,9 +139,9 @@ const AdminTable: React.FC<Props> = ({ data }) => {
                         />
                       </section>
                       <section>
-                        <p className="font-semibold">{item.name}</p>
+                        <p className="font-semibold">{item.uid}</p>
                         <p className="text-xs text-gray-600 dark:text-gray-400">
-                          {item.role}
+                          {item.type}
                         </p>
                       </section>
                     </section>
@@ -124,18 +154,18 @@ const AdminTable: React.FC<Props> = ({ data }) => {
                     </strong>
                   </td>
 
-                  <td className="px-4 py-3 text-sm">{item.date}</td>
+                  <td className="px-4 py-3 text-sm">{item.type}</td>
 
                   {/* Approve and Deny buttons */}
                   <td className="px-4 py-3 text-xs space-x-2">
                     <button
-                      onClick={() => handleApprove(item.name)}
+                      onClick={() => handleApprove(item.uid)}
                       className="px-2 py-1 font-semibold leading-tight rounded-full text-green-700 bg-green-100 dark:bg-green-700 dark:text-green-100 approve"
                     >
                       Approve
                     </button>
                     <button
-                      onClick={() => handleDeny(item.name)}
+                      onClick={() => handleDeny(item.uid)}
                       className="px-2 py-1 font-semibold leading-tight rounded-full text-red-700 bg-red-100 dark:text-red-100 dark:bg-red-700 deny"
                     >
                       Deny
