@@ -1,19 +1,20 @@
 'use client';
-//import Link from "next/link";
 import Header from "../components/Header/header";
+import "../components/Header/Header.css";
 import WelcomeCard from "../components/WelcomeCard/WelcomeCard";
-import "../components/button/Button.css";
 import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
 import Button from "../components/button/Button";
 import ActiveUser from "../interfaces/ActiveUser.interface";
+import "../components/button/Button.css";
+import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import UserType from "../enums/UserType.enum";
-import AuthService from "../services/AuthService";
 import UserStatus from "../enums/UserStatus.enum";
 
-const links = [{ name: "Client", href:"/client" }, { name: "freelancer",href:"/freelancer" },{name: "Home",href:"/"}, {name: "Client",href:"/client"}, {name: "Admin",href:"/admin"}];
+//constant for links to other pages
+const links = [{name: "Home",href:"/"}];
 
 export default function Page(){
     
@@ -50,6 +51,12 @@ export default function Page(){
     if (loading) {
         return (<p>Loading...</p>)
     }
+  
+     //signs the user out of google
+    function signoutClick() {
+        AuthService.googleSignout();
+        router.push("/");
+    }
 
     return(
         <>
@@ -68,12 +75,12 @@ export default function Page(){
                     <WelcomeCard username={activeUser?.userData.username || "Username"} type="client" />
                 </section>
             </main>
-
-            
-            <footer className="dark:bg-purple-300 py-4 flex justify-end">
-                <Button caption={"Log out"}/>
-            </footer>
+          
+          <footer className="bg-[#f75509] py-4 flex justify-end dark:bg-gray-900 box-footer">
+            <Button caption={"Log out"} 
+            onClick={() => signoutClick() } />
+          </footer>
         </section>
-        </>
+      </>
     );
-}
+  }
