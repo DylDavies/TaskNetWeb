@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import UserType from "../enums/UserType.enum";
 import AuthService from "../services/AuthService";
+import UserStatus from "../enums/UserStatus.enum";
 
 const links = [{ name: "Client", href:"/client" }, { name: "freelancer",href:"/freelancer" },{name: "Home",href:"/"}, {name: "Client",href:"/client"}, {name: "Admin",href:"/admin"}];
 
@@ -26,6 +27,9 @@ export default function Page(){
           const user = await AuthService.getCurrentUser();
     
           if (user?.userData.type !== UserType.Client && user?.userData.type !== UserType.Admin) router.push("/");
+
+          if (user?.userData.type !== UserType.Admin && user?.userData.status == UserStatus.Pending) router.push("/pending");
+          if (user?.userData.type !== UserType.Admin && user?.userData.status == UserStatus.Denied) router.push("/denied");
     
           setLoading(false);
         } 
