@@ -84,7 +84,7 @@ export default function Page() {
     }
 
     async function auth() {
-      let user = await AuthService.getCurrentUser();
+      const user = await AuthService.getCurrentUser();
 
       if (user?.userData.type !== UserType.Admin) router.push("/");
 
