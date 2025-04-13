@@ -13,6 +13,9 @@ import { getPendingUsers } from "../server/services/DatabaseService";
 import React, { useEffect, useState } from "react";
 import ActiveUser from "../interfaces/ActiveUser.interface";
 import AuthService from "../services/AuthService";
+import UserType from "../enums/UserType.enum";
+import { useRouter } from "next/navigation";
+
 
 const links = [
   { name: "Logout", href: "/" },
@@ -61,6 +64,13 @@ const userData = [
 
 export default function Page() {
   interface User  {
+  const router = useRouter();
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  /* Testing fetching pending users (START)*/
+  interface User {
     uid: string;
     username: string;
     status: number;
@@ -80,7 +90,18 @@ export default function Page() {
       //console.log("Pending users: ", pendingUsers);
       setPendingUsers(pendingUsers);
     }
-    fetchPendingUsers();
+
+    async function auth() {
+      const user = await AuthService.getCurrentUser();
+
+      if (user?.userData.type !== UserType.Admin) router.push("/");
+
+      setLoading(false);
+
+      fetchPendingUsers();
+    } 
+
+    auth();
   }, []);
 
   const [activeUser, setActiveUser] = useState<ActiveUser>()
@@ -93,6 +114,9 @@ export default function Page() {
     },[] );
   /* Testing fetching pending users (END) */
 
+  if (loading) {
+    return (<p>Loading...</p>)
+  }
 
   return (
     <>

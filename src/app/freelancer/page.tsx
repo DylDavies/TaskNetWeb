@@ -1,3 +1,4 @@
+'use client';
 
 'use client'
 //import Link from "next/link";
@@ -12,6 +13,9 @@ import "../components/button/Button.css";
 import { useEffect, useState } from "react";
 import AuthService from "../services/AuthService";
 import ActiveUser from "../interfaces/ActiveUser.interface";
+import { useRouter } from "next/navigation";
+import UserType from "../enums/UserType.enum";
+import UserStatus from "../enums/UserStatus.enum";
 
 const links = [
   { name: "Client", href: "/client" },
@@ -32,6 +36,31 @@ export default function Page() {
         })()
     },[] );
     
+
+  const [loading, setLoading] = useState(true);
+
+  const router = useRouter();
+
+  useEffect(() => {
+  
+      async function auth() {
+        const user = await AuthService.getCurrentUser();
+  
+        if (user?.userData.type !== UserType.Client && user?.userData.type !== UserType.Admin) router.push("/");
+
+        if (user?.userData.type !== UserType.Admin && user?.userData.status == UserStatus.Pending) router.push("/pending");
+        if (user?.userData.type !== UserType.Admin && user?.userData.status == UserStatus.Denied) router.push("/denied");
+  
+        setLoading(false);
+      } 
+  
+      auth();
+    }, []);
+
+  if (loading) {
+      return (<p>Loading...</p>)
+  }
+
   return (
     <>
       <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
