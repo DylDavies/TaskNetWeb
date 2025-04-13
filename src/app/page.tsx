@@ -9,7 +9,7 @@ export default function Home() {
   AuthService.autoSignIn();
 
   async function signinClick() {
-    AuthService.signin("/admin");
+    AuthService.signin();
     const activeUser = await AuthService.getCurrentUser();
     
     //if there is a user, will update the username
