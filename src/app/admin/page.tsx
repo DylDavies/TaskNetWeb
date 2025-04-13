@@ -3,12 +3,13 @@ import AdminTable from "../components/AdminTable/AdminTable";
 import "../components/AdminTable/AdminTable.css";
 import SearchBar from "../components/searchbar/SearchBar";
 import "../components/searchbar/SearchBar.css";
-import Link from "next/link";
 import Header from "../components/Header/header";
 import "../components/Header/Header.css";
 import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
 import "./global.css";
+import Button from "../components/button/Button";
+import "../components/button/Button.css";
 import { getPendingUsers } from "../server/services/DatabaseService";
 import React, { useEffect, useState } from "react";
 import AuthService from "../services/AuthService";
@@ -16,9 +17,9 @@ import UserType from "../enums/UserType.enum";
 import { useRouter } from "next/navigation";
 
 const links = [
-  { name: "Logout", href: "/" },
   { name: "Home", href: "/" },
   { name: "Client", href: "/client" },
+  { name: "Freelancer", href: "/freelancer" }
 ];
 
 /*
@@ -63,6 +64,12 @@ const userData = [
 export default function Page() {
   const router = useRouter();
 
+      //signs the user out of google
+  function signoutClick() {
+      AuthService.googleSignout();
+     router.push("/");
+  }
+
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -104,7 +111,7 @@ export default function Page() {
   return (
     <>
       <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
-        <header className="w-full bg-orange-500">
+        <header className="w-full">
           <Header name="Admin" usertype="Admin" />
         </header>
 
@@ -136,21 +143,13 @@ export default function Page() {
           </section>
         </main>
 
-        <footer className="bg-[#f75509] py-4 flex justify-center dark:bg-gray-900 box-footer">
-          <section className="space-x-8 text-center">
-            <Link href="/freelancer" className="hover:text-[#1dbf73]">
-              Freelancer
-            </Link>
-            <Link href="/" className="hover:text-[#1dbf73]">
-              Home
-            </Link>
-            <Link href="/client" className="hover:text-[#1dbf73]">
-              Client
-            </Link>
-            <Link href="/admin" className="hover:text-[#1dbf73]">
-              Admin
-            </Link>
-          </section>
+        <footer className="bg-[#f75509] dark:bg-gray-900 box-footer px-6 py-4">
+
+            <section className="flex justify-end">
+              <Button caption={"Log out"} 
+              onClick={() => signoutClick() } />
+            </section>
+          
         </footer>
       </section>
     </>

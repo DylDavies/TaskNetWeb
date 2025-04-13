@@ -1,5 +1,4 @@
 "use client";
-
 import AuthService from "./services/AuthService";
 import React from "react";
 import "./components/sidebar/sidebar.css";
@@ -7,6 +6,7 @@ import "./components/button/Button.css";
 import { useRouter } from "next/navigation";
 import { LoginRedirect } from "./Navigation/navigation";
 
+//Landing page UI
 export default function Home() {
   AuthService.autoSignIn();
   const router = useRouter();
@@ -24,16 +24,6 @@ export default function Home() {
       console.log("No active user");
     }
   }
-
-  // function signoutClick() {
-  //   AuthService.googleSignout();
-  // }
-
-  // async function currentUserClick() {
-  //   const user = await AuthService.getCurrentUser();
-
-  //   console.log("User", user);
-  // }
 
   return (
     <main className="flex h-screen">
