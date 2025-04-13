@@ -6,7 +6,7 @@ import UserData from "../../interfaces/UserData.interface";
 import UserType from "@/app/enums/UserType.enum";
 import UserStatus from "@/app/enums/UserStatus.enum";
 import AuthService from "../../services/AuthService";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 async function getUser(uid: string): Promise<UserData | null> {
     const userDoc = await getDoc(doc(db, "users", uid));
