@@ -5,15 +5,48 @@ import "../components/inputbar/inputBar.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import "./global.css";
+import { SetUserName, setUserType } from "../server/services/DatabaseService";
+import AuthService from "../services/AuthService";
+import UserType from "../enums/UserType.enum";
+import { Login } from "../Navigation/navigation";
+import { useRouter } from "next/navigation";
 
 
 
 export default function Page() {
     const [inputText, setInputText] = useState("");
-
+    const[type, setType] = useState("");
+    const router = useRouter();
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputText(e.target.value);
     };
+
+    const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setType(e.target.value);
+    };
+
+    async function LoginClick(usertype: number, username: string){
+
+        console.log(username, usertype);
+        //getting the current user
+        const activeUser = await AuthService.getCurrentUser();
+        
+        //if there is a user, will call set username and type
+        if (activeUser) {
+            const uid = activeUser.authUser.uid;
+            setUserType(uid,usertype);
+            SetUserName(uid,username);
+        }
+        else{
+            console.log("No active user");
+        }
+
+        Login(usertype, router);
+        
+    };
+
+
+
     return(
         <main className="flex items-center justify-center h-screen bg-neutral-900">
             <section className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl flex overflow-hidden">
@@ -51,13 +84,16 @@ export default function Page() {
                         <section className="flex items-center gap-4">
                             <section className="w-1/3 text-right text-lg opacity-80">Select Role</section>
                             <section className="w-2/3">
-                                <select className="w-full p-2 rounded text-white">
-                                    <option value="client">Client</option>
-                                    <option value="freelancer">Freelancer</option>
+                                <select className="w-full p-2 rounded text-white" 
+                                    value={type} 
+                                    onChange={handleTypeChange}
+                                    >
+                                    <option className="bg-neutral-800 text-white" value={UserType.Client} >Client</option>
+                                    <option className="bg-neutral-800 text-white" value={UserType.Freelancer}>Freelancer</option>
                                 </select>
-                            </section>
+                            </section> 
                         </section>
-                        <Button caption={"SIGN UP"}/>
+                        <Button caption={"SIGN UP"} onClick = {()=> LoginClick(Number(type), inputText)}/>
                     </article>
                 </section>
             </section>

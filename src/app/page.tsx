@@ -19,8 +19,8 @@ export default function Home() {
     
     //if there is a user, will update the username
     if (activeUser) {
-      const username = activeUser.userData.username;
-      console.log(username);
+      const userId = activeUser.authUser.uid;
+      console.log(userId);
     }
     else{
       console.log("No active user");

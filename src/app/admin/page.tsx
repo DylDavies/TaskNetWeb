@@ -11,6 +11,8 @@ import "../components/sidebar/sidebar.css";
 import "./global.css";
 import { getPendingUsers } from "../server/services/DatabaseService";
 import React, { useEffect, useState } from "react";
+import ActiveUser from "../interfaces/ActiveUser.interface";
+import AuthService from "../services/AuthService";
 
 const links = [
   { name: "Logout", href: "/" },
@@ -58,14 +60,16 @@ const userData = [
 ];*/
 
 export default function Page() {
+  interface User  {
+    uid: string;
+    username: string;
+    status: number;
+    type: number; // Do we not need role like freelancer and client?
+    date: number;
+  }
+
   const [searchQuery, setSearchQuery] = useState("");
 
-  /* Testing fetching pending users (START)*/
-  interface User {
-    uid: string;
-    status: number;
-    type: number; // Do we not need role? Like freelancer, client?
-  }
 
   const [pendingUsers, setPendingUsers] = useState<User[]>([]);
 
@@ -78,13 +82,23 @@ export default function Page() {
     }
     fetchPendingUsers();
   }, []);
+
+  let [activeUser, setActiveUser] = useState<ActiveUser>()
+    useEffect(() =>{
+        (async () => { 
+            setActiveUser(
+                await AuthService.getCurrentUser() as ActiveUser
+            )
+        })()
+    },[] );
   /* Testing fetching pending users (END) */
+
 
   return (
     <>
       <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
         <header className="w-full bg-orange-500">
-          <Header name="Admin" usertype="Admin" />
+          <Header name={activeUser?.userData.username || "Admin"} usertype="Admin" />
         </header>
 
         <main className="flex flex-1 dark:bg-[#cdd5f6] bg-color">

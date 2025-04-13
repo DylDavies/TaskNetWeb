@@ -1,4 +1,5 @@
 
+'use client'
 //import Link from "next/link";
 //import Link from "next/link";
 //import "./freelancer.css";
@@ -8,6 +9,9 @@ import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
+import { useEffect, useState } from "react";
+import AuthService from "../services/AuthService";
+import ActiveUser from "../interfaces/ActiveUser.interface";
 
 const links = [
   { name: "Client", href: "/client" },
@@ -18,11 +22,21 @@ const links = [
 
 //this is a comment
 export default function Page() {
+
+  let [activeUser, setActiveUser] = useState<ActiveUser>()
+    useEffect(() =>{
+        (async () => { 
+            setActiveUser(
+                await AuthService.getCurrentUser() as ActiveUser
+            )
+        })()
+    },[] );
+    
   return (
     <>
       <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
         <header className="w-full bg-orange-500 ">
-          <Header name="Alex" usertype="Freelancer" />
+          <Header name={activeUser?.userData.username || "Username"} usertype="Freelancer" />
         </header>
 
         <main className="flex-1 flex dark:bg-[#cdd5f6]">
@@ -30,7 +44,7 @@ export default function Page() {
             <SideBar items={links} />
           </section>
           <section className="flex-1 p-4 flex items-start justify-center">
-            <WelcomeCard username="May" type="freelancer" />
+            <WelcomeCard username={activeUser?.userData.username || "Username"} type="freelancer" />
           </section>
         </main>
 

@@ -2,10 +2,12 @@
 import { approveUser, denyUser } from "@/app/server/services/DatabaseService";
 import React, { useEffect, useState } from "react";
 
-interface User {
+interface User  {
   uid: string;
+  username: string;
   status: number;
   type: number; // Do we not need role like freelancer and client?
+  date: number;
 }
 /*
   previously was name, role and date
@@ -21,8 +23,8 @@ const AdminTable: React.FC<Props> = ({ data }) => {
   useEffect(() => {
     setPendingUsers(data);
     console.log(
-      "Updated pending users with new data:",
-      JSON.stringify(data, null, 2)
+      "new Updated pending users with new data:",
+      JSON.stringify(data, null, 3)
     );
   }, [data]);
 
@@ -50,6 +52,22 @@ const AdminTable: React.FC<Props> = ({ data }) => {
     }
   };
 
+  //This function will convert type from a number to a String
+  function TypeHelper(type: number): string {
+    
+    switch (type) {
+                case 0:
+                  return "No User type";
+                case 1:
+                  return "Freelancer";
+                case 2:
+                  return "Client";
+                case 3:
+                  return "Admin";
+                default:
+                  return "Error";
+              } 
+  }
   /*
 --- HOW TO USE ---
   use case example:
@@ -140,8 +158,9 @@ const AdminTable: React.FC<Props> = ({ data }) => {
                       </section>
                       <section>
                         <p className="font-semibold">{item.uid}</p>
+                        <p className="font-semibold">{item.username}</p>
                         <p className="text-xs text-gray-600 dark:text-gray-400">
-                          {item.type}
+                          {TypeHelper(item.type)}
                         </p>
                       </section>
                     </section>
@@ -154,7 +173,8 @@ const AdminTable: React.FC<Props> = ({ data }) => {
                     </strong>
                   </td>
 
-                  <td className="px-4 py-3 text-sm">{item.type}</td>
+                  {/* Date column*/}
+                  <td className="px-4 py-3 text-sm">{item.date}</td>
 
                   {/* Approve and Deny buttons */}
                   <td className="px-4 py-3 text-xs space-x-2">
