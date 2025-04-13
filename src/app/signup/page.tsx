@@ -85,6 +85,7 @@ export default function Page() {
 
         console.log(username, usertype);
         //getting the current user
+        handleSignupClick();
         const activeUser = await AuthService.getCurrentUser();
         
         //if there is a user, will call set username and type
