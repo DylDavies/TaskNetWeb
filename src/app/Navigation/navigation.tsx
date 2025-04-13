@@ -2,49 +2,46 @@ import UserType from "@/app/enums/UserType.enum";
 import AuthService from "@/app/services/AuthService";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-async function LoginRedirect(router: AppRouterInstance) {
-    const activeUser = await AuthService.getCurrentUser();
+export async function LoginRedirect(router: AppRouterInstance) {
+  const activeUser = await AuthService.getCurrentUser();
 
-    if(activeUser){
-        const userType = activeUser.userData.type;
-        if(userType == UserType.None){
-            //ToDo
-            //redirect to the secondary login page
-              console.log("Freelancer");
-              router.push('/freelancer');
-              
-        }
-        else{
-            Login(userType, router);
-        }
+  if (activeUser) {
+    const userType = activeUser.userData.type;
+    if (userType == UserType.None) {
+      //ToDo
+      //redirect to the secondary login page
+      console.log("Freelancer");
+      router.push("/freelancer");
+    } else {
+      Login(userType, router);
     }
-    else{
-        console.log("No active user");
-    }
-    
+  } else {
+    console.log("No active user");
+  }
 }
 
-    function Login(type: UserType, router: AppRouterInstance){
-        switch (type) {
-            case 0:
-              console.log("none");
-              LoginRedirect(router);
-              break;
-            case 1:
-              console.log("Freelancer");
-              router.push('/freelancer');
-              break;
-            case 2:
-              console.log("Client");
-              router.push('/client');
-              break;
-            case 3:
-              console.log("Admin");
-              router.push('/admin');
-              break;
-            default:
-              console.log("Number not in usertype");
-              break;
-          }
-
+function Login(type: UserType, router: AppRouterInstance) {
+  switch (type) {
+    case 0:
+      console.log("none");
+      LoginRedirect(router);
+      break;
+    case 1:
+      console.log("Freelancer");
+      router.push("/freelancer");
+      break;
+    case 2:
+      console.log("Client");
+      router.push("/client");
+      break;
+    case 3:
+      console.log("Admin");
+      router.push("/admin");
+      break;
+    default:
+      console.log("Number not in usertype");
+      break;
+  }
 }
+
+export default { LoginRedirect, Login };
