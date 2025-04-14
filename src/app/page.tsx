@@ -10,6 +10,7 @@ import { LoginRedirect } from "./Navigation/navigation";
 export default function Home() {
   const [loading, setLoading] = useState(false);
 
+  // AuthService.autoSignIn();
   const router = useRouter();
 
   async function signinClick() {
