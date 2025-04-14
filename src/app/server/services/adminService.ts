@@ -3,9 +3,10 @@
 import { arrayUnion, doc, setDoc } from "firebase/firestore"; 
 import { db } from "../../firebase";
 
-const skillDocID = "lStQgPqgByM0ytnHNrpm"
-async function AddSkill(skillName: string) {
-    await setDoc(doc(db, "skills", skillDocID), {
+
+async function AddSkill(SkillArea: string, skillName: string) {
+    await setDoc(doc(db, "skills", SkillArea), {
+        SkillArea: SkillArea,
         name: arrayUnion(skillName)
       });    
 };

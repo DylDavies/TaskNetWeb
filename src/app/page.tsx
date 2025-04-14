@@ -5,7 +5,6 @@ import "./components/sidebar/sidebar.css";
 import "./components/button/Button.css";
 import { useRouter } from "next/navigation";
 import { LoginRedirect } from "./Navigation/navigation";
-import { AddSkill } from "./server/services/adminService";
 
 //Landing page UI
 export default function Home() {
@@ -16,7 +15,6 @@ export default function Home() {
 
   async function signinClick() {
     console.log("clicked");
-    AddSkill("test");
 
     setLoading(true);
 
