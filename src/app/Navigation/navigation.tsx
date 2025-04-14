@@ -1,5 +1,4 @@
 import UserType from "@/app/enums/UserType.enum";
-import AuthService from "@/app/services/AuthService";
 import { getAuth } from "firebase/auth";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { app } from "../firebase";
