@@ -6,11 +6,13 @@ import { app } from "../firebase";
 import ApiService from "./ApiService";
 import ActiveUser from "../interfaces/ActiveUser.interface";
 import { getUser } from "../server/services/DatabaseService";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { LoginRedirect } from "../Navigation/navigation";
 
 const provider = new GoogleAuthProvider();
 
 export default class AuthService {
-    static async autoSignIn() {
+    static async autoSignIn(router: AppRouterInstance) {
         const auth = getAuth(app);
 
         if (auth.currentUser) return;
@@ -19,6 +21,8 @@ export default class AuthService {
     
         if (session.presence && session.customToken) {
             await signInWithCustomToken(auth, session.customToken);
+
+            LoginRedirect(router);
         }
     }
 
