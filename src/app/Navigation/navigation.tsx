@@ -1,23 +1,25 @@
 import UserType from "@/app/enums/UserType.enum";
-import AuthService from "@/app/services/AuthService";
+import { getAuth } from "firebase/auth";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { app } from "../firebase";
+import { getUser } from "../server/services/DatabaseService";
 
 
 // This function will take in a router and redirect the user to the secondary login page if they haven't already picked a usertype
 async function LoginRedirect(router: AppRouterInstance) {
-    const activeUser = await AuthService.getCurrentUser();
+    const auth = getAuth(app);
 
-    console.log(activeUser);
+    if(auth.currentUser){
+      const dbUser = await getUser(auth.currentUser.uid)
 
-    if(activeUser){
-        const userType = activeUser.userData.type;
+        const userType = dbUser?.type;
         if(userType == UserType.None){
             //redirect to the secondary login page
               router.push('/signup');
               
         }
         else{
-            Login(userType, router);
+            Login(userType || 0, router);
         }
       
   } 
