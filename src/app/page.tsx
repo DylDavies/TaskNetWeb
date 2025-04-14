@@ -8,7 +8,7 @@ import { LoginRedirect } from "./Navigation/navigation";
 
 //Landing page UI
 export default function Home() {
-  let [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // AuthService.autoSignIn();
   const router = useRouter();
