@@ -1,5 +1,5 @@
 export default class ApiService {
-    static BASE_URL = "https://api.tasknet.net";
+    static BASE_URL = "https://api.tasknet.tech";
 
     static async sessionExists(): Promise<{presence: boolean, customToken?: string}> {
         try {
