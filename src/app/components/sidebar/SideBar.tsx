@@ -38,21 +38,23 @@ interface Props {
 */
 const SideBar: React.FC<Props> = ({ items }) => {
   return (
-    <aside className="z-20 hidden w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0 sidebar box">
-      <section className="py-4 text-gray-500 dark:text-gray-400">
-        <a
-          className="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200"
-          href="#"
-        ></a>
-        <ul className="mt-6 list">
-          {items.map((item, index) => (
-            <li key={index}>
-              <Link href={item.href}>{item.name}</Link>
-            </li>
-          ))}
-        </ul>
-      </section>
-    </aside>
+    <aside className="z-20 hidden w-64 overflow-y-auto bg-gray-800 md:block flex-shrink-0 sidebar box">
+  <section className="py-4 text-gray-400">
+    <a className="ml-6 text-lg font-bold text-gray-200" href="#">
+      {/* Optional: Sidebar Title */}
+    </a>
+    <ul className="mt-6 list">
+      {items.map((item, index) => (
+        <li key={index}>
+          <Link href={item.href} className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded">
+            {item.name}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  </section>
+</aside>
+
   );
 };
 

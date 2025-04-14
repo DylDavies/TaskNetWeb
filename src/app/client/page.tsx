@@ -60,13 +60,13 @@ export default function Page(){
 
     return(
         <>
-        <section className="min-h-screen flex flex-col dark:bg-purple-100 text-white font-sans">
+        <section className="min-h-screen flex flex-col bg-[#cdd5f6] text-white font-sans bg-color">
             
             <header className="w-full bg-orange-500 ">
                 <Header usertype={"Client"} name={activeUser?.userData.username || "Username"} />
             </header>
 
-            <main className="flex-1 flex dark:bg-purple-100">
+            <main className="flex-1 flex bg-[#cdd5f6] bg-color">
                 <section className="w-64">
                     <SideBar items={links}/>
 
@@ -76,7 +76,7 @@ export default function Page(){
                 </section>
             </main>
           
-          <footer className="bg-[#f75509] py-4 flex justify-end dark:bg-gray-900 box-footer">
+          <footer className="bg-[#f75509] py-4 flex justify-end bg-gray-900 box-footer">
             <Button caption={"Log out"} 
             onClick={() => signoutClick() } />
           </footer>
