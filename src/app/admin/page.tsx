@@ -136,7 +136,7 @@ export default function Page() {
           <section className="flex-1 p-4">
             <section className="flex flex-col items-center space-y-4">
               {/* SearchBar wider and taller */}
-              <section className="w-full max-w-4xl mt-10 mb-6">
+              {/*<section className="w-full max-w-4xl mt-10 mb-6">
                 {" "}
                 <section className="w-full h-14">
                   <SearchBar
@@ -147,6 +147,7 @@ export default function Page() {
                   />
                 </section>
               </section>
+              */}
 
               {/* AdminTable moved down */}
               <section className="w-full max-w-8xl mt-36">
@@ -156,7 +157,7 @@ export default function Page() {
           </section>
         </main>
 
-        <footer className="bg-[#f75509] dark:bg-gray-900 box-footer px-6 py-4">
+        <footer className="bg-gray-900 box-footer px-6 py-4">
 
             <section className="flex justify-end">
               <Button caption={"Log out"} 

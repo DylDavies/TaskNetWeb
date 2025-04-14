@@ -85,7 +85,6 @@ export default function Page() {
 
         console.log(username, usertype);
         //getting the current user
-        handleSignupClick();
         const activeUser = await AuthService.getCurrentUser();
         
         //if there is a user, will call set username and type
@@ -98,6 +97,7 @@ export default function Page() {
             console.log("No active user");
         }
 
+        await handleSignupClick();
         Login(usertype, router);
         
     };
