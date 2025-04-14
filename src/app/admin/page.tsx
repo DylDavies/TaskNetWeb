@@ -1,7 +1,7 @@
 "use client"; // use state will crash without this
 import AdminTable from "../components/AdminTable/AdminTable";
 import "../components/AdminTable/AdminTable.css";
-import SearchBar from "../components/searchbar/SearchBar";
+//import SearchBar from "../components/searchbar/SearchBar";
 import "../components/searchbar/SearchBar.css";
 import Header from "../components/Header/header";
 import "../components/Header/Header.css";
@@ -72,7 +72,7 @@ export default function Page() {
      router.push("/");
   }
 
-  const [searchQuery, setSearchQuery] = useState("");
+  //const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
   /* Testing fetching pending users (START)*/
@@ -123,12 +123,12 @@ export default function Page() {
 
   return (
     <>
-      <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
+      <section className="min-h-screen flex flex-col bg-[#27274b] text-white font-sans">
         <header className="w-full bg-orange-500">
           <Header name={activeUser?.userData.username || "Admin"} usertype="Admin" />
         </header>
 
-        <main className="flex flex-1 dark:bg-[#cdd5f6] bg-color">
+        <main className="flex flex-1 bg-[#cdd5f6] bg-color">
           <aside className="w-64">
             <SideBar items={links} />
           </aside>
@@ -136,7 +136,7 @@ export default function Page() {
           <section className="flex-1 p-4">
             <section className="flex flex-col items-center space-y-4">
               {/* SearchBar wider and taller */}
-              <section className="w-full max-w-4xl mt-10 mb-6">
+              {/*<section className="w-full max-w-4xl mt-10 mb-6">
                 {" "}
                 <section className="w-full h-14">
                   <SearchBar
@@ -147,6 +147,7 @@ export default function Page() {
                   />
                 </section>
               </section>
+              */}
 
               {/* AdminTable moved down */}
               <section className="w-full max-w-8xl mt-36">
@@ -156,7 +157,7 @@ export default function Page() {
           </section>
         </main>
 
-        <footer className="bg-[#f75509] dark:bg-gray-900 box-footer px-6 py-4">
+        <footer className="bg-gray-900 box-footer px-6 py-4">
 
             <section className="flex justify-end">
               <Button caption={"Log out"} 

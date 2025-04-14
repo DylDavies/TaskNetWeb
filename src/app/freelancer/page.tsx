@@ -82,7 +82,7 @@ export default function Page() {
           </section>
         </main>
 
-        <footer className="bg-[#f75509] py-4 flex justify-end dark:bg-gray-900 box-footer">
+        <footer className=" py-4 flex justify-end bg-gray-900 box-footer">
           <Button caption={"Log out"} 
           onClick={() => signoutClick() } />
         </footer>
