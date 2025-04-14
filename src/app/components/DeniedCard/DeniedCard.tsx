@@ -1,17 +1,17 @@
 import React from "react";
 
-const PendingCard = () => {
+const DeniedCard = () => {
   return (
-    // this component is made up of an outher grey layer, an inner orange layer and a white hourglass icon 
+    // this component is made up of an outher grey layer, an inner orange layer and a white cross icon 
     <section
                 className="flex items-center justify-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800 max-w-md "
               >
                 <section
-                  className="p-3 mr-4 text-orange-500 bg-orange-100 rounded-full dark:text-orange-100 dark:bg-orange-500"
+                  className="p-3 mr-4 text-red-500 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-500"
                 >
-                  <svg className="w-6 h-6 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-6 h-6 " fill="currentColor" viewBox="0 0 20 20">
                     <path
-                      d="M6 2a1 1 0 000 2h1v1.586A2 2 0 007.586 7L10 9.414V10.5a1 1 0 01-.293.707L7.586 13a2 2 0 00-.586 1.414V16H6a1 1 0 100 2h12a1 1 0 100-2h-1v-1.586a2 2 0 00-.586-1.414l-2.121-2.121A1 1 0 0114 10.5v-.586L16.414 7A2 2 0 0017 5.586V4h1a1 1 0 100-2H6z"
+                     fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"
                     ></path>
                   </svg>
                 </section>
@@ -24,12 +24,12 @@ const PendingCard = () => {
                   <p
                     className="text-lg font-semibold text-gray-700 dark:text-gray-200"
                   >
-                    Pending 
+                    Denied
                   </p>
                 </section>
     </section>
   );
 };
 
-// Export the pending card for use in other parts of the program
-export default PendingCard;
+// Export the Denied card for use in other parts of the program
+export default DeniedCard;

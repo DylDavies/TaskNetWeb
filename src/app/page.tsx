@@ -1,29 +1,34 @@
 "use client";
-
 import AuthService from "./services/AuthService";
-import React from "react";
+import React, { useState } from "react";
 import "./components/sidebar/sidebar.css";
 import "./components/button/Button.css";
+import { useRouter } from "next/navigation";
+import { LoginRedirect } from "./Navigation/navigation";
 
+//Landing page UI
 export default function Home() {
-  AuthService.autoSignIn();
+  const [loading, setLoading] = useState(false);
 
-  function signinClick() {
-    AuthService.signin();
+  // AuthService.autoSignIn();
+  const router = useRouter();
+
+  async function signinClick() {
+    console.log("clicked")
+    setLoading(true);
+
+    await AuthService.signin();
+
+    LoginRedirect(router);
+
+    setLoading(false);
   }
-
-  // function signoutClick() {
-  //   AuthService.googleSignout();
-  // }
-
-  // async function currentUserClick() {
-  //   const user = await AuthService.getCurrentUser();
-
-  //   console.log("User", user);
-  // }
 
   return (
     <main className="flex h-screen">
+      <section style={{display: loading ? "block" : "none", position: "fixed", width: "100%", height: "100%", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 2}}>
+        <p style={{position: "absolute", top: "50%", left: "50%", fontSize: "50px", transform: "translate(-50%, -50%)"}}>Loading...</p>
+      </section>
       {/* Left Side */}
       <section className="w-1/2 bg-violet-700 text-neutral-900 flex items-center justify-center p-10">
         <article className="flex flex-col items-center text-center">
@@ -43,6 +48,7 @@ export default function Home() {
                 <button
                   className="gsi-material-button hover:bg-white hover:text-black transition-colors duration-200"
                   onClick={signinClick}
+                  disabled={loading}
                 >
                   <section className="gsi-material-button-icon">
                     <svg
@@ -69,9 +75,9 @@ export default function Home() {
                       <path fill="none" d="M0 0h48v48H0z" />
                     </svg>
                   </section>
-                  <span className="gsi-material-button-contents">
+                  <p className="gsi-material-button-contents">
                     Continue with Google
-                  </span>
+                  </p>
                 </button>
               </section>
             </section>

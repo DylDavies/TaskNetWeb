@@ -18,7 +18,7 @@ export default class AuthService {
         const session = await ApiService.sessionExists();
     
         if (session.presence && session.customToken) {
-            signInWithCustomToken(auth, session.customToken);
+            await signInWithCustomToken(auth, session.customToken);
         }
     }
 
@@ -28,7 +28,7 @@ export default class AuthService {
         const session = await ApiService.sessionExists();
     
         if (session.presence && session.customToken) {
-            signInWithCustomToken(auth, session.customToken);
+            await signInWithCustomToken(auth, session.customToken);
             if (redirectPage) redirect(redirectPage);
             return true;
         }
