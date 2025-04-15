@@ -10,6 +10,8 @@ import UserData from "./interfaces/UserData.interface";
 import { usePathname, useRouter } from "next/navigation";
 import UserType from "./enums/UserType.enum";
 import { PropagateLoader } from "react-spinners";
+import AuthService from "./services/AuthService";
+import ApiService from "./services/ApiService";
 
 export type AuthContextType = {
   user: ActiveUser | null;
@@ -19,13 +21,15 @@ const routes: { [key: string]: UserType } = {
   "/client": UserType.Client,
   "/freelancer": UserType.Freelancer,
   "/admin": UserType.Admin,
+  "/signup": UserType.None
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<ActiveUser | null>(null);
-  const [isHydrated, setIsHydrated] = useState(false); // 👈 ensures client render
+  const [isHydrated, setIsHydrated] = useState(false);
+  const [isAllowed, setIsAllowed] = useState(false);
   const auth = getAuth(app);
   const router = useRouter();
   const path = usePathname();
@@ -69,17 +73,42 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (routes[path]) {
-      const allowed = routes[path] === user?.userData.type || user?.userData.type === UserType.Admin;
-      if (!allowed) router.push("/");
-    }
+    if (!user) AuthService.autoSignIn();
+  }, [user]);
+
+  useEffect(() => {
+    (async () => {
+        if (user?.userData.type == UserType.None) router.push("/signup");
+
+        if (routes[path] !== undefined) {
+            if (!user) {
+                if ((await ApiService.sessionExists()).presence == true) await AuthService.autoSignIn();
+                else router.push("/");
+            } else {
+                const allowed = routes[path] === user.userData.type || user.userData.type === UserType.Admin;
+                
+                if (!allowed) {
+                    switch (user.userData.type) {
+                        case UserType.Client: router.push("/client");
+                        case UserType.Freelancer: router.push("/freelancer"); 
+                    }
+                } else {
+                    setIsAllowed(true);
+                }
+            }
+        } else setIsAllowed(true);
+    })();
   }, [user, path, router]);
 
   if (!isHydrated) return null; // avoid hydration mismatch
 
   return (
     <AuthContext.Provider value={{ user }}>
-      {(user || !routes[path]) ? children : <p style={{position: "absolute", top: "50%", left: "50%", fontSize: "50px", transform: "translate(-50%, -50%)"}}><PropagateLoader color="#ffffff" /></p>}
+        {(isAllowed) ? children :
+            <>
+                <p style={{position: "absolute", top: "50%", left: "50%", fontSize: "50px", transform: "translate(-50%, -50%)"}}><PropagateLoader color="#ffffff" /></p>
+            </>
+        }
     </AuthContext.Provider>
   );
 };

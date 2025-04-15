@@ -16,15 +16,13 @@ export default function Home() {
   // AuthService.autoSignIn();
   const router = useRouter();
 
-  useEffect(() => {
-    if (user) {
-      LoginRedirect(router);
-    }
-  });
+  // useEffect(() => {
+  //   if (user) {
+  //     LoginRedirect(router);
+  //   }
+  // });
 
   async function signinClick() {
-    console.log("clicked");
-
     setLoading(true);
 
     await AuthService.signin();

@@ -8,12 +8,10 @@ import "../components/sidebar/sidebar.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import "./global.css";
-import { useEffect, useState } from "react";
+import { useContext } from "react";
 import AuthService from "../services/AuthService";
-import ActiveUser from "../interfaces/ActiveUser.interface";
 import { useRouter } from "next/navigation";
-import UserType from "../enums/UserType.enum";
-import UserStatus from "../enums/UserStatus.enum";
+import { AuthContext, AuthContextType } from "../AuthContext";
 
 //constant for links to other pages
 const links = [
@@ -22,18 +20,8 @@ const links = [
 
 //this is a comment
 export default function Page() {
+  const { user } = useContext(AuthContext) as AuthContextType;
 
-  const [activeUser, setActiveUser] = useState<ActiveUser>()
-    useEffect(() =>{
-        (async () => { 
-            setActiveUser(
-                await AuthService.getCurrentUser() as ActiveUser
-            )
-        })()
-    },[] );
-    
-
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   //signs the user out of google
@@ -41,32 +29,12 @@ export default function Page() {
     AuthService.googleSignout();
     router.push("/");
   }
-
-  useEffect(() => {
-  
-      async function auth() {
-        const user = await AuthService.getCurrentUser();
-  
-        if (user?.userData.type !== UserType.Freelancer && user?.userData.type !== UserType.Admin) router.push("/");
-
-        if (user?.userData.type !== UserType.Admin && user?.userData.status == UserStatus.Pending) router.push("/pending");
-        if (user?.userData.type !== UserType.Admin && user?.userData.status == UserStatus.Denied) router.push("/denied");
-  
-        setLoading(false);
-      } 
-  
-      auth();
-    }, []);
-
-  if (loading) {
-      return (<p>Loading...</p>)
-  }
     
   return (
     <>
       <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
         <header className="w-full bg-orange-500 ">
-          <Header name={activeUser?.userData.username || "Username"} usertype="Freelancer" />
+          <Header name={user?.userData.username || "Username"} usertype="Freelancer" />
         </header>
 
         <main className="flex flex-1 dark:bg-[#cdd5f6] bg-color">
@@ -78,7 +46,7 @@ export default function Page() {
 
           {/*welcome card centred right underneath the header*/}
           <section className="flex-1 p-4 flex items-start justify-center">
-            <WelcomeCard username={activeUser?.userData.username || "Username"} type="freelancer" />
+            <WelcomeCard username={user?.userData.username || "Username"} type="freelancer" />
           </section>
         </main>
 
