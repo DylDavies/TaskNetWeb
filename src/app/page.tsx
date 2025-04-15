@@ -1,26 +1,17 @@
 "use client";
 import AuthService from "./services/AuthService";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./components/sidebar/sidebar.css";
 import "./components/button/Button.css";
 import { useRouter } from "next/navigation";
 import { LoginRedirect } from "./Navigation/navigation";
-import { AuthContextType, AuthContext } from "./AuthContext";
 import { PropagateLoader } from "react-spinners";
 
 //Landing page UI
 export default function Home() {
   const [loading, setLoading] = useState(false);
-  const { user } = useContext(AuthContext) as AuthContextType;
 
-  // AuthService.autoSignIn();
   const router = useRouter();
-
-  // useEffect(() => {
-  //   if (user) {
-  //     LoginRedirect(router);
-  //   }
-  // });
 
   async function signinClick() {
     setLoading(true);

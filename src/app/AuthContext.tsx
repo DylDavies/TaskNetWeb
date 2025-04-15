@@ -89,8 +89,12 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 
                 if (!allowed) {
                     switch (user.userData.type) {
-                        case UserType.Client: router.push("/client");
-                        case UserType.Freelancer: router.push("/freelancer"); 
+                        case UserType.Client:
+                            router.push("/client");
+                            break;
+                        case UserType.Freelancer:
+                            router.push("/freelancer");
+                            break;
                     }
                 } else {
                     setIsAllowed(true);
