@@ -101,6 +101,9 @@ export default function Page() {
           <SideBar items={links} />
         </section>
 
+        {/* Test for JobData*/}
+        <section>{jobData?.title}</section>
+
         <section className="flex-1 p-4 flex items-start justify-center">
           <WelcomeCard
             username={activeUser?.userData.username || "Username"}
