@@ -1,7 +1,7 @@
 'use server'
 import { db } from "@/app/firebase";
 import JobData from "@/app/interfaces/JobData.interface";
-import { doc, getDoc, Timestamp } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { convertJobData } from "./ConvertFirestoreJobDataToTS";
 
 
