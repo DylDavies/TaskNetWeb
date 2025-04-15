@@ -5,12 +5,16 @@ interface JobData{
     title: string,
     description: string,
     budget: number,
-    deadline: Date, // Data | number
-    skills: string[],
+    deadline: number, 
+    skills: { 
+        [skillArea: string]: number[]  // map with string as key and int array elements (element is the index of a skill)
+    },
     status: JobStatus,
     hiredUId: string,
-    clientUId: string, // added a new one
-    // Should I add another for the date that this was created?
+    clientUId: string, 
+    createdAt:number, 
 }
+
+// Date as a number format: YYYYMMDD
 
 export default JobData;

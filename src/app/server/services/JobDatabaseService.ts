@@ -2,8 +2,6 @@
 import { db } from "@/app/firebase";
 import JobData from "@/app/interfaces/JobData.interface";
 import { doc, getDoc } from "firebase/firestore";
-import { convertJobData } from "./ConvertFirestoreJobDataToTS";
-
 
 // Endpoint to get the Job by its JobID
 async function getJob(uid: string): Promise<JobData | null> {
@@ -11,7 +9,7 @@ async function getJob(uid: string): Promise<JobData | null> {
 
   if (!jobDoc.exists()) return null; 
 
-  return convertJobData(jobDoc.data() as JobData);
+  return jobDoc.data() as JobData;
 }
 
 export { getJob };

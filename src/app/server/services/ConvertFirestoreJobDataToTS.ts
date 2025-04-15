@@ -9,11 +9,12 @@ async function convertJobData(data: DocumentData): Promise<JobData>{
     title: data.title,
     description: data.description,
     budget: data.budget,
-    deadline: (data.deadline as Timestamp).toDate(),
+    deadline: data.deadline,
     skills: data.skills,
     status: data.status,
     hiredUId: data.hiredUId,
     clientUId: data.clientUId,
+    createdAt: data.createdAt
   };
 }
 
