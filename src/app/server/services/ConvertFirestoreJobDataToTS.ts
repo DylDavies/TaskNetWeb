@@ -1,5 +1,5 @@
 'use server'
-import { DocumentData, Timestamp } from "firebase/firestore";
+import { DocumentData } from "firebase/firestore";
 import JobData from "../../interfaces/JobData.interface";
 
 // Helper function to convert deadline (firestore Date/Time) to something which TS can hopefully use
