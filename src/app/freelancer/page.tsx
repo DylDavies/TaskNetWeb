@@ -9,6 +9,8 @@ import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
+import JobAppForm from "../components/JobApplicationForm/JobApplication";
+import "../components/JobApplicationForm/JobApplicationForm.css"
 
 import { useRef, useState } from "react";
 import { Container } from "react-dom/client";
@@ -36,7 +38,7 @@ export default function Page(){
                 </section>
                 
                 <dialog ref ={dialogRef}>
-                    <WelcomeCard username="Test" type="freelancer"></WelcomeCard>
+                    <JobAppForm></JobAppForm>
                 </dialog>
 
                 <button onClick={() => dialogRef.current?.showModal()}>
