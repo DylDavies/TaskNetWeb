@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 //import Link from "next/link";
 //import "./freelancer.css";
@@ -8,10 +10,14 @@ import "../components/sidebar/sidebar.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
 
+import { useRef, useState } from "react";
+import { Container } from "react-dom/client";
+
 const links = [{ name: "Client", href:"/client" },{name: "Home",href:"/"}, {name: "Client",href:"/client"}, {name: "Admin",href:"/admin"}];
 
 //this is a comment
 export default function Page(){
+    const dialogRef = useRef<HTMLDialogElement | null>(null);
     return(
         <>
         <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
@@ -29,6 +35,13 @@ export default function Page(){
                     <WelcomeCard username="May" type="freelancer" />
                 </section>
                 
+                <dialog ref ={dialogRef}>
+                    <WelcomeCard username="Test" type="freelancer"></WelcomeCard>
+                </dialog>
+
+                <button onClick={() => dialogRef.current?.showModal()}>
+                    I AM BUTTON
+                </button>
 
             </main>
 
