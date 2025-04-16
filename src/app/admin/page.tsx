@@ -124,7 +124,7 @@ export default function Page() {
   return (
     <>
       <section className="min-h-screen flex flex-col bg-[#27274b] text-white font-sans">
-        <header className="w-full bg-orange-500">
+        <header className="w-full">
           <Header name={activeUser?.userData.username || "Admin"} usertype="Admin" />
         </header>
 
