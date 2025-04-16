@@ -12,7 +12,7 @@ import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
 import JobData from "../interfaces/JobData.interface";
-import { getJob } from "../server/services/JobDatabaseService";
+import { getAllJobs, getJob } from "../server/services/JobDatabaseService";
 import { getSkillByID } from "../server/services/adminService";
 import { formatDateAsString } from "../server/formatters/FormatDates";
 import JobCard from "../components/JobOverview/JobOverview";
@@ -36,6 +36,18 @@ export default function Page() {
     deadline: string;
     skills: string[];
   };*/
+
+  const handleLoggingJobs = async () => {
+    try {
+      const { jobs, jobIDs } = await getAllJobs();
+      console.log("=== LIST OF JOBS ===");
+      console.table(jobs); // Displays jobs in a nice table format
+      console.log("Job IDs:", jobIDs);
+      console.log("=== LIST OF JOBS ===");
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+    }
+  };
 
   // fetch job data
   useEffect(() => {
@@ -121,6 +133,10 @@ export default function Page() {
             ) : (
               <p>Loading job data...</p>
             )}
+          </section>
+
+          <section>
+            <Button caption={"Log Jobs"} onClick={handleLoggingJobs} />
           </section>
 
           {/*welcome card centred right underneath the header*/}

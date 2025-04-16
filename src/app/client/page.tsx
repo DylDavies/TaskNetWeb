@@ -27,21 +27,23 @@ export default function Page() {
     router.push("/");
   }
 
+  // fetch job data
+
   // Testing Sanitization & Creating job:
   const dummyJob = {
-    title: "Full-Stack Developer for E-commerce Site",
+    title: "Interior Design for Modern Apartment",
     description:
-      "Build and maintain an e-commerce platform using React, Node.js, and Shopify. UI/UX and payment integration experience required.",
-    budgetMin: 40,
-    budgetMax: 80,
-    clientUId: "client123",
+      "Looking for an interior designer to plan and style a 2-bedroom apartment in a modern minimalist style.",
+    budgetMin: 30,
+    budgetMax: 70,
+    clientUId: "client111",
     hiredUId: "",
     status: 0,
-    createdAt: 20250410,
-    deadline: 20250515,
+    createdAt: 20250406,
+    deadline: 20250520,
     skills: {
-      "Digital & Tech": [0, 3, 4, 15],
-      "Marketing & Sales": [3, 5],
+      "Engineering & Architecture": [5, 6],
+      "Digital & Tech": [8],
     },
   };
 
