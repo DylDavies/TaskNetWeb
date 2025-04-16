@@ -32,7 +32,7 @@ const NotificationProvider: FC<{ children: ReactNode }> = ({children}) => {
 
         if (user) {
             unsubscribeSnapshot = onSnapshot(query(collection(db, "notifications"), where("uidFor", "==", user.authUser.uid)), (qSnapshot) => {
-                let results: Notification[] = [];
+                const results: Notification[] = [];
 
                 qSnapshot.forEach(s => results.push(fromDB(s.data() as FSNotification)));
 

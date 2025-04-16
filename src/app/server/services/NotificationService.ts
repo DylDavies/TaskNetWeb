@@ -42,7 +42,7 @@ async function setNotificationSeen(uid: string, seen: boolean) {
 async function getNotificationsForUser(uid: string): Promise<Notification[]> {
     const snapshot = await getDocs(query(collection(db, "notifications"), where("uidFor", "==", uid)));
 
-    let results: Notification[] = [];
+    const results: Notification[] = [];
 
     snapshot.forEach(s => results.push(fromDB(s.data() as FSNotification)));
 
