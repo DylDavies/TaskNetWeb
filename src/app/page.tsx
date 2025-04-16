@@ -5,17 +5,15 @@ import "./components/sidebar/sidebar.css";
 import "./components/button/Button.css";
 import { useRouter } from "next/navigation";
 import { LoginRedirect } from "./Navigation/navigation";
+import { PropagateLoader } from "react-spinners";
 
 //Landing page UI
 export default function Home() {
   const [loading, setLoading] = useState(false);
 
-  // AuthService.autoSignIn();
   const router = useRouter();
 
   async function signinClick() {
-    console.log("clicked");
-
     setLoading(true);
 
     await AuthService.signin();
@@ -28,7 +26,7 @@ export default function Home() {
   return (
     <main className="flex h-screen">
       <section style={{display: loading ? "block" : "none", position: "fixed", width: "100%", height: "100%", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 2}}>
-        <p style={{position: "absolute", top: "50%", left: "50%", fontSize: "50px", transform: "translate(-50%, -50%)"}}>Loading...</p>
+        <p style={{position: "absolute", top: "50%", left: "50%", fontSize: "50px", transform: "translate(-50%, -50%)"}}><PropagateLoader color="#ffffff" /></p>
       </section>
       {/* Left Side */}
       <section className="w-1/2 bg-violet-700 text-neutral-900 flex items-center justify-center p-10">

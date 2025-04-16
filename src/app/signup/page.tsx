@@ -1,43 +1,38 @@
 "use client";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import InputBar from "../components/inputbar/InputBar";
 import "../components/inputbar/inputBar.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import "./global.css";
 import { SetUserName, setUserType } from "../server/services/DatabaseService";
-import AuthService from "../services/AuthService";
 import UserType from "../enums/UserType.enum";
-import { Login } from "../Navigation/navigation";
+import { LoginRedirect } from "../Navigation/navigation";
 import { useRouter } from "next/navigation";
 import { sendEmail } from "../server/services/DatabaseService";
+import { AuthContext, AuthContextType } from "../AuthContext";
 
 
 export default function Page() {
-    const [inputText, setInputText] = useState("");
-    const[type, setType] = useState(UserType.Client.toString());
-    const router = useRouter();
-  
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputText(e.target.value);
-    };
+  const { user } = useContext(AuthContext) as AuthContextType;
 
-    const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setType(e.target.value);
-    };
-  
-     const handleSignupClick = async () => {
-       try {
-         const activeUser = await AuthService.getCurrentUser();
-         
-          if (!activeUser) {
-            alert("No active user found. Please log in first.");
-            return;
-          }
+  const [inputText, setInputText] = useState("");
+  const[type, setType] = useState(UserType.Client.toString());
+  const router = useRouter();
 
-      if (activeUser) {
-        const userEmail = activeUser.authUser.email;
-        const userName = activeUser.authUser.displayName;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  setInputText(e.target.value);
+  };
+
+  const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setType(e.target.value);
+  };
+  
+  const handleSignupClick = async () => {
+    try {
+      if (user) {
+        const userEmail = user.authUser.email;
+        const userName = user.authUser.displayName;
         console.log(userEmail);
         console.log(userName);
 
@@ -81,30 +76,18 @@ export default function Page() {
   };
 
 
-    async function LoginClick(usertype: number, username: string){
+  async function LoginClick(usertype: number, username: string){        
+      //if there is a user, will call set username and type
+      if (user) {
+          const uid = user.authUser.uid;
+          await setUserType(uid,usertype);
+          await SetUserName(uid,username);
+      }
 
-        console.log(username, usertype);
-        //getting the current user
-        const activeUser = await AuthService.getCurrentUser();
-        
-        //if there is a user, will call set username and type
-        if (activeUser) {
-            const uid = activeUser.authUser.uid;
-            setUserType(uid,usertype);
-            SetUserName(uid,username);
-        }
-        else{
-            console.log("No active user");
-        }
-
-        await handleSignupClick();
-        Login(usertype, router);
-        
-    };
+      await handleSignupClick();
+      LoginRedirect(router);
+  };
           
-    
-
-
   return (
     <main className="flex items-center justify-center h-screen bg-neutral-900">
       <section className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl flex overflow-hidden">
