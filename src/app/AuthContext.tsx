@@ -70,7 +70,7 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     return () => {
       if (unsubscribeSnapshot) unsubscribeSnapshot();
     };
-  }, []);
+  }, [auth]);
 
   useEffect(() => {
     if (!user) AuthService.autoSignIn();
