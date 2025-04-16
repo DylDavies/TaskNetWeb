@@ -27,49 +27,6 @@ export default function Page() {
     router.push("/");
   }
 
-  // fetch job data
-
-  // Testing Sanitization & Creating job:
-  const dummyJob = {
-    title: "Interior Design for Modern Apartment",
-    description:
-      "Looking for an interior designer to plan and style a 2-bedroom apartment in a modern minimalist style.",
-    budgetMin: 30,
-    budgetMax: 70,
-    clientUId: "client111",
-    hiredUId: "",
-    status: 0,
-    createdAt: 20250406,
-    deadline: 20250520,
-    skills: {
-      "Engineering & Architecture": [5, 6],
-      "Digital & Tech": [8],
-    },
-  };
-
-  // Submit test job
-  const handleSubmit = async () => {
-    const tempData = sanitizeJobData(
-      dummyJob.title,
-      dummyJob.description,
-      dummyJob.clientUId,
-      dummyJob.deadline,
-      dummyJob.createdAt,
-      dummyJob.skills,
-      dummyJob.budgetMin,
-      dummyJob.budgetMax
-    );
-    //console.log(tempData);
-    try {
-      const result = await createJob(tempData);
-      if (result) {
-        console.log("Job added successfully!");
-      }
-    } catch (error) {
-      console.error("Failed to create job:", error);
-    }
-  };
-
   return (
     <>
       <section className="min-h-screen flex flex-col bg-[#cdd5f6] text-white font-sans bg-color">
@@ -83,10 +40,6 @@ export default function Page() {
         <main className="flex-1 flex bg-[#cdd5f6] bg-color">
           <section className="w-64">
             <SideBar items={links} />
-          </section>
-          {/* Test Job Submit Button */}
-          <section className="mt-6">
-            <Button caption="Test Create Job" onClick={handleSubmit} />
           </section>
 
           <section className="flex-1 p-4 flex items-start justify-center">
