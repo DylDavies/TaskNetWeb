@@ -2,9 +2,7 @@ import JobData from "@/app/interfaces/JobData.interface";
 import JobStatus from "@/app/enums/JobStatus.enum";
 
 // sanitize the data that clients send for a job that they want to create
-const sanitizeJobData = (title: string, description: string, clientUId: string,
-  deadline: number, createdAt: number, skills: { [skillArea: string]: string[] },
-  budgetMin: number, budgetMax: number): JobData => {
+const sanitizeJobData = (jobData: Partial<JobData>): JobData => {
 
   const errors: string[] = [];
   /*
@@ -16,17 +14,17 @@ const sanitizeJobData = (title: string, description: string, clientUId: string,
 
 
   // Error checking an sanitization:
-  if (!title || typeof title !== "string") errors.push("title is missing or not a string");
-  if (!description || typeof description !== "string") errors.push("description is missing or not a string");
+  if (!jobData.title || typeof jobData.title !== "string") errors.push("title is missing or not a string");
+  if (!jobData.description || typeof jobData.description !== "string") errors.push("description is missing or not a string");
 
   // we handle hiredUId, this is for clients so it can be empty
   const hiredUId = "";
   const status = JobStatus.Posted;
 
-  if (!clientUId || typeof clientUId !== "string") errors.push("clientUId is missing or not a string");
-  if (typeof budgetMin !== "number" || budgetMin < 0) errors.push("minimum budget must be a non-negative number.");
-  if (typeof budgetMax !== "number" || budgetMax < 0) errors.push("maximum budget must be a non-negative number.");
-  if (typeof budgetMax !== "number" || budgetMax < budgetMin) errors.push("maximum budget must be greater than budgetMin.");
+  if (!jobData.clientUId || typeof jobData.clientUId !== "string") errors.push("clientUId is missing or not a string");
+  if (typeof jobData.budgetMin !== "number" || jobData.budgetMin < 0) errors.push("minimum budget must be a non-negative number.");
+  if (typeof jobData.budgetMax !== "number" || jobData.budgetMax < 0) errors.push("maximum budget must be a non-negative number.");
+  if (jobData.budgetMin !== undefined && jobData.budgetMax !== undefined && jobData.budgetMax < jobData.budgetMin)errors.push("Maximum budget must be greater than minimum budget");
 
   /*Maybe add a checks for date:
       
@@ -37,29 +35,32 @@ const sanitizeJobData = (title: string, description: string, clientUId: string,
 
   */
 
-  if (typeof deadline !== "number" || deadline.toString().length !== 8) errors.push("Invalid deadline date format.");
-  if (typeof createdAt !== "number" || createdAt.toString().length !== 8) errors.push("Invalid createdAt date format.");
+  if (typeof jobData.deadline !== "number" || jobData.deadline.toString().length !== 8) errors.push("Invalid deadline date format.");
+  if (typeof jobData.deadline !== "number" || jobData.deadline.toString().length !== 8) errors.push("Invalid deadline date format.");
+  if (typeof jobData.createdAt !== "number" || jobData.createdAt.toString().length !== 8) errors.push("Invalid createdAt date format.");
 
-
-
-  // Checking skills:
-  if (skills && typeof skills === "object") {
-    Object.keys(skills).forEach((skillArea) => {
-      const skillIndices = skills[skillArea];
-      if (!Array.isArray(skillIndices) || !skillIndices.every((i) => Number.isInteger(i))) {
-        errors.push(`Invalid skill indices for ${skillArea}.`);
-      }
-    });
+  //------ Add checks to ensure that the Skill Areas exists possibly the same with skills ------
+  if (!jobData.skills || typeof jobData.skills !== "object") {
+    errors.push("Skills must be provided as an object");
   } else {
-    errors.push("Skills map is invalid.");
+    for (const [skillArea, skills] of Object.entries(jobData.skills)) {
+      if (!Array.isArray(skills)) {
+        errors.push(`Skills for ${skillArea} must be an array`);
+        continue;
+      }
+
+      for (const skill of skills) {
+        if (typeof skill !== "string") {
+          errors.push(`Skill in ${skillArea} must be a string`);
+        }
+      }
+    }
   }
 
-
-
   if (errors.length > 0) {
-    alert("Failed to create Job due to: \n"+errors.join("\n"))
-    throw new Error("Sanitization failed: \n" + errors.join("\n")); // Maybe throw new error or alert
-
+    const errorMessage = "Validation failed:\n" + errors.join("\n");
+    console.error(errorMessage);
+    throw new Error(errorMessage);
   }
   else {
     console.log("Data is safe to send to the DB!");
@@ -67,16 +68,16 @@ const sanitizeJobData = (title: string, description: string, clientUId: string,
 
 
   return {
-    title,
-    description,
-    hiredUId,
-    clientUId,
-    deadline,
-    createdAt,
-    skills,
-    status,
-    budgetMin,
-    budgetMax,
+    title: jobData.title!,
+    description: jobData.description!,
+    hiredUId: hiredUId,
+    clientUId: jobData.clientUId!,
+    deadline: jobData.deadline!,
+    createdAt: jobData.createdAt!,
+    skills: jobData.skills!,
+    status: status,
+    budgetMin: jobData.budgetMin!,
+    budgetMax: jobData.budgetMax!,
   };
 }
 

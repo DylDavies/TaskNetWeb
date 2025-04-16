@@ -10,6 +10,7 @@ import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
 import { useContext } from "react";
 import { AuthContextType, AuthContext } from "../AuthContext";
+//import { sanitizeJobData } from "../server/formatters/JobDataSanitization";
 
 //constant for links to other pages
 const links = [{ name: "Home", href: "/" }];

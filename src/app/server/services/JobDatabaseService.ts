@@ -2,7 +2,7 @@
 import JobStatus from "@/app/enums/JobStatus.enum";
 import { db } from "@/app/firebase";
 import JobData from "@/app/interfaces/JobData.interface";
-import { addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { addDoc, and, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 
 // Endpoint to get the Job by its JobID
 async function getJob(uid: string): Promise<JobData | null> {
@@ -91,7 +91,7 @@ async function searchByTitle(title: string): Promise<JobData[]> {
   }
 }
 
-
+// There must be another way to do this (for now leave it as it works):
 // Endpoint to get jobs that have those skills (needs skillID or skillArea to be passed in to work)
 async function searchJobsBySkills(skills: string[], skillIds: string[]): Promise<JobData[]> {
   try {
@@ -107,15 +107,12 @@ async function searchJobsBySkills(skills: string[], skillIds: string[]): Promise
 
       const jobSkillsMap = job.skills || {};
 
-      // Get only the relevant skill categories from the job
       const relevantSkillArrays = skillIds
-        .filter((id) => jobSkillsMap[id]) // keep only categories present in the job
+        .filter((id) => jobSkillsMap[id]) 
         .map((id) => jobSkillsMap[id]);
 
-      // Flatten into one array of relevant skills
       const relevantSkills = relevantSkillArrays.flat();
 
-      // Check if there's a match
       const hasMatch = skills.some(skill => relevantSkills.includes(skill));
       if (hasMatch) {
         matchingJobs.push(job);
@@ -152,11 +149,33 @@ async function getJobsByClientID(clientID: string): Promise<JobData[]> {
   }
 }
 
-// endpoint to view jobs posted by client - ie get jobs by that client id
-// and then endpoint to view client and hiredID - ie get jobs by that clientID and hiredID
+// Endpoint to get clients and freelancers who matched on the same job/s
+async function getJobByClientIdAndHiredId(clientID: string, hiredID: string): Promise<JobData[]> {
+  try {
+    if (!clientID || !hiredID) {
+      throw new Error("Both clientID and hiredID must be provided");
+    }
 
+    const Query = query(
+      collection(db, "Jobs"),
+      and(
+        where("clientUId", "==", clientID),
+        where("hiredUId", "==", hiredID)
+      )
+    );
 
-// Add an endpoint for a freelancer to update hiredUid when they take a job
-// Add an endpoint for a freelancer to update status when they take a job
+    const jobDocs = await getDocs(Query);
+    const jobs: JobData[] = [];
 
-export { getJob, createJob, getAllJobs, searchByTitle, updateHiredUId, updateJobStatus, searchJobsBySkills, getJobsByClientID };
+    jobDocs.forEach((doc) => {
+      jobs.push(doc.data() as JobData);
+    });
+
+    return jobs;
+  } catch (error) {
+    console.error("Error fetching jobs by client and hired ID:", error);
+    throw error;
+  }
+}
+
+export { getJob, createJob, getAllJobs, searchByTitle, updateHiredUId, updateJobStatus, searchJobsBySkills, getJobsByClientID, getJobByClientIdAndHiredId };

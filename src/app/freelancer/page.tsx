@@ -12,8 +12,6 @@ import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
 import JobData from "../interfaces/JobData.interface";
-import { searchJobsBySkills } from "../server/services/JobDatabaseService";
-import { getAllSkillIDs } from "../server/services/SkillsService";
 
 //constant for links to other pages
 const links = [{ name: "Home", href: "/" }];
@@ -39,19 +37,6 @@ export default function Page() {
     router.push("/");
   }
 
-  const handleLoggingJobs = async () => {
-    try {
-      const skillIDs = await getAllSkillIDs();
-      const jobs = await searchJobsBySkills(
-        ["Web Development", "Translation"],
-        skillIDs
-      );
-      console.log(jobs);
-    } catch (error) {
-      console.error("Error fetching jobs:", error);
-    }
-  };
-
   return (
     <>
       <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
@@ -71,10 +56,6 @@ export default function Page() {
           {/* Testing job data - need this to pass the lint */}
           <section>
             <p>{jobData?.title}</p>
-          </section>
-
-          <section>
-            <Button caption={"Log Jobs"} onClick={handleLoggingJobs} />
           </section>
 
           {/*welcome card centred right underneath the header*/}
