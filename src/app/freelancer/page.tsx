@@ -1,51 +1,59 @@
-"use client";
 
-import Link from "next/link";
-//import Link from "next/link";
-//import "./freelancer.css";
 import Header from "../components/Header/header";
+import "../components/Header/Header.css";
 import WelcomeCard from "../components/WelcomeCard/WelcomeCard";
 import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
-import JobAppForm from "../components/JobApplicationForm/JobApplication";
-import "../components/JobApplicationForm/JobApplicationForm.css"
+import "./global.css";
+import { useContext } from "react";
+import AuthService from "../services/AuthService";
+import { useRouter } from "next/navigation";
+import { AuthContext, AuthContextType } from "../AuthContext";
 
-import { useRef, useState } from "react";
-import { Container } from "react-dom/client";
-
-const links = [{ name: "Client", href:"/client" },{name: "Home",href:"/"}, {name: "Client",href:"/client"}, {name: "Admin",href:"/admin"}];
+//constant for links to other pages
+const links = [
+  { name: "Home", href: "/" }
+];
 
 //this is a comment
-export default function Page(){
-    const dialogRef = useRef<HTMLDialogElement | null>(null);
-    return(
-        <>
-        <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
-            
-            <header className="w-full bg-orange-500 ">
-                <Header name = "Alex" usertype="Freelancer" />
-            </header>
+export default function Page() {
+  const { user } = useContext(AuthContext) as AuthContextType;
 
-            <main className="flex-1 flex dark:bg-[#cdd5f6]">
-                <section className="w-64">
-                    <SideBar items={links}/>
+  const router = useRouter();
 
-                </section>
-                <section className="flex-1 p-4 flex items-start justify-center" id="main">
-                    <WelcomeCard username="May" type="freelancer" />
-                    <JobAppForm></JobAppForm>
-                </section>
-                
+  //signs the user out of google
+  function signoutClick() {
+    AuthService.googleSignout();
+    router.push("/");
+  }
+    
+  return (
+    <>
+      <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
+        <header className="w-full bg-orange-500 ">
+          <Header name={user?.userData.username || "Username"} usertype="Freelancer" />
+        </header>
 
-            </main>
+        <main className="flex flex-1 dark:bg-[#cdd5f6] bg-color">
 
-            
-            <footer className="dark:bg-slate-500 py-4 flex justify-end">
-                <Button caption={"Log out"}/>
-            </footer>
-        </section>
-        </>
-    );
+          {/*side bar to the left of the page*/}
+          <section className="w-64">
+            <SideBar items={links} />
+          </section>
+
+          {/*welcome card centred right underneath the header*/}
+          <section className="flex-1 p-4 flex items-start justify-center">
+            <WelcomeCard username={user?.userData.username || "Username"} type="freelancer" />
+          </section>
+        </main>
+
+        <footer className=" py-4 flex justify-end bg-gray-900 box-footer">
+          <Button caption={"Log out"} 
+          onClick={() => signoutClick() } />
+        </footer>
+      </section>
+    </>
+  );
 }

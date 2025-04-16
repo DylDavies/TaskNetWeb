@@ -1,5 +1,5 @@
 export default class ApiService {
-    static BASE_URL = "http://localhost:1020";
+    static BASE_URL = process.env.NEXT_PUBLIC_DEV ? process.env.NEXT_PUBLIC_API_URL : "https://api.tasknet.tech";
 
     static async sessionExists(): Promise<{presence: boolean, customToken?: string}> {
         try {
@@ -22,29 +22,36 @@ export default class ApiService {
         }
     }
 
-    static login(idToken: string): void {
-        // TODO: add error handling
-
-        fetch(`${ApiService.BASE_URL}/auth/login`, {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${idToken}`,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            credentials: "include",
-            mode: "cors"
-        });
+    static async logout(): Promise<void> {
+        try {
+            await fetch(`${ApiService.BASE_URL}/auth/logout`, {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                credentials: "include",
+                mode: "cors"
+            });
+        } catch (error) {
+            console.error(error);
+        }
     }
 
-    // static admin(): void {
-    //     fetch(`${ApiService.BASE_URL}/admin`, {
-    //         method: "GET",
-    //         headers: {
-    //             'Accept': 'application/json',
-    //             'Content-Type': 'application/json',
-    //         },
-    //         credentials: "include"
-    //     });
-    // }
+    static async login(idToken: string): Promise<void> {
+        try {
+            fetch(`${ApiService.BASE_URL}/auth/login`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${idToken}`,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                credentials: "include",
+                mode: "cors"
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }
 }
