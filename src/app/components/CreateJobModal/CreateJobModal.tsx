@@ -88,63 +88,58 @@ const CreateJobModal = () => {
 
           {/* Description */}
           <textarea
-  placeholder="Job Description"
-  value={description}
-  onChange={(e) => setDescription(e.target.value)}
-  className="resize-none"
-  rows={4}
-  style={{
-    width: '100%', // Takes full width
-    minHeight: '150px', // Keeps the textarea large
-    boxShadow: '0 0 0 1.5px #2b2c37, 0 0 25px -17px #000', // Box shadow effect
-    border: '0',
-    borderRadius: '12px', // Rounded corners
-    backgroundColor: '#26272c', // Dark background
-    outline: 'none',
-    color: 'white', // White text color
-    padding: '12px', // Inner padding for better spacing
-    transition: 'all 0.25s cubic-bezier(0.19, 1, 0.22, 1)', // Smooth transition
-    cursor: 'text', // Cursor on text input
-  }}
-/>
-
-
+            placeholder="Job Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="resize-none"
+            rows={4}
+            style={{
+              width: '100%',
+              minHeight: '150px',
+              boxShadow: '0 0 0 1.5px #2b2c37, 0 0 25px -17px #000',
+              border: '0',
+              borderRadius: '12px',
+              backgroundColor: '#26272c',
+              outline: 'none',
+              color: 'white',
+              padding: '12px',
+              transition: 'all 0.25s cubic-bezier(0.19, 1, 0.22, 1)',
+              cursor: 'text',
+            }}
+          />
 
           {/* Budget */}
           <section className="flex items-center gap-2 mb-2">
-  <label className="text-sm font-medium">Budget</label>
-  <section className="flex gap-2">
-    <input
-      value={minBudget}
-      onChange={(e) => {
-        const value = e.target.value;
-        if (!value || parseFloat(value) >= 0) {
-          setMinBudget(value);
-        }
-      }}
-      placeholder="Min"
-      type="number"
-      className="input"
-      style={{ width: "90px" }}
-    />
-    <input
-      value={maxBudget}
-      onChange={(e) => {
-        const value = e.target.value;
-        if (!value || parseFloat(value) >= 0) {
-          setMaxBudget(value);
-        }
-      }}
-      placeholder="Max"
-      type="number"
-      className="input"
-      style={{ width: "90px" }} 
-    />
-  </section>
-</section>
-
-
-
+            <label className="text-sm font-medium">Budget</label>
+            <section className="flex gap-2">
+              <input
+                value={minBudget}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (!value || parseFloat(value) >= 0) {
+                    setMinBudget(value);
+                  }
+                }}
+                placeholder="Min"
+                type="number"
+                className="input"
+                style={{ width: "90px" }}
+              />
+              <input
+                value={maxBudget}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (!value || parseFloat(value) >= 0) {
+                    setMaxBudget(value);
+                  }
+                }}
+                placeholder="Max"
+                type="number"
+                className="input"
+                style={{ width: "90px" }}
+              />
+            </section>
+          </section>
 
           {/* Deadline */}
           <InputBar
