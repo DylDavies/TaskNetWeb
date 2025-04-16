@@ -14,7 +14,11 @@ import UserType from "../enums/UserType.enum";
 import UserStatus from "../enums/UserStatus.enum";
 
 //constant for links to other pages
-const links = [{name: "Home",href:"/"}];
+//constant for links to other pages
+const links = [
+  { name: "Home", href: "/" },
+  { name: "Create Job", href: "#" },
+];
 
 export default function Page(){
     
