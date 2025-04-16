@@ -1,16 +1,41 @@
-section.form{
-    background-color: blue;
-    padding: 30%;
+header{
+    text-align: center;
+    font-size: max(2vw, 20px);
 }
 
-modal{
-    background-color: blueviolet;
+.Modal{
+    position: relative;
+    margin-bottom: 20%;
+    padding: 10%;
 }
 
 form{
-    padding: 10%;
-    background-color: rgb(139, 179, 203);
-    display: block;
+    padding: 5%;
+    background-color:  rgba(30, 30, 30, 0.75);
+    opacity: 100%;
     border-radius: 25px;
-    position: absolute;
 }
+
+.Close{
+    float: right;
+}
+
+input{
+    background-color: rgb(255, 255, 255);
+    color: #1a202c;
+}
+
+label{
+    font-size: max(1.5vw, 15px);
+}
+
+.job-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  
+  .job-card:hover {
+    animation: shake 0.4s ease;
+    transform: scale(1.03); /* pop out slightly */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+  }

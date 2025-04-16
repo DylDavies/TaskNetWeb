@@ -1,3 +1,4 @@
+"use client";
 
 import Header from "../components/Header/header";
 import "../components/Header/Header.css";
@@ -11,11 +12,20 @@ import { useContext } from "react";
 import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
+import JobForm from "../components/JobApplicationForm/JobApplication"
 
 //constant for links to other pages
 const links = [
   { name: "Home", href: "/" }
 ];
+
+const jobData = {
+    company: "Company name",
+    jobTitle: "Title of job",
+    budget: "180k - 250k",
+    deadline: "30 April 2025",
+    skills: ["React", "TypeScript", "Tailwind CSS", "Figma", "Git"],
+  };
 
 //this is a comment
 export default function Page() {
@@ -46,6 +56,10 @@ export default function Page() {
           {/*welcome card centred right underneath the header*/}
           <section className="flex-1 p-4 flex items-start justify-center">
             <WelcomeCard username={user?.userData.username || "Username"} type="freelancer" />
+          </section>
+          <br></br>
+          <section id ="main">
+            <JobForm{...jobData}/>
           </section>
         </main>
 
