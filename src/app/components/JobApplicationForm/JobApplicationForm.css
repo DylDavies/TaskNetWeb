@@ -1,12 +1,16 @@
 section.form{
-    background-color: clear;
-    background: clear;
-    padding: 10%;
-    text-align: center;
-    display: flex;
+    background-color: blue;
+    padding: 30%;
+}
+
+modal{
+    background-color: blueviolet;
 }
 
 form{
+    padding: 10%;
     background-color: rgb(139, 179, 203);
-    display: inline-block;
+    display: block;
+    border-radius: 25px;
+    position: absolute;
 }

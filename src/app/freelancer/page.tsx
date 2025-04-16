@@ -33,17 +33,11 @@ export default function Page(){
                     <SideBar items={links}/>
 
                 </section>
-                <section className="flex-1 p-4 flex items-start justify-center">
+                <section className="flex-1 p-4 flex items-start justify-center" id="main">
                     <WelcomeCard username="May" type="freelancer" />
+                    <JobAppForm></JobAppForm>
                 </section>
                 
-                <dialog ref ={dialogRef}>
-                    <JobAppForm></JobAppForm>
-                </dialog>
-
-                <button onClick={() => dialogRef.current?.showModal()}>
-                    I AM BUTTON
-                </button>
 
             </main>
 
