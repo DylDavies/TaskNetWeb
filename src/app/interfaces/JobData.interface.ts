@@ -8,7 +8,7 @@ interface JobData{
     budgetMax: number,
     deadline: number, 
     skills: { 
-        [skillArea: string]: number[]  // map with string as key and int array elements (element is the index of a skill)
+        [skillArea: string]: string[]  // map with string as key and int array elements (element is the index of a skill)
     },
     status: JobStatus,
     hiredUId: string,

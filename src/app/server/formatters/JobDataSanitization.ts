@@ -3,7 +3,7 @@ import JobStatus from "@/app/enums/JobStatus.enum";
 
 // sanitize the data that clients send for a job that they want to create
 const sanitizeJobData = (title: string, description: string, clientUId: string,
-  deadline: number, createdAt: number, skills: { [skillArea: string]: number[] },
+  deadline: number, createdAt: number, skills: { [skillArea: string]: string[] },
   budgetMin: number, budgetMax: number): JobData => {
 
   const errors: string[] = [];
