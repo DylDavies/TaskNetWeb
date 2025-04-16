@@ -11,6 +11,8 @@ import { LoginRedirect } from "../Navigation/navigation";
 import { useRouter } from "next/navigation";
 import { sendEmail } from "../server/services/DatabaseService";
 import { AuthContext, AuthContextType } from "../AuthContext";
+import Image from "next/image";
+import signupImage from "../../../public/images/signup-freelance.jpg";
 
 
 export default function Page() {
@@ -93,8 +95,8 @@ export default function Page() {
       <section className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl flex overflow-hidden">
         {/* Left side (Image section) */}
         <section className="w-1/2 bg-neutral-900 text-white flex justify-center items-center">
-          <img
-            src="/images/signup-freelance.jpg"
+          <Image
+            src={signupImage}
             className="w-full h-full object-cover"
             alt="Sign Up"
           />
