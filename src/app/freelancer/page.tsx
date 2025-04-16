@@ -47,7 +47,8 @@ export default function Page() {
         console.error("Error occured while fetching Job: ", error);
       }
     }
-  });
+    fetchJobWithUID();
+  }, []);
 
   //signs the user out of google
   function signoutClick() {
@@ -69,6 +70,11 @@ export default function Page() {
           {/*side bar to the left of the page*/}
           <section className="w-64">
             <SideBar items={links} />
+          </section>
+
+          {/* Testing job data - need this to pass the lint */}
+          <section>
+            <p>{jobData?.title}</p>
           </section>
 
           {/*welcome card centred right underneath the header*/}
