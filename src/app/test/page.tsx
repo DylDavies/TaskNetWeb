@@ -1,4 +1,4 @@
-"use client";
+{/*"use client";
 import React, { useState } from "react";
 import CreateJobModal from "../components/CreateJobModal/CreateJobModal";;
 import { SetUserName, setUserType } from "../server/services/DatabaseService";
@@ -31,4 +31,4 @@ export default function test(){
         </>
       );
 
-};
+};*/}
