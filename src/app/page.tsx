@@ -5,6 +5,10 @@ import "./components/sidebar/sidebar.css";
 import "./components/button/Button.css";
 import { useRouter } from "next/navigation";
 import { LoginRedirect } from "./Navigation/navigation";
+//import { PropagateLoader } from "react-spinners";
+import Image from "next/image";
+import logoImage from "../../public/images/Logo.png";
+import freelancerImage from "../../public/images/Freelancer-Planning.webp";
 import Loader from "./components/Loader/Loader";
 
 //Landing page UI
@@ -31,7 +35,7 @@ export default function Home() {
         <article className="flex flex-col items-center text-center">
           {/* Logo */}
           <section className=" -mt-19 mb-0">
-            <img src="/images/Logo.png" alt="Logo" className="logo" />
+            <Image src={logoImage} alt="Logo" className="logo" />
           </section>
 
           {/* Main Text */}
@@ -85,8 +89,8 @@ export default function Home() {
       {/* Right Side */}
       <section className="w-1/2 bg-gray-900 flex justify-center items-center p-10">
         <article className="shadow-xl rounded-lg max-w-full h-auto">
-          <img
-            src="/images/Freelancer-Planning.webp"
+          <Image
+            src={freelancerImage}
             alt="Landing Page Example"
             className="rounded-lg"
           />
