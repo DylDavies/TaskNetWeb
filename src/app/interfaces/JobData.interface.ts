@@ -4,7 +4,8 @@ import JobStatus from "../enums/JobStatus.enum";
 interface JobData{
     title: string,
     description: string,
-    budget: number,
+    budgetMin: number,
+    budgetMax: number,
     deadline: number, 
     skills: { 
         [skillArea: string]: number[]  // map with string as key and int array elements (element is the index of a skill)

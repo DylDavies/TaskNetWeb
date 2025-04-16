@@ -13,6 +13,10 @@ import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
 import JobData from "../interfaces/JobData.interface";
 import { getJob } from "../server/services/JobDatabaseService";
+import { getSkillByID } from "../server/services/adminService";
+import { formatDateAsString } from "../server/formatters/FormatDates";
+import JobCard from "../components/JobOverview/JobOverview";
+import { formatBudget } from "../server/formatters/Budget";
 
 //constant for links to other pages
 const links = [{ name: "Home", href: "/" }];
@@ -20,10 +24,18 @@ const links = [{ name: "Home", href: "/" }];
 //this is a comment
 export default function Page() {
   const [jobData, setJobData] = useState<JobData | null>(null);
-
+  /*const [cardData, setCardData] = useState<cardProps | null>(null);*/
   const { user } = useContext(AuthContext) as AuthContextType;
-
   const router = useRouter();
+
+  /*
+  type cardProps = {
+    company: string;
+    jobTitle: string;
+    budget: string;
+    deadline: string;
+    skills: string[];
+  };*/
 
   // fetch job data
   useEffect(() => {
@@ -33,18 +45,36 @@ export default function Page() {
         setJobData(jobData);
         console.log("Fetched job data: ", jobData);
 
+        let firstSkill = "";
+        if (jobData) {
+          firstSkill = Object.keys(jobData.skills)[0];
+        }
+        const skillsArray = await getSkillByID(firstSkill);
+
         // more tests:
         console.log("Title: ", jobData?.title);
-        console.log("Budget: ", jobData?.budget);
-        console.log("Deadline: ", jobData?.deadline);
-        console.log("Posted date: ", jobData?.createdAt);
-        console.log("Skills: ", jobData?.skills);
+        console.log("Budget min: ", jobData?.budgetMin);
+        console.log("Budget max: ", jobData?.budgetMax);
+        console.log("Deadline: ", formatDateAsString(jobData?.deadline));
+        console.log("Posted date: ", formatDateAsString(jobData?.createdAt));
+        console.log("Skills map: ", jobData?.skills);
+        console.log("Skills: ", skillsArray);
         console.log("Description: ", jobData?.description);
         console.log("Client ID: ", jobData?.clientUId);
         console.log("Hired ID: ", jobData?.hiredUId);
         console.log("Status: ", jobData?.status);
+
+        // propsCard: (don't want to use it just yet)
+        /*
+        setCardData({
+          company: jobData?.clientUId || "Unknown Company",
+          jobTitle: jobData?.title || "Untitled Position",
+          budget: formatBudget(jobData?.budgetMin, jobData?.budgetMax),
+          deadline: formatDateAsString(jobData?.deadline),
+          skills: skillsArray || [],
+        });*/
       } catch (error) {
-        console.error("Error occured while fetching Job: ", error);
+        console.error("Error occurred while fetching Job: ", error);
       }
     }
     fetchJobWithUID();
@@ -75,6 +105,22 @@ export default function Page() {
           {/* Testing job data - need this to pass the lint */}
           <section>
             <p>{jobData?.title}</p>
+          </section>
+
+          {/*Testing Job card with data*/}
+          <section className="max-w-2xl mx-auto">
+            {/* Change skills = once endpoint has been written to get skills for that job */}
+            {jobData ? (
+              <JobCard
+                company={jobData.clientUId || "Unknown Company"}
+                jobTitle={jobData.title || "Untitled Position"}
+                budget={formatBudget(jobData.budgetMin, jobData.budgetMax)}
+                deadline={formatDateAsString(jobData.deadline)}
+                skills={Object.keys(jobData.skills)} // Or transform as needed
+              />
+            ) : (
+              <p>Loading job data...</p>
+            )}
           </section>
 
           {/*welcome card centred right underneath the header*/}
