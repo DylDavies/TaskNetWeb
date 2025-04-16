@@ -75,6 +75,17 @@ export default function Page() {
         const jobData = await getJob("Kb3PXEXuWGlSrWug6Dn2");
         setJobData(jobData);
         console.log("Fetched job data: ", jobData);
+
+        // more tests:
+        console.log("Title: ", jobData?.title);
+        console.log("Budget: ", jobData?.budget);
+        console.log("Deadline: ", jobData?.deadline);
+        console.log("Posted date: ", jobData?.createdAt);
+        console.log("Skills: ", jobData?.skills);
+        console.log("Description: ", jobData?.description);
+        console.log("Client ID: ", jobData?.clientUId);
+        console.log("Hired ID: ", jobData?.hiredUId);
+        console.log("Status: ", jobData?.status);
       } catch (error) {
         console.error("Error occured while fetching Job: ", error);
       }
