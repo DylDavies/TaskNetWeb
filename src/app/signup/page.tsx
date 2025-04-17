@@ -1,7 +1,7 @@
 "use client";
 import React, { useContext, useState } from "react";
-import InputBar from "../components/inputbar/InputBar";
-import "../components/inputbar/inputBar.css";
+import InputBar from "../components/Inputbar/InputBar";
+import "../components/Inputbar/inputBar.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import "./global.css";
