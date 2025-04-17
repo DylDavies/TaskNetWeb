@@ -24,6 +24,23 @@ async function getSkillArray(){
       return skillAreas;
 }
 
+// Endpoint to get all Ids
+async function getAllSkillIDs(): Promise<string[]> {
+  try {
+    const skillDoc = await getDocs(collection(db, "skills"));
+    const skillIDs: string[] = [];
+    
+    skillDoc.forEach((doc) => {
+      skillIDs.push(doc.id); // Only store the document ID
+    });
+    
+    return skillIDs;
+  } catch (error) {
+    console.error("Error fetching job IDs:", error);
+    throw error;
+  }
+}
 
 
-export {AddSkill, getSkillArray};
+
+export {AddSkill, getSkillArray, getAllSkillIDs};
