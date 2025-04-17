@@ -10,7 +10,7 @@ import "../components/sidebar/sidebar.css";
 import "./global.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
@@ -36,13 +36,6 @@ export default function Page() {
   //const [searchQuery, setSearchQuery] = useState("");
 
   /* Testing fetching pending users (START)*/
-  interface User {
-    uid: string;
-    username: string;
-    status: number;
-    type: number; // Do we not need role like freelancer and client?
-    date: number;
-  }
 
 
   /* Testing fetching pending users (END) */
