@@ -12,7 +12,7 @@ import { useContext } from "react";
 import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
-import JobForm from "../components/JobApplicationForm/JobApplication"
+import JobForm from "../components/JobApplicationModal/JobApplication"
 
 //constant for links to other pages
 const links = [

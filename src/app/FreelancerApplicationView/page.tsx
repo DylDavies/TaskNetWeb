@@ -16,6 +16,7 @@ import React, { useContext, useEffect, useState } from "react";
 import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
+import ClientModal from "../components/ClientModal/clientModal";
 
 
 const links = [
@@ -85,7 +86,7 @@ export default function Page() {
 
               {/* FATable moved down */}
               <section className="w-full max-w-8xl mt-36">
-                <FATable data={pendingUsers} />
+                <ClientModal/>
               </section>
             </section>
           </section>
