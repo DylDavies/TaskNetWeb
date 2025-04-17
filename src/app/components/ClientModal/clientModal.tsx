@@ -1,5 +1,5 @@
 import Modal from "react-modal";
-import React, {useContext, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import { getPendingUsers } from "../../server/services/DatabaseService";
 import FATable from "../FATable/FATable";
 
@@ -10,11 +10,6 @@ interface User  {
     type: number; // Do we not need role like freelancer and client?
     date: number;
     
-  }
-
-interface Props {
-    data: User[];
-    onRowClick?: (user: User) => void;
   }
 
 const ClientModal:  React.FunctionComponent = ()=> {

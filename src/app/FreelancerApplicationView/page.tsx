@@ -1,6 +1,5 @@
 "use client";
 
-import FATable from "../components/FATable/FATable";
 import "../components/FATable/FATable.css";
 //import SearchBar from "../components/searchbar/SearchBar";
 import "../components/searchbar/SearchBar.css";
@@ -11,7 +10,6 @@ import "../components/sidebar/sidebar.css";
 import "./global.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
-import { getPendingUsers } from "../server/services/DatabaseService";
 import React, { useContext, useEffect, useState } from "react";
 import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
@@ -46,18 +44,6 @@ export default function Page() {
     date: number;
   }
 
-  const [pendingUsers, setPendingUsers] = useState<User[]>([]);
-
-  // To update the admin table after the Admin approves or denies user
-  useEffect(() => {
-    async function fetchPendingUsers() {
-      const pendingUsers = await getPendingUsers();
-      //console.log("Pending users: ", pendingUsers);
-      setPendingUsers(pendingUsers);
-    }
-
-    fetchPendingUsers();
-  }, []);
 
   /* Testing fetching pending users (END) */
 

@@ -44,14 +44,9 @@ type JobCardProps = {
 };
 
 const JobForm: React.FC<JobCardProps> = ({
-  company,
   jobTitle,
-  budget,
-  deadline,
-  skills,
   
 }) => {
-    const initial = company.charAt(0).toUpperCase(); 
     const [modalIsOpen, setIsOpen] = React.useState(false);
 
     const jobData = {
