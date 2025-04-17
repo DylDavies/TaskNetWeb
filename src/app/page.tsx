@@ -1,7 +1,7 @@
 "use client";
 import AuthService from "./services/AuthService";
 import React, { useState } from "react";
-import "./components/sidebar/sidebar.css";
+import "./components/Sidebar/sidebar.css";
 import "./components/button/Button.css";
 import { useRouter } from "next/navigation";
 import { LoginRedirect } from "./Navigation/navigation";

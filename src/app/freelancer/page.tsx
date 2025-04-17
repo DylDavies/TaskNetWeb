@@ -2,8 +2,8 @@
 import Header from "../components/Header/header";
 import "../components/Header/Header.css";
 import WelcomeCard from "../components/WelcomeCard/WelcomeCard";
-import SideBar from "../components/sidebar/SideBar";
-import "../components/sidebar/sidebar.css";
+import SideBar from "../components/Sidebar/SideBar";
+import "../components/Sidebar/sidebar.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import "./global.css";

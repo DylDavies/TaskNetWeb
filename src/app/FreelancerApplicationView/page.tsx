@@ -3,11 +3,11 @@
 import FATable from "../components/FATable/FATable";
 import "../components/FATable/FATable.css";
 //import SearchBar from "../components/searchbar/SearchBar";
-import "../components/searchbar/SearchBar.css";
+import "../components/Searchbar/SearchBar.css";
 import Header from "../components/Header/header";
 import "../components/Header/Header.css";
-import SideBar from "../components/sidebar/SideBar";
-import "../components/sidebar/sidebar.css";
+import SideBar from "../components/Sidebar/SideBar";
+import "../components/Sidebar/sidebar.css";
 import "./global.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";

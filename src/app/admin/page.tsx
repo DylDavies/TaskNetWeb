@@ -3,11 +3,11 @@
 import AdminTable from "../components/AdminTable/AdminTable";
 import "../components/AdminTable/AdminTable.css";
 //import SearchBar from "../components/searchbar/SearchBar";
-import "../components/searchbar/SearchBar.css";
+import "../components/Searchbar/SearchBar.css";
 import Header from "../components/Header/header";
 import "../components/Header/Header.css";
-import SideBar from "../components/sidebar/SideBar";
-import "../components/sidebar/sidebar.css";
+import SideBar from "../components/Sidebar/SideBar";
+import "../components/Sidebar/sidebar.css";
 import "./global.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
@@ -16,6 +16,7 @@ import React, { useContext, useEffect, useState } from "react";
 import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
+import PendingUser from "../interfaces/PendingUser.interface";
 
 
 const links = [
@@ -37,29 +38,17 @@ export default function Page() {
 
   //const [searchQuery, setSearchQuery] = useState("");
 
-  /* Testing fetching pending users (START)*/
-  interface User {
-    uid: string;
-    username: string;
-    status: number;
-    type: number; // Do we not need role like freelancer and client?
-    date: number;
-  }
-
-  const [pendingUsers, setPendingUsers] = useState<User[]>([]);
+  const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
 
   // To update the admin table after the Admin approves or denies user
   useEffect(() => {
     async function fetchPendingUsers() {
       const pendingUsers = await getPendingUsers();
-      //console.log("Pending users: ", pendingUsers);
       setPendingUsers(pendingUsers);
     }
 
     fetchPendingUsers();
   }, []);
-
-  /* Testing fetching pending users (END) */
 
   return (
     <>
