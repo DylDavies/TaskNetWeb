@@ -20,9 +20,15 @@ async function getSkillArray(): Promise<SkillData[]>{
     const data = doc.data();
     return {
       id: doc.id,
-      skills: data.skills || []  // assuming 'skills' exists in document
+      skills: data.names || []  // assuming 'skills' exists in document
     };
   });
+}
+
+// Helper to get all skills 
+async function getAllSkills(): Promise<string[]> {
+  const skillArray = await getSkillArray();
+  return skillArray.flatMap((area) => area.skills);
 }
 
 // Endpoint to get all Ids
@@ -44,4 +50,4 @@ async function getAllSkillIDs(): Promise<string[]> {
 
 
 
-export {AddSkill, getSkillArray, getAllSkillIDs};
+export {AddSkill, getSkillArray, getAllSkillIDs, getAllSkills};

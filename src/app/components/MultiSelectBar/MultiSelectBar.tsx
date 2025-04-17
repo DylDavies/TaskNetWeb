@@ -1,30 +1,22 @@
-"use client";
-import React, { useState } from "react";
+import { useState } from "react";
 
-const allOptions = [
-  "Ocean",
-  "Purple",
-  "Forest",
-  "Chocolate",
-  "Vanilla",
-  "Strawberry",
-  "Blue",
-  "Sunset",
-];
+interface MultiSelectProps {
+  skills: string[];
+}
 
-const MultiSelect: React.FC = () => {
+const MultiSelect: React.FC<MultiSelectProps> = ({ skills }) => {
   const [inputValue, setInputValue] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
-  const [filtered, setFiltered] = useState<string[]>(allOptions);
+  const [filtered, setFiltered] = useState<string[]>(skills); // use passed-in options
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setInputValue(val);
     setFiltered(
-      allOptions.filter(
-        (opt) =>
-          opt.toLowerCase().includes(val.toLowerCase()) &&
-          !selected.includes(opt)
+      skills.filter(
+        (skill) =>
+          skill.toLowerCase().includes(val.toLowerCase()) &&
+          !selected.includes(skill)
       )
     );
   };
@@ -33,7 +25,7 @@ const MultiSelect: React.FC = () => {
     if (!selected.includes(value)) {
       setSelected([...selected, value]);
       setInputValue("");
-      setFiltered(allOptions.filter((opt) => opt !== value));
+      setFiltered(skills.filter((skill) => skill !== value));
     }
   };
 
@@ -43,7 +35,6 @@ const MultiSelect: React.FC = () => {
       const match = filtered[0];
       if (match) handleSelect(match);
     } else if (e.key === "Backspace" && !inputValue && selected.length > 0) {
-      // Remove last tag
       const last = selected[selected.length - 1];
       removeTag(last);
     }
