@@ -1,13 +1,20 @@
-import { useState } from "react";
+"use client";
+import { useState, useEffect } from "react";
 
 interface MultiSelectProps {
   skills: string[];
+  onSelect: (selectedSkills: string[]) => void; // Add the onSelect prop
 }
 
-const MultiSelect: React.FC<MultiSelectProps> = ({ skills }) => {
+const MultiSelect: React.FC<MultiSelectProps> = ({ skills, onSelect }) => {
   const [inputValue, setInputValue] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
-  const [filtered, setFiltered] = useState<string[]>(skills); // use passed-in options
+  const [filtered, setFiltered] = useState<string[]>(skills);
+
+  // Update the parent with selected skills whenever it changes
+  useEffect(() => {
+    onSelect(selected);
+  }, [selected, onSelect]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
@@ -24,6 +31,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({ skills }) => {
   const handleSelect = (value: string) => {
     if (!selected.includes(value)) {
       setSelected([...selected, value]);
+      //console.log("Selected Skills (in MultiSelect):", [...selected, value]);
       setInputValue("");
       setFiltered(skills.filter((skill) => skill !== value));
     }
@@ -46,33 +54,40 @@ const MultiSelect: React.FC<MultiSelectProps> = ({ skills }) => {
   };
 
   return (
-    <section className="w-full max-w-xl">
-      <div className="border border-gray-600 bg-gray-800 p-2 rounded-lg flex flex-wrap items-start gap-2 h-24 overflow-y-auto">
-        {selected.map((item) => (
-          <div
-            key={item}
-            className="flex items-center bg-gray-700 text-white px-3 py-1 rounded-full hover:bg-gray-600 transition"
-          >
-            {item}
-            <button
-              onClick={() => removeTag(item)}
-              className="ml-2 text-gray-400 hover:text-red-400 font-bold"
+    <section className="w-full max-w-md">
+      {/* Tag input area with fixed height */}
+      <section className="border border-gray-600 bg-gray-800 p-2 rounded-lg h-16 overflow-y-auto">
+        <section className="flex flex-wrap gap-2 w-full">
+          {selected.map((item) => (
+            <section
+              key={item}
+              className="flex items-center max-w-[48%] truncate bg-gray-700 text-white px-3 py-1 rounded-full hover:bg-gray-600 transition"
             >
-              ×
-            </button>
-          </div>
-        ))}
-        <input
-          type="text"
-          className="bg-gray-800 text-white placeholder-gray-400 focus:outline-none px-2 py-1 min-w-[100px] flex-1"
-          placeholder="Type to search..."
-          value={inputValue}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-        />
-      </div>
+              <em className="truncate">{item}</em>
+              <button
+                onClick={() => removeTag(item)}
+                className="ml-2 text-gray-400 hover:text-red-400 font-bold"
+              >
+                ×
+              </button>
+            </section>
+          ))}
 
-      {/* Dropdown */}
+          {/* Input field */}
+          <section className="flex-grow w-full">
+            <input
+              type="text"
+              className="bg-gray-800 text-white placeholder-gray-400 focus:outline-none px-2 py-1 w-full"
+              placeholder="Filter skills..."
+              value={inputValue}
+              onChange={handleChange}
+              onKeyDown={handleKeyDown}
+            />
+          </section>
+        </section>
+      </section>
+
+      {/* Dropdown for filtering skills */}
       <ul className="mt-2 border border-gray-600 bg-gray-800 rounded-lg shadow-md max-h-40 overflow-auto">
         {inputValue && filtered.length > 0 ? (
           filtered.map((option) => (

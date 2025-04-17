@@ -28,7 +28,9 @@ async function getSkillArray(): Promise<SkillData[]>{
 // Helper to get all skills 
 async function getAllSkills(): Promise<string[]> {
   const skillArray = await getSkillArray();
-  return skillArray.flatMap((area) => area.skills);
+  const skills = skillArray.flatMap((area) => area.skills)
+  const uniqueSkills = Array.from(new Set(skills));
+  return uniqueSkills;
 }
 
 // Endpoint to get all Ids
