@@ -61,7 +61,7 @@ async function setNotificationSeen(uid: string, seen: boolean) {
 async function markAllNotificationsAsSeenForUser(uids: string[]) {
     const batch = writeBatch(db);
 
-    for (let uid of uids) {
+    for (const uid of uids) {
         const dc = doc(db, "notifications", uid);
 
         batch.update(dc, {

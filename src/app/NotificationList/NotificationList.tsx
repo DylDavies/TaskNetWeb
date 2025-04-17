@@ -19,7 +19,7 @@ const NotificationList = () => {
     function markAllAsRead() {
         if (!notifications) return;
 
-        let uids = notifications.filter(val => !val.seen).map(val => val.uid);
+        const uids = notifications.filter(val => !val.seen).map(val => val.uid);
 
         markAllNotificationsAsSeenForUser(uids);
     }

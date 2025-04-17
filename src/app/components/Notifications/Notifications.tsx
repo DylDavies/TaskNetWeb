@@ -1,17 +1,13 @@
-import { AuthContext, AuthContextType } from "@/app/AuthContext";
-import ActiveUser from "@/app/interfaces/ActiveUser.interface";
 import { NotificationContext, NotificationContextType } from "@/app/NotificationContext"
 import NotificationList from "@/app/NotificationList/NotificationList";
-import { createNotification } from "@/app/server/services/NotificationService";
 import { useContext, useEffect, useRef, useState } from "react"
 
 const Notifications = () => {
     const { notifications } = useContext(NotificationContext) as NotificationContextType;
-    const { user } = useContext(AuthContext) as AuthContextType;
     const [ menuOpen, setMenuOpen ] = useState(false);
     const ref = useRef<HTMLElement | null>(null);
 
-    let displayBadge: boolean | null = (notifications && notifications.filter(n => !n.seen).length > 0);
+    const displayBadge: boolean | null = (notifications && notifications.filter(n => !n.seen).length > 0);
 
     useEffect(() => {
       document.addEventListener("mousedown", (event) => {
