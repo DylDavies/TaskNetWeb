@@ -18,7 +18,7 @@ example:
     skills: ["React", "TypeScript", "Tailwind CSS", "Figma", "Git"],
   };
 
-  where you want to place the card, call this: <JobOverview {...jobData} />
+  where you want to place the card, call this: <JobOverview onClick{clickFunction} {...jobData}  />
 
 
   You must pass the card :
@@ -32,12 +32,14 @@ example:
 
 */
 
-type JobCardProps = {
+interface JobCardProps {
   company: string;
   jobTitle: string;
   budget: string;
   deadline: string;
   skills: string[];
+  hired?: boolean;
+  onClick?: () => void;
 };
 
 const JobCard: React.FC<JobCardProps> = ({
@@ -46,13 +48,15 @@ const JobCard: React.FC<JobCardProps> = ({
   budget,
   deadline,
   skills,
+  hired,
+  onClick
   
 }) => {
     const initial = company.charAt(0).toUpperCase(); 
 
   return (
     
-    <article className="m-5" aria-label={`${jobTitle} at ${company}`}>
+    <article onClick={onClick} className="m-5" aria-label={`${jobTitle} at ${company}` }>
     <section className="job-card bg-gray-800 group mt-6 grid w-[450px] grid-cols-12 space-x-1 overflow-hidden rounded-lg border border-blue-900 py-4 px-4 text-gray-700 shadow transition hover:shadow-lg">
       
       {/* Header Row */}
@@ -113,9 +117,17 @@ const JobCard: React.FC<JobCardProps> = ({
         </section>
   
         {/* Company and Deadline inline at the bottom */}
-        <section className="flex justify-between items-center text-sm text-gray-400 pt-1 border-t border-gray-700 mt-2">
+        <footer className="flex justify-between items-center text-sm text-gray-400 pt-1 border-t border-gray-700 mt-2">
           <address className="italic">{company}</address>
-        </section>
+          {typeof hired === "boolean" && (
+            <output
+                className={` italic
+                ${hired ? " text-green-400" : " text-red-400"}`}
+            >
+            {hired ? "Hired" : "Not Hired"}
+            </output>
+        )}
+        </footer>
       </section>
     </section>
   </article>

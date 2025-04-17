@@ -12,6 +12,7 @@ import UserType from "./enums/UserType.enum";
 import { PropagateLoader } from "react-spinners";
 import AuthService from "./services/AuthService";
 import ApiService from "./services/ApiService";
+import UserStatus from "./enums/UserStatus.enum";
 
 export type AuthContextType = {
   user: ActiveUser | null;
@@ -80,11 +81,35 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     (async () => {
         if (user?.userData.type == UserType.None) router.push("/signup");
 
+        switch (user?.userData.status) {
+          case UserStatus.Pending:
+            if (path !== "/pending") router.push("/pending");
+            break;
+          case UserStatus.Denied:
+            if (path !== "/denied") router.push("/denied");
+            break;
+        }
+
+        if (["/pending", "/denied"].includes(path) && user?.userData.status == UserStatus.Approved) {
+          switch (user.userData.type) {
+            case UserType.Client:
+              router.push("/client");
+              break;
+            case UserType.Freelancer:
+              router.push("/freelancer");
+              break;
+            case UserType.Admin:
+              router.push("/admin");
+              break;
+          }
+        }
+
         if (routes[path] !== undefined) {
             if (!user) {
-                if ((await ApiService.sessionExists()).presence == true) await AuthService.autoSignIn();
-                else router.push("/");
+              if ((await ApiService.sessionExists()).presence == true) await AuthService.autoSignIn();
+              else router.push("/");
             } else {
+              if (user.userData.status == UserStatus.Approved) {
                 const allowed = routes[path] === user.userData.type || user.userData.type === UserType.Admin;
                 
                 if (!allowed) {
@@ -99,6 +124,7 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 } else {
                     setIsAllowed(true);
                 }
+              }
             }
         } else setIsAllowed(true);
     })();
