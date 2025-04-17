@@ -28,7 +28,7 @@ const jobData = {
 
 //this is a comment
 export default function Page() {
-  const [jobData] = useState<JobData | null>(null);
+  //const [jobData] = useState<JobData | null>(null);
   /*const [cardData, setCardData] = useState<cardProps | null>(null);*/
   const { user } = useContext(AuthContext) as AuthContextType;
   const router = useRouter();
@@ -65,7 +65,7 @@ export default function Page() {
 
           {/* Testing job data - need this to pass the lint */}
           <section>
-            <p>{jobData?.title}</p>
+            {/*<p>{jobData?.title}</p>*/}
           </section>
 
           {/*welcome card centred right underneath the header*/}
