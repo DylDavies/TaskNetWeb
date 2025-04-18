@@ -1,6 +1,5 @@
 import React, { JSX } from "react";
 import Link from "next/link";
-import CreateJobModal from "../CreateJobModal/CreateJobModal";
 
 /*
 ------NOTE TO USER OF THIS COMPONENT-----
