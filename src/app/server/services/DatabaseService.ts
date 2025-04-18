@@ -122,4 +122,12 @@ const sendEmail = (to: string, subject: string, text: string) => {
   });
 };
 
-export { getUser, getPendingUsers, approveUser, denyUser, setUserType, SetUserName, sendEmail };
+//this function will take in a users uid and return their username
+async function getUsername(uid: string): Promise<string>{
+    const user = await getUser(uid)
+    if (user !== null){
+      return user.username;
+    }
+    return "No username";
+} 
+export { getUser, getPendingUsers, approveUser, denyUser, setUserType, SetUserName, sendEmail, getUsername };
