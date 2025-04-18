@@ -20,7 +20,7 @@ import CreateJobModal from "../components/CreateJobModal/CreateJobModal";
 const [showModal, setShowModal] = useState(false);
 const links = [
   { name: "Home", href: "/" },
-  { name: "Create Job", href: "/test" },
+  { name: "Create Job", href: "/" },
 ];
 
 export default function Page(){
