@@ -5,7 +5,6 @@ import { db } from "../../firebase";
 import ApplicantData from "../../interfaces/ApplicantData.interface";
 import ApplicantStatus from "@/app/enums/ApplicantStatus.enum";
 //import AuthService from "../../services/AuthService";
-import nodemailer from 'nodemailer';
 
 async function getApplicant(ApplicantID: string): Promise<ApplicantData | null> {
     const userDoc = await getDoc(doc(db, "applications", ApplicantID));
