@@ -12,12 +12,10 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import UserType from "../enums/UserType.enum";
 import UserStatus from "../enums/UserStatus.enum";
-import CreateJobModal from "../components/CreateJobModal/CreateJobModal";
 
 
 //constant for links to other pages
 //constant for links to other pages
-const [showModal, setShowModal] = useState(false);
 const links = [
   { name: "Home", href: "/" },
   { name: "Create Job", href: "/" },
