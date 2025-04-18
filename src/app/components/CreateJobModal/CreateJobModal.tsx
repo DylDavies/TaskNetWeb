@@ -7,8 +7,11 @@ import "../button/Button.css";
 import "../inputbar/inputBar.css";
 import "./CreateJobModal.css";
 import Modal from "react-modal";
+import { getAllSkills } from "@/app/server/services/SkillsService";
 
-const dummySkills = ["React", "Tailwind", "Node.js", "Figma", "TypeScript", "Vue", "JavaScript", "CSS"];
+
+let dummySkills =await getAllSkills();
+
 
 const CreateJobModal = () => {
   const [title, setTitle] = useState("");
@@ -49,6 +52,7 @@ const CreateJobModal = () => {
       setSelectedSkills([...selectedSkills, skill]);
       setSkillInput(""); 
       setFilteredSkills(dummySkills); 
+      dummySkills = dummySkills.filter(item => item !== skill);
     }
   };
 
