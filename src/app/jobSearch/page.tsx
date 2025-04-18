@@ -78,7 +78,7 @@ export default function Page() {
 
   // Click handler for clicking on a job card
   function handleCardClick(job: ActiveJob): void {
-    //console.log(job);
+    console.log(job); // need this for linter & testing
     alert("Not implemented yet :(");
   }
 
