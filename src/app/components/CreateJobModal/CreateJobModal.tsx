@@ -243,7 +243,5 @@ const CreateJobModal = () => {
 };
 
 export default CreateJobModal;
-function setIsOpen(arg0: boolean) {
-  throw new Error("Function not implemented.");
-}
+
 
