@@ -162,4 +162,13 @@ const uploadFile = (file: File, path: string, name: string): Promise<string> => 
   });
 }
 
-export { getUser, getPendingUsers, approveUser, denyUser, setUserType, SetUserName, sendEmail, uploadFile};
+//this function will take in a users uid and return their username
+async function getUsername(uid: string): Promise<string>{
+    const user = await getUser(uid)
+    if (user !== null){
+      return user.username;
+    }
+    return "No username";
+} 
+export { getUser, getPendingUsers, approveUser, denyUser, setUserType, SetUserName, sendEmail, getUsername, uploadFile };
+
