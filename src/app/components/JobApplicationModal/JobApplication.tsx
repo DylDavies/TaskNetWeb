@@ -2,6 +2,7 @@ import React from "react";
 import Modal from "react-modal";
 import './JobApplicationForm.css';
 import JobOverview from "../JobOverview/JobOverview";
+import Button from "../button/Button";
 
 /*
 --- NOTE ON USE ---
@@ -62,9 +63,13 @@ const JobForm: React.FC<JobCardProps> = ({
     }
 
     function closeModal(){
-        console.log("Modal open state:", modalIsOpen);
         setIsOpen(false);
     }
+
+    /*function submitForm(jobData: jobData){
+      createJob(jobData);
+      setIsOpen(false);
+    }*/
 
   return (
     <section>
@@ -83,7 +88,7 @@ const JobForm: React.FC<JobCardProps> = ({
                 <input type="date" id="timeLine" name="timeLine"></input><br></br>
                 <label htmlFor="bid">Please write down your bid</label><br></br>
                 <input type="text" id="bid" name ="bid"></input><br></br>
-                <button type ="submit" onClick={closeModal}>Submit</button>
+                <Button caption = {"Submit"} onClick={closeModal}></Button>
             </form>
     </Modal>
     </section>
