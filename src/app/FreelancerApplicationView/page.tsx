@@ -10,7 +10,8 @@ import "../components/sidebar/sidebar.css";
 import "./global.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
-import React, { useContext } from "react";
+import { getPendingApplicants } from "../server/services/ApplicationDatabaseServices";
+import React, { useContext, useEffect, useState } from "react";
 import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
@@ -37,6 +38,30 @@ export default function Page() {
 
   /* Testing fetching pending users (START)*/
 
+  interface ApplicantData {
+    applicationid: string;
+    ApplicationDate: number;
+    BidAmount: number;
+    CVURL: string;
+    EstimatedTimeline: number;
+    JobID: string;
+    Status: number;
+    username: Promise<string>;
+
+}
+
+  const [pendingApplicants, setPendingApplicants] = useState<ApplicantData[]>([]);
+
+  // To update the admin table after the Admin approves or denies user
+  useEffect(() => {
+    async function fetchPendingApplicants() {
+      const pendingApplicants = await getPendingApplicants();
+      //console.log("Pending users: ", pendingUsers);
+      setPendingApplicants(pendingApplicants);
+    }
+
+    fetchPendingApplicants();
+  }, []);
 
   /* Testing fetching pending users (END) */
 
@@ -66,6 +91,7 @@ export default function Page() {
               {/* FATable moved down */}
               <section className="w-full max-w-8xl mt-36">
                 <ClientModal/>
+                <FATable data={pendingApplicants} />
               </section>
             </section>
           </section>

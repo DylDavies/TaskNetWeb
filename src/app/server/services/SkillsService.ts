@@ -3,6 +3,7 @@
 import { arrayUnion, doc, setDoc } from "firebase/firestore"; 
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from "../../firebase";
+import SkillData from "@/app/interfaces/SkillData.interface";
 
 
 async function AddSkill(SkillArea: string, skillName: string) {
@@ -13,15 +14,23 @@ async function AddSkill(SkillArea: string, skillName: string) {
 };
 
 //This function will return an array of maps each containing the skill area id and an array of skills that fall into that category
-async function getSkillArray(){
-    const snapshot = await getDocs(collection(db, 'skills'));
-    const skillAreas = snapshot.docs.map(doc => ({
-        id: doc.id,
-        names: doc.data()
-      }));
-      console.log(skillAreas);
-      console.log(skillAreas.at(0));
-      return skillAreas;
+async function getSkillArray(): Promise<SkillData[]>{
+  const snapShot = await getDocs(collection(db,"skills"));
+  return snapShot.docs.map(doc => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      skills: data.names || []  // assuming 'skills' exists in document
+    };
+  });
+}
+
+// Helper to get all skills 
+async function getAllSkills(): Promise<string[]> {
+  const skillArray = await getSkillArray();
+  const skills = skillArray.flatMap((area) => area.skills)
+  const uniqueSkills = Array.from(new Set(skills));
+  return uniqueSkills;
 }
 
 // Endpoint to get all Ids
@@ -41,6 +50,9 @@ async function getAllSkillIDs(): Promise<string[]> {
   }
 }
 
+// There may be a bug in get all skills or get all skills ids
+// It doesnt seem to fetch everything
 
 
-export {AddSkill, getSkillArray, getAllSkillIDs};
+
+export {AddSkill, getSkillArray, getAllSkillIDs, getAllSkills};
