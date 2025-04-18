@@ -6,7 +6,8 @@ interface Notification {
     message: string;
     seen: boolean;
     action?: NotificationAction;
-    sentTime: Date
+    sentTime: Date;
+    deleted: boolean;
 }
 
 export default Notification;
