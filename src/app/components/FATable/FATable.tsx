@@ -1,6 +1,5 @@
 "use client";
 import { acceptApplicant, rejectApplicant } from "@/app/server/services/ApplicationDatabaseServices";
-import { getUsername } from "@/app/server/services/DatabaseService";
 import React, { useEffect, useState } from "react";
 
 interface Applicants  {
