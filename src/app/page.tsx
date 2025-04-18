@@ -10,9 +10,6 @@ import Image from "next/image";
 import logoImage from "../../public/images/Logo.png";
 import freelancerImage from "../../public/images/Freelancer-Planning.webp";
 import Loader from "./components/Loader/Loader";
-import { uploadFile } from "./server/services/DatabaseService";
-import UploadComponent from "./components/FileUpload/FileUpload";
-
 
 //Landing page UI
 export default function Home() {
