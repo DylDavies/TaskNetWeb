@@ -13,6 +13,7 @@ import Loader from "./components/Loader/Loader";
 import { uploadFile } from "./server/services/DatabaseService";
 import UploadComponent from "./components/FileUpload/FileUpload";
 
+
 //Landing page UI
 export default function Home() {
   const [loading, setLoading] = useState(false);
@@ -32,8 +33,6 @@ export default function Home() {
 
   return (
     <main className="flex h-screen">
-
-    <UploadComponent uploadFunction={uploadFile} path="CV"/>
       <Loader loading={loading}></Loader>
       {/* Left Side */}
       <section className="w-1/2 bg-violet-700 text-neutral-900 flex items-center justify-center p-10">
