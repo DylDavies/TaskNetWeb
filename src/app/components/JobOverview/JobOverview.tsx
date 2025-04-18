@@ -38,7 +38,7 @@ interface JobCardProps {
   budget: string;
   deadline: string;
   skills: string[];
-  hired?: boolean;
+  hired?: number;
   onClick?: () => void;
 }
 
@@ -119,12 +119,13 @@ const JobCard: React.FC<JobCardProps> = ({
           {/* Company and Deadline inline at the bottom */}
           <footer className="flex justify-between items-center text-sm text-gray-400 pt-1 border-t border-gray-700 mt-2">
             <address className="italic">{company}</address>
-            {typeof hired === "boolean" && (
+            {typeof hired === "number" && (hired === 0 || hired === 1) && (
               <output
-                className={` italic
-                ${hired ? " text-green-400" : " text-red-400"}`}
+                className={`italic ${
+                hired === 1 ? "text-green-400" : "text-red-400"
+                }`}
               >
-                {hired ? "Hired" : "Not Hired"}
+                {hired === 1 ? "Hired" : "Open to applicants"}
               </output>
             )}
           </footer>
