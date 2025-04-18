@@ -44,7 +44,7 @@ export default function Page() {
     CVURL: string;
     EstimatedTimeline: number;
     JobID: string;
-    status: number,
+    status: number;
 
 }
 
