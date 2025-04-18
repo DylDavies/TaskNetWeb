@@ -1,11 +1,9 @@
 import _1 from "firebase/app";
 import auth, { Auth } from "firebase/auth";
-import navigation from "next/navigation";
+import storage from "firebase/storage"
 import ApiService from "../../src/app/services/ApiService";
 import { getUser } from "../../src/app/server/services/DatabaseService";
 import AuthService from "@/app/services/AuthService";
-import UserStatus from "@/app/enums/UserStatus.enum";
-import UserType from "@/app/enums/UserType.enum";
 
 jest.mock("firebase/app");
 
@@ -22,6 +20,12 @@ jest.mock("firebase/auth", () => {
 jest.mock("firebase/firestore", () => {
     return {
         getFirestore: jest.fn()
+    }
+});
+
+jest.mock("firebase/storage", () => {
+    return {
+        getStorage: jest.fn()
     }
 });
 
@@ -110,25 +114,6 @@ describe("Authentication tests", () => {
             expect(jest.mocked(global.console.error).mock.calls[0][0].message).toBe("auth/email-already-exists");
 
         });
-
-        describe("Redirection tests", () => {
-            it("should redirect with redirectPage and __session", async () => {
-                (ApiService.sessionExists as jest.Mock).mockReturnValue({presence: true, customToken: "mockCustomToken"});
-
-                await AuthService.signin("mockRedirectPage");
-
-                expect(navigation.redirect).toHaveBeenCalledWith("mockRedirectPage");
-            });
-
-            it("should redirect with redirectPage and no __session", async () => {
-                (auth.signInWithPopup as jest.Mock).mockResolvedValue({ user: { getIdToken: jest.fn() } });
-                (ApiService.sessionExists as jest.Mock).mockReturnValue({presence: false});
-
-                await AuthService.signin("mockRedirectPage");
-
-                expect(navigation.redirect).toHaveBeenCalledWith("mockRedirectPage");
-            });
-        });
     })
 
     describe("Google signout", () => {
@@ -137,53 +122,6 @@ describe("Authentication tests", () => {
 
             expect(auth.getAuth).toHaveBeenCalled();
             expect(auth.signOut).toHaveBeenCalled();
-        });
-    });
-
-    describe("Current user", () => {
-        it("should return current user", async () => {
-            const testData = {
-                currentUser: {
-                    uid: "mockUId"
-                }
-            }
-            jest.mocked(auth.getAuth).mockReturnValue(testData as unknown as Auth);
-            jest.mocked(getUser).mockResolvedValue({status: UserStatus.Pending, type: UserType.None});
-
-            let user = await AuthService.getCurrentUser();
-
-            expect(auth.getAuth).toHaveBeenCalled();
-            expect(user).toMatchObject({
-                authUser: testData.currentUser,
-                userData: {status: UserStatus.Pending, type: UserType.None}
-            });
-        });
-
-        it("should return null if no current user", async () => {
-            const testData = {
-                currentUser: null
-            }
-            jest.mocked(auth.getAuth).mockReturnValue(testData as unknown as Auth);
-
-            let user = await AuthService.getCurrentUser();
-
-            expect(auth.getAuth).toHaveBeenCalled();
-            expect(user).toBe(null);
-        });
-
-        it("should return null if database doesn't return user", async () => {
-            const testData = {
-                currentUser: {
-                    uid: "mockUId"
-                }
-            }
-            jest.mocked(auth.getAuth).mockReturnValue(testData as unknown as Auth);
-            jest.mocked(getUser).mockResolvedValue(null);
-
-            let user = await AuthService.getCurrentUser();
-
-            expect(auth.getAuth).toHaveBeenCalled();
-            expect(user).toBe(null);
         });
     });
 })

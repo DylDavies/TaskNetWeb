@@ -1,11 +1,12 @@
 'use server';
 
 import { getDoc, doc, collection, where, query, getDocs, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db, storage } from "../../firebase";
 import UserData from "../../interfaces/UserData.interface";
 import UserStatus from "@/app/enums/UserStatus.enum";
 //import AuthService from "../../services/AuthService";
 import nodemailer from 'nodemailer';
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 async function getUser(uid: string): Promise<UserData | null> {
     const userDoc = await getDoc(doc(db, "users", uid));
@@ -122,4 +123,52 @@ const sendEmail = (to: string, subject: string, text: string) => {
   });
 };
 
-export { getUser, getPendingUsers, approveUser, denyUser, setUserType, SetUserName, sendEmail };
+//this fucntion will take in a file, the path in which the file must be stored and file name, it will then store the file in the database in the given path and return the url at which the file can be accessed
+const uploadFile = (file: File, path: string, name: string): Promise<string> => {
+  //promises to return a string this will be the url at which the file can be accessed
+  return new Promise((resolve, reject) => {
+    if (!file) {
+      console.log("No file uploaded");
+      reject("No file uploaded");
+      return;
+    }
+
+    const storageRef = ref(storage, `${path}/${name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log(`Upload is ${progress.toFixed(0)}% done. State: ${snapshot.state}`);
+      },
+      (error) => {
+        console.error("Upload failed", error);
+        reject(error);
+      },
+      () => {
+        console.log("Upload complete");
+        getDownloadURL(uploadTask.snapshot.ref)
+          .then((downloadURL) => {
+            console.log("Upload complete. File available at:", downloadURL);
+            resolve(downloadURL);
+          })
+          .catch((error) => {
+            console.error("Failed to retrieve download URL:", error);
+            reject("Failed to retrieve download url");
+          });
+      }
+    );
+  });
+}
+
+//this function will take in a users uid and return their username
+async function getUsername(uid: string): Promise<string>{
+    const user = await getUser(uid)
+    if (user !== null){
+      return user.username;
+    }
+    return "No username";
+} 
+export { getUser, getPendingUsers, approveUser, denyUser, setUserType, SetUserName, sendEmail, getUsername, uploadFile };
+

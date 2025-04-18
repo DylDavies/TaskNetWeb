@@ -1,0 +1,49 @@
+/* Overall calendar styling */
+.custom-calendar {
+    background-color: #1f2937; /* Tailwind bg-gray-800 */
+    color: white;
+    border: 1px solid #374151; /* Tailwind border-gray-700 */
+    font-family: inherit;
+  }
+  
+  /* Header of the calendar (month + nav) */
+  .custom-calendar .react-datepicker__header {
+    background-color: #111827; /* Tailwind bg-gray-900 */
+    border-bottom: 1px solid #374151;
+    color: white;
+  }
+  
+  /* Current month/year */
+  .custom-calendar .react-datepicker__current-month {
+    color: white;
+  }
+  
+  /* Weekday names */
+  .custom-calendar .react-datepicker__day-name {
+    color: white;
+  }
+  
+  /* Day numbers */
+  .custom-calendar .react-datepicker__day {
+    color: white;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+  }
+  
+  /* Selected day */
+  .custom-calendar .react-datepicker__day--selected {
+    background-color: #f97316; /* Tailwind orange-500 */
+    color: white;
+  }
+  
+  /* Hover effect */
+  .custom-calendar .react-datepicker__day:hover {
+    background-color: #4b5563; /* Tailwind gray-600 */
+    color: white;
+  }
+  
+  /* Disabled days (optional for clarity) */
+  .custom-calendar .react-datepicker__day--disabled {
+    color: #6b7280 !important; /* Tailwind gray-500 */
+  }
+  

@@ -22,29 +22,36 @@ export default class ApiService {
         }
     }
 
-    static login(idToken: string): void {
-        // TODO: add error handling
-
-        fetch(`${ApiService.BASE_URL}/auth/login`, {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${idToken}`,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            credentials: "include",
-            mode: "cors"
-        });
+    static async logout(): Promise<void> {
+        try {
+            await fetch(`${ApiService.BASE_URL}/auth/logout`, {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                credentials: "include",
+                mode: "cors"
+            });
+        } catch (error) {
+            console.error(error);
+        }
     }
 
-    // static admin(): void {
-    //     fetch(`${ApiService.BASE_URL}/admin`, {
-    //         method: "GET",
-    //         headers: {
-    //             'Accept': 'application/json',
-    //             'Content-Type': 'application/json',
-    //         },
-    //         credentials: "include"
-    //     });
-    // }
+    static async login(idToken: string): Promise<void> {
+        try {
+            fetch(`${ApiService.BASE_URL}/auth/login`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${idToken}`,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                credentials: "include",
+                mode: "cors"
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }
 }
