@@ -8,9 +8,6 @@ import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import UserType from "../enums/UserType.enum";
-import UserStatus from "../enums/UserStatus.enum";
 import CreateJobModal from "../components/CreateJobModal/CreateJobModal";
 
 import { useContext } from "react";
