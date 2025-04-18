@@ -2,16 +2,15 @@
 
 import { createContext, FC, ReactNode, useContext, useEffect, useState } from "react"
 import Notification from "./interfaces/Notification.interface"
-import { fromDB, getNotificationsForUser, setNotificationSeen } from "./server/services/NotificationService"
+import { fromDB, getNotificationsForUser } from "./server/services/NotificationService"
 import { AuthContext, AuthContextType } from "./AuthContext"
 import { Unsubscribe } from "firebase/auth";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { and, collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "./firebase";
 import FSNotification from "./interfaces/FSNotification.interface";
 
 export type NotificationContextType = {
-    notifications: Notification[] | null,
-    markAsSeen: typeof setNotificationSeen
+    notifications: Notification[] | null
 }
 
 export const NotificationContext = createContext<NotificationContextType | null>(null);
@@ -31,7 +30,7 @@ const NotificationProvider: FC<{ children: ReactNode }> = ({children}) => {
         let unsubscribeSnapshot: Unsubscribe | null = null;
 
         if (user) {
-            unsubscribeSnapshot = onSnapshot(query(collection(db, "notifications"), where("uidFor", "==", user.authUser.uid)), (qSnapshot) => {
+            unsubscribeSnapshot = onSnapshot(query(collection(db, "notifications"), and(where("uidFor", "==", user.authUser.uid), where("deleted", "==", false))), (qSnapshot) => {
                 const results: Notification[] = [];
 
                 qSnapshot.forEach(s => results.push(fromDB(s.data() as FSNotification)));
@@ -46,7 +45,7 @@ const NotificationProvider: FC<{ children: ReactNode }> = ({children}) => {
     }, [user]);
 
     return (
-        <NotificationContext.Provider value={{ notifications, markAsSeen: setNotificationSeen }}>
+        <NotificationContext.Provider value={{ notifications }}>
             {children}
         </NotificationContext.Provider>
     )

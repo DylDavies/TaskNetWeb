@@ -6,7 +6,8 @@ interface FSNotification {
     message: string;
     seen: boolean;
     action?: NotificationAction;
-    sentTime: number
+    sentTime: number,
+    deleted: boolean
 }
 
 export default FSNotification;
