@@ -50,6 +50,9 @@ async function getAllSkillIDs(): Promise<string[]> {
   }
 }
 
+// There may be a bug in get all skills or get all skills ids
+// It doesnt seem to fetch everything
+
 
 
 export {AddSkill, getSkillArray, getAllSkillIDs, getAllSkills};
