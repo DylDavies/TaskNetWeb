@@ -79,15 +79,16 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   useEffect(() => {
     (async () => {
-        if (user?.userData.type == UserType.None) router.push("/signup");
-
-        switch (user?.userData.status) {
-          case UserStatus.Pending:
-            if (path !== "/pending") router.push("/pending");
-            break;
-          case UserStatus.Denied:
-            if (path !== "/denied") router.push("/denied");
-            break;
+        if (user?.userData.type == UserType.None) return router.push("/signup");
+        else {
+          switch (user?.userData.status) {
+            case UserStatus.Pending:
+              if (path !== "/pending") router.push("/pending");
+              return;
+            case UserStatus.Denied:
+              if (path !== "/denied") router.push("/denied");
+              return;
+          }
         }
 
         if (["/pending", "/denied"].includes(path) && user?.userData.status == UserStatus.Approved) {
@@ -102,12 +103,16 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
               router.push("/admin");
               break;
           }
+
+          return;
         }
 
         if (routes[path] !== undefined) {
             if (!user) {
               if ((await ApiService.sessionExists()).presence == true) await AuthService.autoSignIn();
               else router.push("/");
+
+              return;
             } else {
               if (user.userData.status == UserStatus.Approved) {
                 const allowed = routes[path] === user.userData.type || user.userData.type === UserType.Admin;
@@ -124,6 +129,8 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 } else {
                     setIsAllowed(true);
                 }
+
+                return;
               }
             }
         } else setIsAllowed(true);

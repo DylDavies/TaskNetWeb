@@ -1,6 +1,6 @@
 'use server';
 
-import { arrayUnion, doc, setDoc } from "firebase/firestore"; 
+import { arrayUnion, doc, getDoc, setDoc } from "firebase/firestore"; 
 import { db } from "../../firebase";
 
 
@@ -11,4 +11,13 @@ async function AddSkill(SkillArea: string, skillName: string) {
       });    
 };
 
-export {AddSkill};
+async function getSkillByID(SkillArea: string){
+  const skillDoc = await getDoc(doc(db, "skills", SkillArea));
+
+  if (!skillDoc.exists()) return null; 
+
+  return skillDoc.data() as []; // Is there an interface to return this as??
+}
+
+
+export {AddSkill, getSkillByID};
