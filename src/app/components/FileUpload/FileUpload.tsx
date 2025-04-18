@@ -12,34 +12,30 @@ type UploadFunction = (
 type UploadComponentProps = {
   uploadFunction: UploadFunction;
   path: string;
+  name: string;
 };
 
-function UploadComponent({ uploadFunction, path }: UploadComponentProps) {
-  const [progress, setProgress] = useState<number>(0);
+function UploadComponent({ uploadFunction, path, name }: UploadComponentProps) {
+  //const [progress, setProgress] = useState<number>(0);
   const [downloadURL, setDownloadURL] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      setUploading(true);
-      setProgress(0);
-      
+
+     // setProgress(0);
       // Show uploading toast
       const toastId = toast.loading("Uploading File...");
 
-      uploadFunction(file, path, "test3", (prog) => {
-        setProgress(prog);
-      })
+      uploadFunction(file, path, name)
         .then((url) => {
           setDownloadURL(url);
-          setUploading(false);
           toast.dismiss(toastId);
           toast.success("Upload complete!");
+          console.log(downloadURL);
         })
         .catch((error) => {
           console.error("Upload failed:", error);
-          setUploading(false);
           toast.dismiss(toastId);
           toast.error("Upload failed. Please try again.");
         });
