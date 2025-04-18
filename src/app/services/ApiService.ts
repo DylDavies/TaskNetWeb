@@ -40,7 +40,7 @@ export default class ApiService {
 
     static async login(idToken: string): Promise<void> {
         try {
-            fetch(`${ApiService.BASE_URL}/auth/login`, {
+            let result = await fetch(`${ApiService.BASE_URL}/auth/login`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${idToken}`,
@@ -50,6 +50,10 @@ export default class ApiService {
                 credentials: "include",
                 mode: "cors"
             });
+
+            if (!result.ok && result.status == 401) {
+                console.error({status: 401, message: "invalid-token"});
+            }
         } catch (error) {
             console.error(error);
         }

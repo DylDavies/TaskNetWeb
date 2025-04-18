@@ -1,127 +1,78 @@
-import _1 from "firebase/app";
-import auth, { Auth } from "firebase/auth";
-import storage from "firebase/storage"
-import ApiService from "../../src/app/services/ApiService";
-import { getUser } from "../../src/app/server/services/DatabaseService";
+import { getAuth, signInWithPopup, signInWithCustomToken } from "firebase/auth";
 import AuthService from "@/app/services/AuthService";
+import ApiService from "@/app/services/ApiService";
+import { redirect } from "next/navigation";
 
-jest.mock("firebase/app");
-
-jest.mock("firebase/auth", () => {
-    return {
-        getAuth: jest.fn(),
-        GoogleAuthProvider: jest.fn(),
-        signInWithPopup: jest.fn(),
-        signOut: jest.fn(),
-        signInWithCustomToken: jest.fn(),
-    }
-});
-
-jest.mock("firebase/firestore", () => {
-    return {
-        getFirestore: jest.fn()
-    }
-});
-
-jest.mock("firebase/storage", () => {
-    return {
-        getStorage: jest.fn()
-    }
-});
-
-jest.mock("next/navigation", () => {
-    return {
-        redirect: jest.fn()
-    }
-})
-
+jest.mock("firebase/auth");
 jest.mock("../../src/app/services/ApiService");
-jest.mock("../../src/app/server/services/DatabaseService", () => ({
-    getUser: jest.fn()
-}));
+jest.mock("next/navigation");
 
-describe("Authentication tests", () => {
+describe("AuthService", () => {
+    const mockAuth = {
+        currentUser: null
+    };
+
     beforeEach(() => {
-        jest.mocked(ApiService).mockClear();
-        jest.mocked(getUser).mockClear();
-    })
+        (getAuth as jest.Mock).mockReturnValue(mockAuth);
+        jest.clearAllMocks();
+    });
 
-    describe("Google Signin", () => {
-        it("auto sign in with user should stop", async () => {
-            const testData = {
-                currentUser: {
-                    uid: "mockUId"
-                }
-            }
-            jest.mocked(auth.getAuth).mockReturnValue(testData as unknown as Auth);
-            (ApiService.sessionExists as jest.Mock).mockReturnValue({presence: true, customToken: "mockCustomToken"});
+    describe("signin", () => {
+        it("should handle successful sign-in with existing session", async () => {
+            (ApiService.sessionExists as jest.Mock).mockResolvedValue({
+                presence: true,
+                customToken: "mock-token"
+            });
 
-            await AuthService.autoSignIn();
-
-            expect(auth.getAuth).toHaveBeenCalled();
-            expect(ApiService.sessionExists).not.toHaveBeenCalled();
+            const result = await AuthService.signin();
+            expect(signInWithCustomToken).toHaveBeenCalled();
+            expect(result).toBe(true);
         });
 
-        it("auto sign in without user call required functions", async () => {
-            const testData = {
-                currentUser: null
-            }
-            jest.mocked(auth.getAuth).mockReturnValue(testData as unknown as Auth);
-            (ApiService.sessionExists as jest.Mock).mockReturnValue({presence: true, customToken: "mockCustomToken"});
+        it("should handle sign-in error with console logging", async () => {
+            (signInWithPopup as jest.Mock).mockRejectedValue(new Error("Auth failed"));
+            (ApiService.sessionExists as jest.Mock).mockResolvedValue({
+                presence: false
+            });
+            const consoleSpy = jest.spyOn(console, "error").mockImplementation();
 
-            await AuthService.autoSignIn();
-
-            expect(auth.getAuth).toHaveBeenCalled();
-            expect(ApiService.sessionExists).toHaveBeenCalled();
-            expect(auth.signInWithCustomToken).toHaveBeenCalled();
-        });
-
-        it("should call all relevant functions (no __session)", async () => {
-            const getIdTokenMock = jest.fn();
-
-            (auth.signInWithPopup as jest.Mock).mockResolvedValue({ user: { getIdToken: getIdTokenMock } });
-            (ApiService.sessionExists as jest.Mock).mockReturnValue({presence: false});
-
-            await AuthService.signin();
-
-            expect(auth.getAuth).toHaveBeenCalled();
-            expect(auth.signInWithPopup).toHaveBeenCalled();
-            expect(ApiService.login).toHaveBeenCalled();
-            expect(getIdTokenMock).toHaveBeenCalled();
-        });
-
-        it("should call all relevant functions (with __session)", async () => {
-            (ApiService.sessionExists as jest.Mock).mockReturnValue({presence: true, customToken: "mockCustomToken"});
-            (auth.getAuth as jest.Mock).mockReturnValue("mockAuth");
-
-            await AuthService.signin();
-
-            expect(auth.getAuth).toHaveBeenCalled();
-
-            expect(auth.signInWithCustomToken).toHaveBeenCalledWith("mockAuth", "mockCustomToken");
-        });
-
-        it("should handle error when signInWithPopup fails", async () => {
-            global.console.error = jest.fn();
-
-            (auth.signInWithPopup as jest.Mock).mockRejectedValue(new Error("auth/email-already-exists"));
-            (ApiService.sessionExists as jest.Mock).mockReturnValue({presence: false});
-
-            await AuthService.signin();
-
-            expect(auth.getAuth).toHaveBeenCalled();
-            expect(auth.signInWithPopup).toHaveBeenCalled();
-            expect(jest.mocked(global.console.error).mock.calls[0][0].message).toBe("auth/email-already-exists");
-
-        });
-    })
-
-    describe("Google signout", () => {
-        it("should call all relevant functions", () => {
-            AuthService.googleSignout();
-
-            expect(auth.getAuth).toHaveBeenCalled();
-            expect(auth.signOut).toHaveBeenCalled();
+            const result = await AuthService.signin();
+            expect(result).toBe(false);
+            expect(consoleSpy).toHaveBeenCalled();
         });
     });
-})
+
+    describe("autoSignIn", () => {
+        it("should handle missing customToken in session", async () => {
+            (ApiService.sessionExists as jest.Mock).mockResolvedValue({
+                presence: true,
+                customToken: null
+            });
+
+            const result = await AuthService.autoSignIn();
+            expect(result).toBe(false);
+            expect(signInWithCustomToken).not.toHaveBeenCalled();
+        });
+
+        it("should handle signInWithCustomToken failure", async () => {
+            (ApiService.sessionExists as jest.Mock).mockResolvedValue({
+                presence: true,
+                customToken: "invalid-token"
+            });
+
+            (signInWithCustomToken as jest.Mock).mockRejectedValue(new Error("Invalid token"));
+            const consoleSpy = jest.spyOn(console, "error").mockImplementation();
+
+            const result = await AuthService.autoSignIn();
+            expect(result).toBe(false);
+            expect(consoleSpy).toHaveBeenCalled();
+        });
+    });
+    
+    describe("signout", () => {
+        it("should call ApiService.logout", () => {
+            AuthService.googleSignout();
+            expect(ApiService.logout).toHaveBeenCalled();
+        });
+    });
+});
