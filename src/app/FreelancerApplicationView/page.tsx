@@ -11,7 +11,7 @@ import "../components/sidebar/sidebar.css";
 import "./global.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
-import { getPendingUsers } from "../server/services/DatabaseService";
+import { getPendingApplicants } from "../server/services/ApplicationDatabaseServices";
 import React, { useContext, useEffect, useState } from "react";
 import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
@@ -37,25 +37,28 @@ export default function Page() {
   //const [searchQuery, setSearchQuery] = useState("");
 
   /* Testing fetching pending users (START)*/
-  interface User {
-    uid: string;
-    username: string;
-    status: number;
-    type: number; // Do we not need role like freelancer and client?
-    date: number;
-  }
+  interface ApplicantData {
+    aid: string;
+    ApplicationDate: number;
+    BidAmount: number;
+    CVURL: string;
+    EstimatedTimeline: number;
+    JobID: string;
+    status: number,
 
-  const [pendingUsers, setPendingUsers] = useState<User[]>([]);
+}
+
+  const [pendingApplicants, setPendingApplicants] = useState<ApplicantData[]>([]);
 
   // To update the admin table after the Admin approves or denies user
   useEffect(() => {
-    async function fetchPendingUsers() {
-      const pendingUsers = await getPendingUsers();
+    async function fetchPendingApplicants() {
+      const pendingApplicants = await getPendingApplicants();
       //console.log("Pending users: ", pendingUsers);
-      setPendingUsers(pendingUsers);
+      setPendingApplicants(pendingApplicants);
     }
 
-    fetchPendingUsers();
+    fetchPendingApplicants();
   }, []);
 
   /* Testing fetching pending users (END) */
@@ -85,7 +88,7 @@ export default function Page() {
 
               {/* FATable moved down */}
               <section className="w-full max-w-8xl mt-36">
-                <FATable data={pendingUsers} />
+                <FATable data={pendingApplicants} />
               </section>
             </section>
           </section>
