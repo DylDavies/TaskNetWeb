@@ -38,13 +38,14 @@ export default function Page() {
 
   /* Testing fetching pending users (START)*/
   interface ApplicantData {
-    aid: string;
+    applicationid: string;
     ApplicationDate: number;
     BidAmount: number;
     CVURL: string;
     EstimatedTimeline: number;
     JobID: string;
-    status: number;
+    Status: number;
+    username: Promise<string>;
 
 }
 

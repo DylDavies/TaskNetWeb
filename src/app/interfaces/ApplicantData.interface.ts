@@ -1,15 +1,14 @@
-import ApplicantStatus from "../enums/ApplicantStatus.enum";
+import ApplicantionStatus from "../enums/ApplicantionStatus.enum";
 
-interface ApplicantData {
+interface ApplicantionData {
     ApplicantID: string;
     ApplicationDate: number;
-    BidAmount: 0;
+    BidAmount: number;
     CVURL: string;
-    EstimatedTimeline: 0;
+    EstimatedTimeline: number;
     JobID: string;
-    status: ApplicantStatus,
-    date: number
+    Status: ApplicantionStatus,
 
 }
 
-export default ApplicantData;
+export default ApplicantionData;

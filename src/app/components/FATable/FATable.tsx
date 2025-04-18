@@ -1,13 +1,15 @@
 "use client";
 import { acceptApplicant, rejectApplicant } from "@/app/server/services/ApplicationDatabaseServices";
+import { getUsername } from "@/app/server/services/DatabaseService";
 import React, { useEffect, useState } from "react";
 
 interface Applicants  {
-  aid: string;
-  username: string;
-  status: number;
-  ApplicationDate: number;
-  BidAmount: number;  
+    applicationid: string;
+    ApplicationDate: number;
+    BidAmount: number;
+    EstimatedTimeline: number;
+    Status: number;  
+    username: Promise<string>;
 }
 /*
   previously was name, role and date
@@ -33,7 +35,7 @@ const FATable: React.FC<Props> = ({ data,onRowClick }) => {
     try {
       await acceptApplicant(aid);
       setPendingApplicants((currentApplicant) =>
-        currentApplicant.filter((applicant) => applicant.aid != aid)
+        currentApplicant.filter((applicant) => applicant.applicationid != aid)
       ); // for updating table when approved
       console.log(`Successfully accepted applicant ${aid}`);
     } catch (error) {
@@ -45,7 +47,7 @@ const FATable: React.FC<Props> = ({ data,onRowClick }) => {
     try {
       await rejectApplicant(aid);
       setPendingApplicants((currentApplicant) =>
-        currentApplicant.filter((applicant) => applicant.aid != aid)
+        currentApplicant.filter((applicant) => applicant.applicationid != aid)
       ); // for updating table when approved
       console.log(`Successfully rejected applicant ${aid}`);
     } catch (error) {
@@ -87,8 +89,7 @@ const FATable: React.FC<Props> = ({ data,onRowClick }) => {
                 <section>
                   <p className="font-semibold">{item.username}</p>
                   <p className="font-semibold">Bid amount: {item.BidAmount}</p>
-                  <p className="text-xs text-gray-400">Application date: 
-                    {item.ApplicationDate}
+                  <p className="text-xs text-gray-400">Application date:  {item.ApplicationDate}
                   </p>
                 </section>
               </section>
@@ -107,13 +108,13 @@ const FATable: React.FC<Props> = ({ data,onRowClick }) => {
             {/* Approve and Deny buttons */}
             <td className="px-4 py-3 text-xs space-x-2">
               <button
-                onClick={() => handleAccept(item.aid)}
+                onClick={() => handleAccept(item.applicationid)}
                 className="px-2 py-1 font-semibold leading-tight rounded-full bg-green-700 text-green-100 transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
               >
                 Accept
               </button>
               <button
-                onClick={() => handleReject(item.aid)}
+                onClick={() => handleReject(item.applicationid)}
                 className="px-2 py-1 font-semibold leading-tight rounded-full bg-red-700 text-red-100 transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
               >
                 Reject

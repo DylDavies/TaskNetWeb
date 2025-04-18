@@ -3,8 +3,8 @@
 import { getDoc, doc, collection, where, query, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import ApplicantData from "../../interfaces/ApplicantData.interface";
-import ApplicantStatus from "@/app/enums/ApplicantStatus.enum";
-//import AuthService from "../../services/AuthService";
+import ApplicantionStatus from "@/app/enums/ApplicantionStatus.enum";
+import { getUsername } from "./DatabaseService";
 
 async function getApplicant(ApplicantID: string): Promise<ApplicantData | null> {
     const userDoc = await getDoc(doc(db, "applications", ApplicantID));
@@ -15,26 +15,28 @@ async function getApplicant(ApplicantID: string): Promise<ApplicantData | null> 
 };
 
 // Fetch pending applicants Endpoint:
-async function getPendingApplicants(): Promise<{aid:string; status:number, ApplicationDate: number, BidAmount: number, CVURL: string,EstimatedTimeline: number,JobID: string,}[]>{
-    const dbRef = collection(db,'applications');  //db.collection('users');
-    const pending = query(dbRef,where('status', '==', ApplicantStatus.Pending));
+async function getPendingApplicants(): Promise<{applicationid:string; Status:number, ApplicationDate: number, BidAmount: number, CVURL: string,EstimatedTimeline: number,JobID: string,username:Promise<string>}[]>{
+    const dbRef = collection(db,'applications'); 
+    const pending = query(dbRef,where('Status', '==', ApplicantionStatus.Pending));
+    console.log(pending)
 
     const snapshot = await getDocs(pending);
 
     const pendingApplicants = snapshot.docs.map(doc => ({
 
-        aid: doc.id,
+        applicationid: doc.id,
         ApplicationDate: doc.data().ApplicationDate,
         BidAmount: doc.data().BidAmount,
         CVURL: doc.data().CVURL,
         EstimatedTimeline: doc.data().EstimatedTimeline,
         JobID: doc.data().JobID,
-        status: doc.data().status
+        Status: doc.data().Status,
+        username: getUsername(doc.data().ApplicantID)
         
         
     }));
 
-    console.log(pendingApplicants);
+    console.log("poes",pendingApplicants);
 
     return pendingApplicants;
 };  
@@ -44,7 +46,7 @@ async function acceptApplicant(aid:string):Promise<void>{
     const dbRef = doc(db,'applications', aid);
 
     await updateDoc(dbRef,{
-        status:1, // 1 : Approve (temp)
+        Status:1, // 1 : Approve (temp)
     });
 };
 
@@ -53,7 +55,7 @@ async function rejectApplicant(aid:string):Promise<void>{
     const dbRef = doc(db,'applications', aid);
 
     await updateDoc(dbRef,{
-        status:2, // 2 : Deny (temp)
+        Status:2, // 2 : Deny (temp)
     });
 };
 
