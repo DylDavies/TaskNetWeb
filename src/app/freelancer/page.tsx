@@ -45,7 +45,7 @@ export default function Page() {
           <SideBar items={links} />
         </section>
 
-        {/* Job data section (for testing purposes) */}
+        {/* Job data section (linter tunes without) */}
         <section>
           <p>{jobData?.title}</p>
         </section>
