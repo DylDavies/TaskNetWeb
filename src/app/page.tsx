@@ -12,7 +12,6 @@ import freelancerImage from "../../public/images/Freelancer-Planning.webp";
 import Loader from "./components/Loader/Loader";
 import { uploadFile } from "./server/services/DatabaseService";
 import UploadComponent from "./components/FileUpload/FileUpload";
-import { uploadCV } from "./server/services/ApplicationService";
 
 //Landing page UI
 export default function Home() {
@@ -29,34 +28,6 @@ export default function Home() {
 
     setLoading(false);
   }
-
-  const handleUpload = () => {
-    if (!file) return alert("Please select a file!");
-
-    setUploading(true);
-    uploadFile(file, "CV", "Test")
-      .then((downloadURL) => {
-        setUrl(downloadURL);
-        console.log("File uploaded successfully at", downloadURL);
-      })
-      .catch((error) => {
-        console.error("Upload error:", error);
-      })
-      .finally(() => {
-        setUploading(false);
-      });
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
-    }
-  };
-
-  const [file, setFile] = useState<File | null>(null);
-  const [progress, setProgress] = useState(0);
-  const [url, setUrl] = useState("");
-  const [uploading, setUploading] = useState(false);
 
 
   return (

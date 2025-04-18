@@ -15,7 +15,7 @@ type UploadFunction = (
     path: string;
   };
   
-  function UploadComponent({ uploadFunction, path }: UploadComponentProps) {
+  function UploadComponent({ uploadFunction, path}: UploadComponentProps) {
     const [progress, setProgress] = useState<number>(0);
     const [downloadURL, setDownloadURL] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
@@ -40,7 +40,7 @@ type UploadFunction = (
     };
   
     return (
-      <div className="p-4 border rounded-lg w-80 flex flex-col items-center gap-4">
+      <section className="p-4 border rounded-lg w-80 flex flex-col items-center gap-4">
         <label className="cursor-pointer flex items-center gap-2 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">
           <Upload className="w-5 h-5" />
           Upload CV
@@ -53,14 +53,14 @@ type UploadFunction = (
         </label>
   
         {uploading && (
-          <div className="w-full">
+          <section className="w-full">
             <Progress value={progress} placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
             <p className="text-sm text-gray-600 mt-1">{progress.toFixed(0)}%</p>
-          </div>
+          </section>
         )}
   
         {downloadURL && (
-          <div className="text-center mt-2">
+          <section className="text-center mt-2">
             <p className="text-green-600 text-sm">Upload complete!</p>
             <a
               href={downloadURL}
@@ -70,9 +70,9 @@ type UploadFunction = (
             >
               View uploaded file
             </a>
-          </div>
+          </section>
         )}
-      </div>
+      </section>
     );
   }
   
