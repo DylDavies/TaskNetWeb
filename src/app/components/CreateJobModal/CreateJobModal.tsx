@@ -6,7 +6,7 @@ import Button from "../button/Button";
 import "../button/Button.css";
 import "../inputbar/inputBar.css";
 import "./CreateJobModal.css";
-//import Modal from "react-modal";
+import Modal from "react-modal";
 
 const dummySkills = ["React", "Tailwind", "Node.js", "Figma", "TypeScript", "Vue", "JavaScript", "CSS"];
 
@@ -21,7 +21,7 @@ const CreateJobModal = () => {
   const [skillInput, setSkillInput] = useState("");
   const [filteredSkills, setFilteredSkills] = useState<string[]>(dummySkills);
 
-  //const [modalIsOpen,setIsOpen]=useState(false);
+  const [modalIsOpen,setIsOpen]=useState(false);
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Job created:", {
@@ -56,24 +56,14 @@ const CreateJobModal = () => {
     setSelectedSkills(selectedSkills.filter((s) => s !== skill));
   };
 
-  {/*function openModal(){
+  function openModal(){
     setIsOpen(true);
   }
 
   function closeModal(){
     setIsOpen(false);
 
-        <section>
-      <button onClick={openModal}> Open </button>
-    <Modal isOpen={modalIsOpen} 
-    onRequestClose={closeModal}>\
-              <button
-            onClick={closeModal} 
-            className="text-white text-xl hover:text-red-400"
-          >
-            ×
-          </button>
-  }*/}
+  }
 
 
 
@@ -89,11 +79,21 @@ const CreateJobModal = () => {
   };
 
   return (
-    <section className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+    <section>
+    <button onClick={openModal}> Create Job </button>
+    <Modal
+  isOpen={modalIsOpen}
+  onRequestClose={closeModal}
+  className=" rounded-2xl p-6 w-full max-w-lg shadow-lg text-white max-h-[90vh] overflow-y-auto z-50"
+  overlayClassName="fixed inset-0 bg-purple bg-opacity-0 backdrop-blur-sm z-40 flex items-center justify-center"
+  >
+
+    <section className="fixed inset-0 flex items-center justify-center z-50 bg-opacity-50 ">
       <article className="bg-neutral-800 rounded-2xl p-6 w-full max-w-lg shadow-lg text-white max-h-[90vh] overflow-y-auto">
         <section className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Create a New Job</h2>
           <button
+            onClick={closeModal} 
             className="text-white text-xl hover:text-red-400"
           >
             ×
@@ -237,7 +237,13 @@ const CreateJobModal = () => {
         </form>
       </article>
     </section>
+    </Modal>
+    </section>
   );
 };
 
 export default CreateJobModal;
+function setIsOpen(arg0: boolean) {
+  throw new Error("Function not implemented.");
+}
+

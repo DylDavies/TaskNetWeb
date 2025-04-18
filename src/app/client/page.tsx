@@ -12,13 +12,13 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import UserType from "../enums/UserType.enum";
 import UserStatus from "../enums/UserStatus.enum";
+import CreateJobModal from "../components/CreateJobModal/CreateJobModal";
 
 
 //constant for links to other pages
 //constant for links to other pages
 const links = [
-  { name: "Home", href: "/" },
-  { name: "Create Job", href: "/" },
+  { name: "Home", href: "/" }
 ];
 
 export default function Page(){
@@ -73,7 +73,7 @@ export default function Page(){
 
             <main className="flex-1 flex bg-[#cdd5f6] bg-color">
                 <section className="w-64">
-                    <SideBar items={links}/>
+                    <SideBar items={links} myfunction={CreateJobModal}/>
 
                 </section>
                 <section className="flex-1 p-4 flex items-start justify-center">
