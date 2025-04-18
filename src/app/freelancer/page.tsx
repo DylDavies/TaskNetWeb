@@ -8,7 +8,7 @@ import "../components/sidebar/sidebar.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import "./global.css";
-import { useState, useContext } from "react";
+import { useContext } from "react";
 import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
