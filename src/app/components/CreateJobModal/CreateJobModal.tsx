@@ -6,7 +6,7 @@ import Button from "../button/Button";
 import "../button/Button.css";
 import "../inputbar/inputBar.css";
 import "./CreateJobModal.css";
-import Modal from "react-modal";
+//import Modal from "react-modal";
 
 const dummySkills = ["React", "Tailwind", "Node.js", "Figma", "TypeScript", "Vue", "JavaScript", "CSS"];
 
@@ -21,7 +21,7 @@ const CreateJobModal = () => {
   const [skillInput, setSkillInput] = useState("");
   const [filteredSkills, setFilteredSkills] = useState<string[]>(dummySkills);
 
-  const [modalIsOpen,setIsOpen]=useState(false);
+  //const [modalIsOpen,setIsOpen]=useState(false);
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Job created:", {
