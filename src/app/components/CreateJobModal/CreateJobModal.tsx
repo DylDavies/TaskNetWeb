@@ -5,6 +5,8 @@ import InputBar from "../inputbar/InputBar";
 import Button from "../button/Button";
 import "../button/Button.css";
 import "../inputbar/inputBar.css";
+import "./CreateJobModal.css";
+import Modal from "react-modal";
 
 const dummySkills = ["React", "Tailwind", "Node.js", "Figma", "TypeScript", "Vue", "JavaScript", "CSS"];
 
@@ -19,6 +21,7 @@ const CreateJobModal = () => {
   const [skillInput, setSkillInput] = useState("");
   const [filteredSkills, setFilteredSkills] = useState<string[]>(dummySkills);
 
+  const [modalIsOpen,setIsOpen]=useState(false);
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Job created:", {
@@ -53,6 +56,16 @@ const CreateJobModal = () => {
     setSelectedSkills(selectedSkills.filter((s) => s !== skill));
   };
 
+  function openModal(){
+    setIsOpen(true);
+  }
+
+  function closeModal(){
+    setIsOpen(false);
+  }
+
+
+
   const handleSkillInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSkillInput(value);
@@ -65,12 +78,16 @@ const CreateJobModal = () => {
   };
 
   return (
+    <section>
+      <button onClick={openModal}> Open </button>
+    <Modal isOpen={modalIsOpen} 
+    onRequestClose={closeModal}>
     <section className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
       <article className="bg-neutral-800 rounded-2xl p-6 w-full max-w-lg shadow-lg text-white max-h-[90vh] overflow-y-auto">
         <section className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Create a New Job</h2>
           <button
-            onClick={() => window.location.reload()} // or close modal logic
+            onClick={closeModal} 
             className="text-white text-xl hover:text-red-400"
           >
             ×
@@ -88,25 +105,27 @@ const CreateJobModal = () => {
 
           {/* Description */}
           <textarea
-            placeholder="Job Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="resize-none"
-            rows={4}
-            style={{
-              width: '100%',
-              minHeight: '150px',
-              boxShadow: '0 0 0 1.5px #2b2c37, 0 0 25px -17px #000',
-              border: '0',
-              borderRadius: '12px',
-              backgroundColor: '#26272c',
-              outline: 'none',
-              color: 'white',
-              padding: '12px',
-              transition: 'all 0.25s cubic-bezier(0.19, 1, 0.22, 1)',
-              cursor: 'text',
-            }}
-          />
+  placeholder="Job Description"
+  value={description}
+  onChange={(e) => setDescription(e.target.value)}
+  className="job-description"
+  rows={4}
+  style={{
+    width: '100%',
+    minHeight: '150px',
+    boxShadow: '0 0 0 1.5px #2b2c37, 0 0 25px -17px #000',
+    border: '0',
+    borderRadius: '12px',
+    backgroundColor: '#26272c',
+    outline: 'none',
+    color: 'white',
+    padding: '12px',
+    transition: 'all 0.25s cubic-bezier(0.19, 1, 0.22, 1)',
+    cursor: 'text',
+  }}
+/>
+
+
 
           {/* Budget */}
           <section className="flex items-center gap-2 mb-2">
@@ -123,7 +142,9 @@ const CreateJobModal = () => {
                 placeholder="Min"
                 type="number"
                 className="input"
-                style={{ width: "90px" }}
+                style={{ width: "120px", paddingLeft: "12px" }}
+
+                
               />
               <input
                 value={maxBudget}
@@ -136,7 +157,7 @@ const CreateJobModal = () => {
                 placeholder="Max"
                 type="number"
                 className="input"
-                style={{ width: "90px" }}
+                style={{ width: "120px", paddingLeft: "12px" }}
               />
             </section>
           </section>
@@ -153,7 +174,7 @@ const CreateJobModal = () => {
           <InputBar
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            placeholder="Status (e.g., open, in_progress, closed)"
+            placeholder="Status"
             type="text"
           />
 
@@ -209,6 +230,8 @@ const CreateJobModal = () => {
           </section>
         </form>
       </article>
+    </section>
+    </Modal>
     </section>
   );
 };
