@@ -9,7 +9,7 @@ import { SetUserName, setUserType } from "../server/services/DatabaseService";
 import UserType from "../enums/UserType.enum";
 import { LoginRedirect } from "../Navigation/navigation";
 import { useRouter } from "next/navigation";
-import { sendEmail } from "../server/services/DatabaseService";
+import { sendEmail } from "../server/services/EmailService";
 import { AuthContext, AuthContextType } from "../AuthContext";
 import Image from "next/image";
 import signupImage from "../../../public/images/signup-freelance.jpg";
@@ -36,8 +36,6 @@ export default function Page() {
       if (user) {
         const userEmail = user.authUser.email;
         const userName = user.authUser.displayName;
-        console.log(userEmail);
-        console.log(userName);
 
         if (!userEmail) {
           alert("No email found for the current user.");
@@ -48,8 +46,6 @@ export default function Page() {
           alert("No username found for the current user.");
           return;
         }
-
-        console.log("Sending email to:", userEmail);
 
         // Send the signup confirmation email
         const subject = "Welcome to TaskNet! You're on the Waiting List";

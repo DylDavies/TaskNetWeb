@@ -2,7 +2,6 @@ import React from "react";
 
 const PendingCard = () => {
   return (
-    // this component is made up of an outher grey layer, an inner orange layer and a white hourglass icon 
     <section className="flex items-center justify-center p-4 bg-gray-800 rounded-lg shadow-xs max-w-md">
   <section className="p-3 mr-4 text-orange-100 bg-orange-500 rounded-full">
     <svg className="w-6 h-6 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -24,5 +23,4 @@ const PendingCard = () => {
   );
 };
 
-// Export the pending card for use in other parts of the program
 export default PendingCard;

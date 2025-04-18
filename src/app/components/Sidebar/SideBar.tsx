@@ -21,21 +21,6 @@ import Link from "next/link";
 interface Props {
   items: { name: string; href: string }[];
 }
-/*
-
-  Sidebar is a react function component that expects props as its input, from those props were extracting items
-  React.FS<Props> : functional component that takes in props of type 'Props'
-  = ({ items }) => {...} is destructuring
-  
-  its equivalent to:
-  const SideBar = (prop:Props) => {
-    const { items } = props;
-  }
-
-
-  "Create a functional component named SideBar that receives props shaped like Props, and we’re pulling items straight out from the props."
-
-*/
 const SideBar: React.FC<Props> = ({ items }) => {
   return (
     <aside className="z-20 hidden w-64 overflow-y-auto bg-gray-800 md:block flex-shrink-0 sidebar box">
