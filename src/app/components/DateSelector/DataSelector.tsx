@@ -3,9 +3,9 @@ import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
-import "./DateSelector.css"; // we'll style it below
+import "./DateSelector.css";
 
-const CustomDatePicker: React.FC = () => {
+const DateSelector: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [hoveredPart, setHoveredPart] = useState<string | null>(null);
 
@@ -19,7 +19,7 @@ const CustomDatePicker: React.FC = () => {
         onChange={(date) => {
           if (date) {
             setSelectedDate(date);
-            console.log("Selected Date:", format(date, "yyyy/MM/dd"));
+            console.log("Selected Date:", format(date, "YYYY/MM/DD"));
           }
         }}
         dateFormat="yyyy/MM/dd"
@@ -31,12 +31,12 @@ const CustomDatePicker: React.FC = () => {
         <section className="mt-4 text-sm flex flex-col gap-2">
           <p className="text-gray-400">
             Selected Date:{" "}
-            <span className="text-orange-400 font-semibold">
+            <em className="text-orange-400 font-semibold">
               {format(selectedDate, "yyyy/MM/dd")}
-            </span>
+            </em>
           </p>
           <section className="flex gap-4">
-            <span
+            <em
               onMouseEnter={() => setHoveredPart("year")}
               onMouseLeave={() => setHoveredPart(null)}
               className={`px-3 py-1 rounded-lg transition-all duration-200 ${
@@ -46,8 +46,8 @@ const CustomDatePicker: React.FC = () => {
               }`}
             >
               Year: {format(selectedDate, "yyyy")}
-            </span>
-            <span
+            </em>
+            <em
               onMouseEnter={() => setHoveredPart("month")}
               onMouseLeave={() => setHoveredPart(null)}
               className={`px-3 py-1 rounded-lg transition-all duration-200 ${
@@ -57,8 +57,8 @@ const CustomDatePicker: React.FC = () => {
               }`}
             >
               Month: {format(selectedDate, "MM")}
-            </span>
-            <span
+            </em>
+            <em
               onMouseEnter={() => setHoveredPart("day")}
               onMouseLeave={() => setHoveredPart(null)}
               className={`px-3 py-1 rounded-lg transition-all duration-200 ${
@@ -68,7 +68,7 @@ const CustomDatePicker: React.FC = () => {
               }`}
             >
               Day: {format(selectedDate, "dd")}
-            </span>
+            </em>
           </section>
         </section>
       )}
@@ -76,4 +76,4 @@ const CustomDatePicker: React.FC = () => {
   );
 };
 
-export default CustomDatePicker;
+export default DateSelector;
