@@ -56,13 +56,24 @@ const CreateJobModal = () => {
     setSelectedSkills(selectedSkills.filter((s) => s !== skill));
   };
 
-  function openModal(){
+  {/*function openModal(){
     setIsOpen(true);
   }
 
   function closeModal(){
     setIsOpen(false);
-  }
+
+        <section>
+      <button onClick={openModal}> Open </button>
+    <Modal isOpen={modalIsOpen} 
+    onRequestClose={closeModal}>\
+              <button
+            onClick={closeModal} 
+            className="text-white text-xl hover:text-red-400"
+          >
+            ×
+          </button>
+  }*/}
 
 
 
@@ -78,16 +89,11 @@ const CreateJobModal = () => {
   };
 
   return (
-    <section>
-      <button onClick={openModal}> Open </button>
-    <Modal isOpen={modalIsOpen} 
-    onRequestClose={closeModal}>
     <section className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
       <article className="bg-neutral-800 rounded-2xl p-6 w-full max-w-lg shadow-lg text-white max-h-[90vh] overflow-y-auto">
         <section className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Create a New Job</h2>
           <button
-            onClick={closeModal} 
             className="text-white text-xl hover:text-red-400"
           >
             ×
@@ -230,8 +236,6 @@ const CreateJobModal = () => {
           </section>
         </form>
       </article>
-    </section>
-    </Modal>
     </section>
   );
 };
