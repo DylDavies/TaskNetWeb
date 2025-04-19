@@ -16,6 +16,7 @@ import React, { useContext, useEffect, useState } from "react";
 import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
+//import { getJob } from "../server/services/JobDatabaseService";
 
 
 const links = [
