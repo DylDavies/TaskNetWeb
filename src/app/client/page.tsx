@@ -77,9 +77,8 @@ export default function Page() {
   function handleCardClick(job: ActiveJob): void {
     console.log(job.jobId); // need this for linter & testing
     ClickedJobId = job.jobId;
-    JobStore.setJobId(job.jobId);
+    JobStore.setJobId(ClickedJobId);
     router.push("/FreelancerApplicationView")
-    alert("Not implemented yet :(");
   }
 
   return (
