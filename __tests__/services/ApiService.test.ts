@@ -42,6 +42,13 @@ describe("ApiService", () => {
       const result = await ApiService.sessionExists();
       expect(result).toEqual({ presence: false });
     });
+
+    it("should handle errors", async () => {
+      (global.fetch as jest.Mock).mockRejectedValue(new Error("failed"));
+
+      const result = await ApiService.sessionExists();
+      expect(result).toEqual({ presence: false })
+    })
   });
 
   describe("login", () => {
@@ -74,5 +81,34 @@ describe("ApiService", () => {
         expect.objectContaining({ status: 401, message: "invalid-token" })
       );
     });
+  });
+});
+
+describe("ApiService Configuration", () => {
+  const OLD_ENV = process.env;
+
+  beforeEach(() => {
+    jest.resetModules(); // Clear cache
+    process.env = {...OLD_ENV}; // Reset environment
+  });
+
+  afterAll(() => {
+    process.env = OLD_ENV; // Restore original environment
+  });
+
+  it("should use DEV API URL when NEXT_PUBLIC_DEV is truthy", () => {
+    process.env.NEXT_PUBLIC_DEV = "true";
+    process.env.NEXT_PUBLIC_API_URL = "http://localhost:3000";
+    
+    const ApiService = require("../../src/app/services/ApiService").default;
+    expect(ApiService.BASE_URL).toBe("http://localhost:3000");
+  });
+
+  it("should use production API URL by default", () => {
+    delete process.env.NEXT_PUBLIC_DEV;
+    delete process.env.NEXT_PUBLIC_API_URL;
+    
+    const ApiService = require("../../src/app/services/ApiService").default;
+    expect(ApiService.BASE_URL).toBe("https://api.tasknet.tech");
   });
 });

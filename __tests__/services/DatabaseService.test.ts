@@ -1,13 +1,18 @@
 // __tests__/services/DatabaseService.test.ts
 import { 
-    collection, where, query, getDocs, updateDoc, doc 
+    collection, where, query, getDocs, updateDoc, doc, 
+    getDoc
   } from "firebase/firestore";
   import { 
     getPendingUsers, approveUser, denyUser, setUserType, 
-    SetUserName, sendEmail, uploadFile 
+    SetUserName, sendEmail, uploadFile, 
+    getUser
   } from "../../src/app/server/services/DatabaseService";
   import UserStatus from "@/app/enums/UserStatus.enum";
 import { getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import nodemailer from "nodemailer";
+
+const { __mockTransporter } = nodemailer as any;
   
   jest.mock("firebase/firestore");
   jest.mock("firebase/storage");
@@ -21,6 +26,63 @@ import { getDownloadURL, uploadBytesResumable } from "firebase/storage";
   
     beforeEach(() => {
       jest.clearAllMocks();
+      
+    });
+
+    describe("getUser", () => {
+      it("should return null if no user", async () => {
+        (doc as jest.Mock).mockReturnValue({});
+        (getDoc as jest.Mock).mockResolvedValue({exists: () => false});
+
+        let result = await getUser("mockUid");
+
+        expect(result).toBe(null);
+      });
+
+      it("should return user", async () => {
+        (doc as jest.Mock).mockReturnValue({});
+        (getDoc as jest.Mock).mockResolvedValue({exists: () => true, data: () => "data"});
+
+        let result = await getUser("mockUid");
+
+        expect(result).toBe("data");
+      })
+    });
+
+    describe("approveUser", () => {
+      it("should run updateDoc", async () => {        
+        await approveUser("mockUid");
+
+        expect(updateDoc).toHaveBeenCalled();
+      });
+    })
+
+    describe("denyUser", () => {
+      it("should run updateDoc", async () => {        
+        await denyUser("mockUid");
+
+        expect(updateDoc).toHaveBeenCalled();
+      });
+    });
+
+    describe("setUserName", () => {
+      it("should succeeed", async () => {
+        (updateDoc as jest.Mock).mockReturnValue("success");
+
+        await SetUserName("mockUId", "username");
+
+        expect(updateDoc).toHaveBeenCalled();
+      });
+
+      it("should handle error on updateDoc", async () => {
+        (updateDoc as jest.Mock).mockRejectedValue(new Error("failed"));
+
+        const consoleSpy = jest.spyOn(console, "error").mockImplementation();
+
+        await SetUserName("mockUId", "username");
+
+        expect(consoleSpy).toHaveBeenCalled();
+      });
     });
   
     describe("getPendingUsers", () => {
@@ -50,31 +112,47 @@ import { getDownloadURL, uploadBytesResumable } from "firebase/storage";
       });
   
       it("should handle update errors", async () => {
-        (updateDoc as jest.Mock).mockRejectedValue(new Error("DB error"));
-        await expect(setUserType("invalid", 1)).rejects.toThrow();
+        const error = new Error("DB error");
+        (updateDoc as jest.Mock).mockRejectedValue(error);
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    
+        await expect(setUserType("invalid", 1)).rejects.toThrow("DB error");
+        expect(consoleSpy).toHaveBeenCalledWith("Could not set user type", error);
       });
     });
   
     describe("sendEmail", () => {
-      it("should handle successful email sending", async () => {
-        const mockSendMail = jest.fn((_, cb) => cb(null, "success"));
-        require("nodemailer").createTransport.mockReturnValue({
-          sendMail: mockSendMail
-        });
-  
-        await expect(sendEmail("test@test.com", "Subject", "Body"))
-          .resolves.toBeUndefined();
-      });
-  
-      it("should handle email errors", async () => {
-        const mockSendMail = jest.fn((_, cb) => cb(new Error("SMTP error")));
-        require("nodemailer").createTransport.mockReturnValue({
-          sendMail: mockSendMail
-        });
+      const mockSendMail = __mockTransporter.sendMail;
 
-        let consoleSpy = jest.spyOn(console, "error").mockImplementation();
-  
-        await expect(consoleSpy).toHaveBeenCalled();
+      let consoleSpy: jest.SpyInstance;
+    
+      beforeEach(() => {
+        mockSendMail.mockClear();
+        consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+      });
+    
+      afterEach(() => {
+        consoleSpy.mockRestore();
+      });
+
+      it('should handle email errors', async () => {
+        const testError = new Error('SMTP error');
+        mockSendMail.mockImplementationOnce((mailOptions: any, callback: any) => {
+          callback(testError, null);
+        });
+    
+        await expect(sendEmail('test@test.com', 'Subject', 'Body'))
+          .rejects.toThrow('SMTP error');
+    
+        expect(consoleSpy).toHaveBeenCalledWith(
+          'Email send error:',
+          expect.objectContaining({ message: 'SMTP error' })
+        );
+      });
+    
+      it('should handle successful email sending', async () => {
+        await expect(sendEmail('test@test.com', 'Subject', 'Body'))
+          .resolves.toBe('250 OK');
       });
     });
   
@@ -82,7 +160,7 @@ import { getDownloadURL, uploadBytesResumable } from "firebase/storage";
       it("should handle successful upload", async () => {
         (uploadBytesResumable as jest.Mock).mockReturnValue({
           snapshot: { ref: "file-ref" },
-          on: jest.fn((_, __, onComplete) => onComplete())
+          on: jest.fn((_, __, ___, onComplete) => onComplete())
         });
         (getDownloadURL as jest.Mock).mockResolvedValue("http://example.com/file");
   
@@ -91,14 +169,26 @@ import { getDownloadURL, uploadBytesResumable } from "firebase/storage";
       });
   
       it("should handle upload errors", async () => {
+        const error = new Error("Upload failed");
         (uploadBytesResumable as jest.Mock).mockReturnValue({
-          on: jest.fn((_, onError) => onError(new Error("Upload failed")))
+          on: jest.fn().mockImplementation((_, __, onError) => onError(error))
         });
-  
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    
         await expect(uploadFile(new File([], "test.txt"), "path", "name"))
           .rejects.toThrow("Upload failed");
+        expect(consoleSpy).toHaveBeenCalledWith("Upload failed", error);
+      });
+    
+      it("should handle downloadUrl error", async () => {
+        (uploadBytesResumable as jest.Mock).mockReturnValue({
+          snapshot: { ref: "file-ref" },
+          on: jest.fn((_, __, ___, onComplete) => onComplete())
+        });
+        (getDownloadURL as jest.Mock).mockRejectedValue(new Error("failed"));
+  
+        await expect(uploadFile(new File([], "test.txt"), "path", "name"))
+          .rejects.toBe("Failed to retrieve download url")
       });
     });
-  
-    // Similar tests for approveUser, denyUser, SetUserName
   });
