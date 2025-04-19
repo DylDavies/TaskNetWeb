@@ -31,7 +31,7 @@ export default function Page() {
     AuthService.googleSignout();
     router.push("/");
   }
-  const clientUId = user?.userData.username ;
+  const clientUId = user?.authUser.uid ;
 
   // Gets JobData data to populate cards, only will show cards created by the user (client)
   useEffect(() => {
