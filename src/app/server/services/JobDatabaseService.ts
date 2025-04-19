@@ -1,6 +1,7 @@
 'use server'
 import JobStatus from "@/app/enums/JobStatus.enum";
 import { db } from "@/app/firebase";
+import ActiveJob from "@/app/interfaces/ActiveJob.interface";
 import JobData from "@/app/interfaces/JobData.interface";
 import { addDoc, and, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 
@@ -26,18 +27,20 @@ async function createJob(jobData: JobData): Promise<string> {
 }
 
 // Endpoint to get all jobs
-async function getAllJobs(): Promise<{ jobs: JobData[]; jobIDs: string[] }> {
+async function getAllJobs(): Promise<ActiveJob[]>{
   try {
     const jobDocs = await getDocs(collection(db, "Jobs"));
-    const jobs: JobData[] = [];
-    const jobIDs: string[] = [];
+    const activeJobs: ActiveJob[] = [];
     
     jobDocs.forEach((doc) => {
-      jobs.push(doc.data() as JobData);
-      jobIDs.push(doc.id);
+      const data = doc.data() as JobData;
+      activeJobs.push({
+        jobId: doc.id,
+        jobData:data
+      })
     });
-    
-    return { jobs, jobIDs };
+    return activeJobs;
+      
   } catch (error) {
     console.error("Error getting jobs:", error);
     throw new Error("Failed to get jobs");
@@ -91,40 +94,40 @@ async function searchByTitle(title: string): Promise<JobData[]> {
   }
 }
 
-// There must be another way to do this (for now leave it as it works):
-// Endpoint to get jobs that have those skills (needs skillID or skillArea to be passed in to work)
-async function searchJobsBySkills(skills: string[], skillIds: string[]): Promise<JobData[]> {
-  try {
-    if (!skills || skills.length === 0 || !skillIds || skillIds.length === 0) {
-      throw new Error("Skills and skillIds must be provided");
-    }
-
-    const jobDocs = await getDocs(collection(db, "Jobs"));
-    const matchingJobs: JobData[] = [];
-
-    jobDocs.forEach((doc) => {
-      const job = doc.data() as JobData;
-
-      const jobSkillsMap = job.skills || {};
-
-      const relevantSkillArrays = skillIds
-        .filter((id) => jobSkillsMap[id]) 
-        .map((id) => jobSkillsMap[id]);
-
-      const relevantSkills = relevantSkillArrays.flat();
-
-      const hasMatch = skills.some(skill => relevantSkills.includes(skill));
-      if (hasMatch) {
-        matchingJobs.push(job);
+// There must be another way to do this (for now leave it as it works): (This may not be needed but keep it here for now)
+  // Endpoint to get jobs that have those skills (needs skillID or skillArea to be passed in to work)
+  async function searchJobsBySkills(skills: string[], skillIds: string[]): Promise<JobData[]> {
+    try {
+      if (!skills || skills.length === 0 || !skillIds || skillIds.length === 0) {
+        throw new Error("Skills and skillIds must be provided");
       }
-    });
 
-    return matchingJobs;
-  } catch (error) {
-    console.error("Error searching jobs by skills:", error);
-    throw error;
+      const jobDocs = await getDocs(collection(db, "Jobs"));
+      const matchingJobs: JobData[] = [];
+
+      jobDocs.forEach((doc) => {
+        const job = doc.data() as JobData;
+
+        const jobSkillsMap = job.skills || {};
+
+        const relevantSkillArrays = skillIds
+          .filter((id) => jobSkillsMap[id]) 
+          .map((id) => jobSkillsMap[id]);
+
+        const relevantSkills = relevantSkillArrays.flat();
+
+        const hasMatch = skills.some(skill => relevantSkills.includes(skill));
+        if (hasMatch) {
+          matchingJobs.push(job);
+        }
+      });
+
+      return matchingJobs;
+    } catch (error) {
+      console.error("Error searching jobs by skills:", error);
+      throw error;
+    }
   }
-}
 
 // Endpoint to get jobs for a given clientID
 async function getJobsByClientID(clientID: string): Promise<JobData[]> {
