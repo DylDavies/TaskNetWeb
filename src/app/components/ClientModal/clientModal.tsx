@@ -19,12 +19,12 @@ interface Props {
     onClick?: (user: Applicants) => void;
   }
 
-const ClientModal:  React.FC<Props> = ({data, onClick})=> {
+const ClientModal:  React.FC<Props> = ({data})=> {
 
     const[modalIsOpen, setIsOpen] = React.useState(false);
-    function openModal(){
+    /*function openModal(){
         setIsOpen(true);
-    }
+    }*/
 
     function closeModal(){
         setIsOpen(false);

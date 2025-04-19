@@ -18,9 +18,9 @@ type Props = {
 const JobForm: React.FC<Props> = ({data}) => {
     const [modalIsOpen, setIsOpen] = React.useState(false);
     
-    function openModal(){
+    /*function openModal(){
         setIsOpen(true);
-    }
+    }*/
 
     function closeModal(){
         setIsOpen(false);
