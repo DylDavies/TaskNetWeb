@@ -40,7 +40,7 @@ export default class ApiService {
 
     static async login(idToken: string): Promise<void> {
         try {
-            let result = await fetch(`${ApiService.BASE_URL}/auth/login`, {
+            const result = await fetch(`${ApiService.BASE_URL}/auth/login`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${idToken}`,
