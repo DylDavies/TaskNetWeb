@@ -1,5 +1,6 @@
 import React from "react";
 import "./JobOverview.css";
+import JobStatus from "@/app/enums/JobStatus.enum";
 
 /*
 --- NOTE ON USE ---
@@ -38,7 +39,7 @@ interface JobCardProps {
   budget: string;
   deadline: string;
   skills: string[];
-  hired?: number;
+  hired?: JobStatus;
   onClick?: () => void;
 }
 
@@ -119,15 +120,17 @@ const JobCard: React.FC<JobCardProps> = ({
           {/* Company and Deadline inline at the bottom */}
           <footer className="flex justify-between items-center text-sm text-gray-400 pt-1 border-t border-gray-700 mt-2">
             <address className="italic">{company}</address>
-            {typeof hired === "number" && (hired === 0 || hired === 1) && (
-              <output
-                className={`italic ${
-                hired === 1 ? "text-green-400" : "text-red-400"
-                }`}
-              >
-                {hired === 1 ? "Hired" : "Open to applicants"}
-              </output>
-            )}
+          {hired === JobStatus.Posted && (
+            <output className="italic text-yellow-400">Open to applicants</output>
+          )}
+
+          {hired === JobStatus.Employed && (
+            <output className="italic text-yellow-400">Hired</output>
+          )}
+
+          {hired === JobStatus.Completed && (
+            <output className="italic text-green-400">Completed</output>
+          )}
           </footer>
         </section>
       </section>
