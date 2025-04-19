@@ -10,7 +10,7 @@ import Image from "next/image";
 import logoImage from "../../public/images/Logo.png";
 import freelancerImage from "../../public/images/Freelancer-Planning.webp";
 import Loader from "./components/Loader/Loader";
-import GetApplication from "./test/test";
+import GetApplication from "./temp/temp";
 
 //Landing page UI
 export default function Home() {
@@ -19,6 +19,7 @@ export default function Home() {
   const router = useRouter();
 
   async function signinClick() {
+
     setLoading(true);
     
     await AuthService.signin();

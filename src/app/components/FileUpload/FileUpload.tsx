@@ -13,9 +13,10 @@ type UploadComponentProps = {
   uploadFunction: UploadFunction;
   path: string;
   name: string;
+  onUploadComplete?: (url: string) => void;
 };
 
-function UploadComponent({ uploadFunction, path, name }: UploadComponentProps) {
+function UploadComponent({ uploadFunction, path, name, onUploadComplete  }: UploadComponentProps) {
   //const [progress, setProgress] = useState<number>(0);
   const [downloadURL, setDownloadURL] = useState<string | null>(null);
 
@@ -33,6 +34,11 @@ function UploadComponent({ uploadFunction, path, name }: UploadComponentProps) {
           toast.dismiss(toastId);
           toast.success("Upload complete!");
           console.log(downloadURL);
+
+          if (onUploadComplete) {
+            onUploadComplete(url);
+          }
+          
         })
         .catch((error) => {
           console.error("Upload failed:", error);
