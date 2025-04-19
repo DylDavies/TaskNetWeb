@@ -20,6 +20,7 @@ import Link from "next/link";
 
 interface Props {
   items: { name: string; href: string }[];
+  type: string;
 }
 /*
 
@@ -52,6 +53,7 @@ const SideBar: React.FC<Props> = ({ items }) => {
         </li>
       ))}
     </ul>
+
   </section>
 </aside>
 
