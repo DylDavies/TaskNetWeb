@@ -8,6 +8,7 @@ import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
+import CreateJobModal from "../components/CreateJobModal/CreateJobModal";
 import { AuthContextType, AuthContext } from "../AuthContext";
 import { useState, useContext, useEffect } from "react";
 import JobCard from "../components/JobOverview/JobOverview";
@@ -17,7 +18,10 @@ import { formatBudget } from "../server/formatters/Budget";
 import JobData from "../interfaces/JobData.interface";
 //import { sanitizeJobData } from "../server/formatters/JobDataSanitization";
 
+
+
 //constant for links to other pages
+
 const links = [{ name: "Home", href: "/" }];
 
 export default function Page() {
@@ -76,7 +80,7 @@ export default function Page() {
          
 
           <section className="w-64">
-            <SideBar items={links} />
+            <SideBar items={links} myfunction={CreateJobModal}/>
           </section>
 
           <section className="flex-1 p-4 flex flex-col items-center gap-6 overflow-y-auto">

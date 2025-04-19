@@ -1,5 +1,6 @@
 import _1 from "firebase/app";
 import auth, { Auth } from "firebase/auth";
+import storage from "firebase/storage"
 import ApiService from "../../src/app/services/ApiService";
 import { getUser } from "../../src/app/server/services/DatabaseService";
 import AuthService from "@/app/services/AuthService";
@@ -19,6 +20,12 @@ jest.mock("firebase/auth", () => {
 jest.mock("firebase/firestore", () => {
     return {
         getFirestore: jest.fn()
+    }
+});
+
+jest.mock("firebase/storage", () => {
+    return {
+        getStorage: jest.fn()
     }
 });
 
