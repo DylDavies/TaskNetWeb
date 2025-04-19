@@ -123,8 +123,10 @@ const sendEmail = (to: string, subject: string, text: string) => {
   });
 };
 
+
+type OnProgressCallback = (progress: number) => void;
 //this fucntion will take in a file, the path in which the file must be stored and file name, it will then store the file in the database in the given path and return the url at which the file can be accessed
-const uploadFile = (file: File, path: string, name: string): Promise<string> => {
+const uploadFile = (file: File, path: string, name: string, onProgress?: OnProgressCallback): Promise<string> => {
   //promises to return a string this will be the url at which the file can be accessed
   return new Promise((resolve, reject) => {
     if (!file) {
@@ -141,6 +143,7 @@ const uploadFile = (file: File, path: string, name: string): Promise<string> => 
       (snapshot) => {
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         console.log(`Upload is ${progress.toFixed(0)}% done. State: ${snapshot.state}`);
+        if (onProgress) onProgress(progress);
       },
       (error) => {
         console.error("Upload failed", error);

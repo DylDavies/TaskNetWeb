@@ -7,6 +7,7 @@ import "../button/Button.css";
 import "../inputbar/inputBar.css";
 import "./CreateJobModal.css";
 import Modal from "react-modal";
+import { useEffect } from 'react';
 import { getAllSkills } from "@/app/server/services/SkillsService";
 
 
@@ -14,6 +15,11 @@ let dummySkills =await getAllSkills();
 
 
 const CreateJobModal = () => {
+  useEffect(() => {
+    // Set the app element for react-modal to improve accessibility
+    Modal.setAppElement('#root'); // Assuming the root element of your app is with id "root"
+  }, []);
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
@@ -83,7 +89,7 @@ const CreateJobModal = () => {
   };
 
   return (
-    <section>
+    <section id = "root">
     <button onClick={openModal}> Create Job </button>
     <Modal
   isOpen={modalIsOpen}
