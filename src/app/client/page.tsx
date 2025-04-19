@@ -16,6 +16,7 @@ import { getJobsByClientID } from "../server/services/JobDatabaseService";
 import { formatDateAsString } from "../server/formatters/FormatDates";
 import { formatBudget } from "../server/formatters/Budget";
 import JobData from "../interfaces/JobData.interface";
+import { getUsername } from "../server/services/DatabaseService";
 //import { sanitizeJobData } from "../server/formatters/JobDataSanitization";
 
 
@@ -36,6 +37,9 @@ export default function Page() {
     router.push("/");
   }
   const clientUId = user?.authUser.uid ;
+  const [username, setUsername] = useState<string>("");
+  
+  
 
   // Gets JobData data to populate cards, only will show cards created by the user (client)
   useEffect(() => {
@@ -46,7 +50,7 @@ export default function Page() {
       }
         try {
           const jobs = await getJobsByClientID(clientUId);
-  
+          
           setJobCards(jobs);
         } catch (error) {
           console.error("Error occurred when trying to fetch Jobs: ", error);
@@ -54,6 +58,16 @@ export default function Page() {
       
     }
     fetchUserJobs();
+  }, [clientUId]);
+  
+  useEffect(() => {
+    async function fetchUsername() {
+      if (clientUId) {
+        const name = await getUsername(clientUId);
+        setUsername(name);
+      }
+    }
+    fetchUsername();
   }, [clientUId]);
  
 
@@ -90,12 +104,13 @@ export default function Page() {
             />
             <section className="w-full px-6">
               <h2 className="text-2xl font-bold text-gray-300 flex justify-center">My job postings: </h2>
+              <h3 className="text-2xl italic text-gray-300 flex justify-center">Click to see applicants: </h3>
               <section className ="border-2 border-gray-600 rounded-lg p-4 flex flex-wrap justify-center gap-6">
               {jobCards.length > 0 ? (
                 jobCards.map((job, index) => (
                   <JobCard
                     key={index}
-                    company={job.clientUId}
+                    company={username}
                     jobTitle={job.title}
                     budget={formatBudget(job.budgetMin, job.budgetMax)}
                     deadline={formatDateAsString(job.deadline)}
