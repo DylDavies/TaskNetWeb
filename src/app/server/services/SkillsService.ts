@@ -19,8 +19,6 @@ async function getSkillArray(){
         id: doc.id,
         names: doc.data()
       }));
-      console.log(skillAreas);
-      console.log(skillAreas.at(0));
       return skillAreas;
 }
 
@@ -37,7 +35,7 @@ async function getAllSkillIDs(): Promise<string[]> {
     return skillIDs;
   } catch (error) {
     console.error("Error fetching job IDs:", error);
-    throw error;
+    return [];
   }
 }
 

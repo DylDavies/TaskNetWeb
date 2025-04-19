@@ -10,3 +10,4 @@ export const and = jest.fn();
 export const writeBatch = jest.fn();
 export const addDoc = jest.fn();
 export const setDoc = jest.fn();
+export const arrayUnion = jest.fn();
