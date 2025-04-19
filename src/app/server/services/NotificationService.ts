@@ -69,7 +69,11 @@ async function markAllNotificationsAsSeenForUser(uids: string[]) {
         });
     }
 
-    batch.commit();
+    try {
+        await batch.commit();
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 async function getNotificationsForUser(userUId: string): Promise<Notification[]> {
@@ -82,4 +86,4 @@ async function getNotificationsForUser(userUId: string): Promise<Notification[]>
     return results;
 }
 
-export { createNotification, setNotificationSeen, getNotificationsForUser, fromDB, deleteNotification, markAllNotificationsAsSeenForUser }
+export { createNotification, setNotificationSeen, getNotificationsForUser, fromDB, deleteNotification, markAllNotificationsAsSeenForUser, toDB }
