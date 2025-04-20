@@ -28,8 +28,6 @@ export default function Home() {
 
     setLoading(false);
   }
-
-
   return (
     <main className="flex h-screen">
       <Loader loading={loading}></Loader>

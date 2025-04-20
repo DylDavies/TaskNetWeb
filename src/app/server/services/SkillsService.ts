@@ -46,7 +46,7 @@ async function getAllSkillIDs(): Promise<string[]> {
     return skillIDs;
   } catch (error) {
     console.error("Error fetching job IDs:", error);
-    throw error;
+    return [];
   }
 }
 
