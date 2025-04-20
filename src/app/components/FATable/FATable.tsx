@@ -1,13 +1,19 @@
 "use client";
 import { acceptApplicant, rejectApplicant } from "@/app/server/services/ApplicationDatabaseServices";
 import React, { useEffect, useState } from "react";
+import ApplicantionStatus from "@/app/enums/ApplicantionStatus.enum";
+
 
 interface Applicants  {
-    applicationid: string;
+    
+
+    ApplicantID: string;
     ApplicationDate: number;
     BidAmount: number;
+    CVURL: string;
     EstimatedTimeline: number;
-    Status: number;  
+    JobID: string;
+    Status: ApplicantionStatus;
     username: Promise<string>;
 }
 /*
@@ -16,7 +22,7 @@ interface Applicants  {
 
 interface Props {
   data: Applicants[];
-  onRowClick?: (user: Applicants) => void;
+  onRowClick?: (applicant: Applicants) => void;
 }
 const FATable: React.FC<Props> = ({ data,onRowClick }) => {
   //console.log(`The data is: ${JSON.stringify(data, null, 2)}`); //sanity check
@@ -34,7 +40,7 @@ const FATable: React.FC<Props> = ({ data,onRowClick }) => {
     try {
       await acceptApplicant(aid);
       setPendingApplicants((currentApplicant) =>
-        currentApplicant.filter((applicant) => applicant.applicationid != aid)
+        currentApplicant.filter((applicant) => applicant.ApplicantID != aid)
       ); // for updating table when approved
       console.log(`Successfully accepted applicant ${aid}`);
     } catch (error) {
@@ -46,7 +52,7 @@ const FATable: React.FC<Props> = ({ data,onRowClick }) => {
     try {
       await rejectApplicant(aid);
       setPendingApplicants((currentApplicant) =>
-        currentApplicant.filter((applicant) => applicant.applicationid != aid)
+        currentApplicant.filter((applicant) => applicant.ApplicantID != aid)
       ); // for updating table when approved
       console.log(`Successfully rejected applicant ${aid}`);
     } catch (error) {
@@ -107,13 +113,13 @@ const FATable: React.FC<Props> = ({ data,onRowClick }) => {
             {/* Approve and Deny buttons */}
             <td className="px-4 py-3 text-xs space-x-2">
               <button
-                onClick={() => handleAccept(item.applicationid)}
+                onClick={() => handleAccept(item.ApplicantID)}
                 className="px-2 py-1 font-semibold leading-tight rounded-full bg-green-700 text-green-100 transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
               >
                 Accept
               </button>
               <button
-                onClick={() => handleReject(item.applicationid)}
+                onClick={() => handleReject(item.ApplicantID)}
                 className="px-2 py-1 font-semibold leading-tight rounded-full bg-red-700 text-red-100 transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
               >
                 Reject

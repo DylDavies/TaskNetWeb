@@ -1,11 +1,11 @@
 import Modal from "react-modal";
 import React from "react";
 import "./clientModal.css"
-import "./global.css"
+//import "./global.css"
 
 interface Applicants  {
     JobID: string;
-    applicationID: string;
+    ApplicantID: string;
     ApplicationDate: number;
     CVURL: string,
     BidAmount: number;
@@ -16,7 +16,7 @@ interface Applicants  {
 
 interface Props {
     data: Applicants;
-    onClick?: (user: Applicants) => void;
+    isOpen: boolean;
   }
 
 const ClientModal:  React.FC<Props> = ({data})=> {
@@ -58,7 +58,7 @@ const ClientModal:  React.FC<Props> = ({data})=> {
 
             <section>
                 <h3 className="font-semibold">Applicant ID</h3>
-                <p>{data.applicationID}</p>
+                <p>{data.ApplicantID}</p>
             </section>
 
             <section>
