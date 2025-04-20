@@ -15,8 +15,9 @@ import JobCard from "../components/JobOverview/JobOverview";
 import { getJobsByClientID } from "../server/services/JobDatabaseService";
 import { formatDateAsString } from "../server/formatters/FormatDates";
 import { formatBudget } from "../server/formatters/Budget";
-import JobData from "../interfaces/JobData.interface";
 import { getUsername } from "../server/services/DatabaseService";
+import ActiveJob from "../interfaces/ActiveJob.interface";
+import JobStore from "../JobStore";
 //import { sanitizeJobData } from "../server/formatters/JobDataSanitization";
 
 
@@ -24,10 +25,11 @@ import { getUsername } from "../server/services/DatabaseService";
 //constant for links to other pages
 
 const links = [{ name: "Home", href: "/" }];
+let ClickedJobId = "";
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
-  const [jobCards, setJobCards] = useState<JobData[]>([]);
+  const [jobCards, setJobCards] = useState<ActiveJob[]>([]);
 
   const router = useRouter();
 
@@ -72,9 +74,11 @@ export default function Page() {
  
 
   // Click handler for clicking on a job card
-  function handleCardClick(job: JobData): void {
-    console.log(job); // need this for linter & testing
-    alert("Not implemented yet :(");
+  function handleCardClick(job: ActiveJob): void {
+    console.log(job.jobId); // need this for linter & testing
+    ClickedJobId = job.jobId;
+    JobStore.setJobId(ClickedJobId);
+    router.push("/FreelancerApplicationView")
   }
 
   return (
@@ -111,12 +115,12 @@ export default function Page() {
                   <JobCard
                     key={index}
                     company={username}
-                    jobTitle={job.title}
-                    budget={formatBudget(job.budgetMin, job.budgetMax)}
-                    deadline={formatDateAsString(job.deadline)}
-                    skills={Object.values(job.skills).flat()}
+                    jobTitle={job.jobData.title}
+                    budget={formatBudget(job.jobData.budgetMin, job.jobData.budgetMax)}
+                    deadline={formatDateAsString(job.jobData.deadline)}
+                    skills={Object.values(job.jobData.skills).flat()}
                     onClick={() => handleCardClick(job)}
-                    hired={job.status}
+                    hired={job.jobData.status}
                   />
                 ))
               ) : (
@@ -137,3 +141,4 @@ export default function Page() {
     </>
   );
 }
+

@@ -15,9 +15,9 @@ async function getApplicant(ApplicantID: string): Promise<ApplicantData | null> 
 };
 
 // Fetch pending applicants Endpoint:
-async function getPendingApplicants(): Promise<{applicationid:string; Status:number, ApplicationDate: number, BidAmount: number, CVURL: string,EstimatedTimeline: number,JobID: string,username:Promise<string>}[]>{
+async function getPendingApplicants(JobID: string): Promise<{applicationid:string; Status:number, ApplicationDate: number, BidAmount: number, CVURL: string,EstimatedTimeline: number,JobID: string,username:Promise<string>}[]>{
     const dbRef = collection(db,'applications'); 
-    const pending = query(dbRef,where('Status', '==', ApplicantionStatus.Pending));
+    const pending = query(dbRef,where('Status', '==', ApplicantionStatus.Pending), where('JobID', '==', JobID));
     console.log(pending)
 
     const snapshot = await getDocs(pending);

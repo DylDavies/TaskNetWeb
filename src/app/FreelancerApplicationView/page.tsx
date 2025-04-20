@@ -16,6 +16,7 @@ import React, { useContext, useEffect, useState } from "react";
 import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
+import JobStore from "../JobStore";
 //import { getJob } from "../server/services/JobDatabaseService";
 
 
@@ -55,7 +56,7 @@ export default function Page() {
   // To update the admin table after the Admin approves or denies user
   useEffect(() => {
     async function fetchPendingApplicants() {
-      const pendingApplicants = await getPendingApplicants();
+      const pendingApplicants = await getPendingApplicants(JobStore.getJobId());
       //console.log("Pending users: ", pendingUsers);
       setPendingApplicants(pendingApplicants);
     }

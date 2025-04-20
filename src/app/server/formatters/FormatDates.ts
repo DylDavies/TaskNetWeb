@@ -17,7 +17,7 @@ const formatDateAsString = (dateNum?: number) => {
 
 
 const formatDateAsDate = (dateNum?: number): string => {
-    if (!dateNum) return "Not specified"; // null or undefined 
+    if (dateNum == undefined) return "Not specified"; // null or undefined 
 
     const dateStr = dateNum.toString();
     if (dateStr.length !== 8) return "Invalid date"; // Ensure YYYYMMDD format

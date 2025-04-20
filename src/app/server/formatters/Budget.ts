@@ -1,6 +1,6 @@
 export const formatBudget = (budgetMin?: number, budgetMax?:number) => {
-    if(!budgetMin) return "Budget min is NAN";
-    if(!budgetMax) return "Budget max is NAN";
+    if(budgetMin == undefined) return "Budget min is NAN";
+    if(budgetMax == undefined) return "Budget max is NAN";
     
     if(budgetMin >= 10000 && budgetMax >= 10000){
         budgetMin = budgetMin/1000;

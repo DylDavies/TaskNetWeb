@@ -67,8 +67,7 @@ async function updateHiredUId(jobID: string, hiredUId:string){
     await updateDoc(doc(collection(db,"Jobs"),jobID),{
       hiredUId: hiredUId
     });
-  }
-  catch(error){
+  } catch(error){
     console.error("Error occurred when trying to update hiredUId: ", error)
   }
 }
@@ -130,7 +129,7 @@ async function searchByTitle(title: string): Promise<JobData[]> {
   }
 
 // Endpoint to get jobs for a given clientID
-async function getJobsByClientID(clientID: string): Promise<JobData[]> {
+async function getJobsByClientID(clientID: string): Promise<ActiveJob[]> {
   try {
     const Query = query(
       collection(db, "Jobs"),
@@ -138,10 +137,15 @@ async function getJobsByClientID(clientID: string): Promise<JobData[]> {
     );
     const jobDocs = await getDocs(Query);
 
-    const jobs: JobData[] = [];
+    const jobs: ActiveJob[] = [];
 
     jobDocs.forEach((doc) => {
-      jobs.push(doc.data() as JobData);
+      const jobData = doc.data() as JobData;
+      const activeJob: ActiveJob = {
+        jobId: doc.id,
+        jobData,
+      };
+      jobs.push(activeJob);
     });
 
     return jobs;

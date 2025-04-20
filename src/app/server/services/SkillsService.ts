@@ -46,10 +46,9 @@ async function getAllSkillIDs(): Promise<string[]> {
     return skillIDs;
   } catch (error) {
     console.error("Error fetching job IDs:", error);
-    throw error;
+    return [];
   }
 }
-
 
 // Endpoint to get skill area mapping from given skill names
 async function mapSkillsToAreas(skillNames: string[]): Promise<{ [skillArea: string]: string[] }> {
@@ -69,11 +68,5 @@ async function mapSkillsToAreas(skillNames: string[]): Promise<{ [skillArea: str
 
   return skillMap;
 }
-
-
-// There may be a bug in get all skills or get all skills ids
-// It doesnt seem to fetch everything
-
-
 
 export {AddSkill, getSkillArray, getAllSkillIDs, getAllSkills, mapSkillsToAreas};
