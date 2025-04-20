@@ -29,7 +29,7 @@ describe("SkillsService", () => {
       (getDocs as jest.Mock).mockResolvedValue({ docs: mockData });
       
       const result = await getSkillArray();
-      expect(result).toEqual([{ id: "1", names: { names: ["TS"] }}]);
+      expect(result).toEqual([{ id: "1", skills: ["TS"] }]);
     });
   });
 

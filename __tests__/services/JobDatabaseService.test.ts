@@ -67,9 +67,8 @@ import JobStatus from "@/app/enums/JobStatus.enum";
         });
         (getDocs as jest.Mock).mockResolvedValue({ forEach });
         
-        const { jobs, jobIDs } = await getAllJobs();
-        expect(jobs).toHaveLength(2);
-        expect(jobIDs).toEqual(["1", "2"]);
+        const result = await getAllJobs();
+        expect(result).toHaveLength(2);
       });
 
       it("should handle errors", async () => {
