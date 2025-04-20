@@ -12,6 +12,7 @@ import freelancerImage from "../../public/images/Freelancer-Planning.webp";
 import Loader from "./components/Loader/Loader";
 import { uploadFile } from "./server/services/DatabaseService";
 import UploadComponent from "./components/FileUpload/FileUpload";
+import GetApplication from "./temp/temp";
 
 //Landing page UI
 export default function Home() {
@@ -22,7 +23,7 @@ export default function Home() {
   async function signinClick() {
 
     setLoading(true);
-
+    
     await AuthService.signin();
 
     LoginRedirect(router);
@@ -31,10 +32,14 @@ export default function Home() {
   }
   return (
     <main className="flex h-screen">
-
-    <UploadComponent uploadFunction={uploadFile} path="CV"/>
       <Loader loading={loading}></Loader>
       {/* Left Side */}
+      <GetApplication
+      JobID="94Klj1Z9Y6h8nWLpGVke"
+      EstimatedTimeline={20050607}
+      BidAmount={200}
+      ApplicantID="vWTe2YK6zBZYy9JAwdxC1TksJvf1"
+      CVURL="https://firebasestorage.googleapis.com/v0/b/tasknet-4bede.firebasestorage.app/o/CV%2Ftest2CV?alt=media&token=14e5c927-14bd-45ae-be28-d6f7466ea67b"/>
       <section className="w-1/2 bg-violet-700 text-neutral-900 flex items-center justify-center p-10">
         <article className="flex flex-col items-center text-center">
           {/* Logo */}

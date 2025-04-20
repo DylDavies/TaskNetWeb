@@ -1,76 +1,58 @@
 "use client";
-import { approveUser, denyUser } from "@/app/server/services/DatabaseService";
+import { acceptApplicant, rejectApplicant } from "@/app/server/services/ApplicationDatabaseServices";
 import React, { useEffect, useState } from "react";
 
-interface User  {
-  uid: string;
-  username: string;
-  status: number;
-  type: number; // Do we not need role like freelancer and client?
-  date: number;
-  
+interface Applicants  {
+    applicationid: string;
+    ApplicationDate: number;
+    BidAmount: number;
+    EstimatedTimeline: number;
+    Status: number;  
+    username: Promise<string>;
 }
 /*
   previously was name, role and date
 */
 
 interface Props {
-  data: User[];
-  onRowClick?: (user: User) => void;
+  data: Applicants[];
+  onRowClick?: (user: Applicants) => void;
 }
 const FATable: React.FC<Props> = ({ data,onRowClick }) => {
   //console.log(`The data is: ${JSON.stringify(data, null, 2)}`); //sanity check
-  const [pendingUsers, setPendingUsers] = useState<User[]>(data);
+  const [pendingApplicants, setPendingApplicants] = useState<Applicants[]>(data);
 
   useEffect(() => {
-    setPendingUsers(data);
+    setPendingApplicants(data);
     console.log(
-      "new Updated pending users with new data:",
+      "new Updated pending applicants with new data:",
       JSON.stringify(data, null, 3)
     );
   }, [data]);
 
-  const handleApprove = async (uid: string) => {
+  const handleAccept = async (aid: string) => {
     try {
-      await approveUser(uid);
-      setPendingUsers((currentUser) =>
-        currentUser.filter((user) => user.uid != uid)
+      await acceptApplicant(aid);
+      setPendingApplicants((currentApplicant) =>
+        currentApplicant.filter((applicant) => applicant.applicationid != aid)
       ); // for updating table when approved
-      console.log(`Successfully approved user ${uid}`);
+      console.log(`Successfully accepted applicant ${aid}`);
     } catch (error) {
-      console.error(`Error when trying to approve user ${error}`);
+      console.error(`Error when trying to accept applicant ${error}`);
     }
   };
 
-  const handleDeny = async (uid: string) => {
+  const handleReject = async (aid: string) => {
     try {
-      await denyUser(uid);
-      setPendingUsers((currentUser) =>
-        currentUser.filter((user) => user.uid != uid)
+      await rejectApplicant(aid);
+      setPendingApplicants((currentApplicant) =>
+        currentApplicant.filter((applicant) => applicant.applicationid != aid)
       ); // for updating table when approved
-      console.log(`Successfully Denied user ${uid}`);
+      console.log(`Successfully rejected applicant ${aid}`);
     } catch (error) {
-      console.error(`Error when trying to deny user ${error}`);
+      console.error(`Error when trying to reject applicant ${error}`);
     }
   };
-
-  //This function will convert type from a number to a String
-  function TypeHelper(type: number): string {
-    
-    switch (type) {
-                case 0:
-                  return "No User type";
-                case 1:
-                  return "Freelancer";
-                case 2:
-                  return "Client";
-                case 3:
-                  return "Admin";
-                default:
-                  return "Error";
-              } 
-  }
-  
 
   return (
     <>
@@ -89,7 +71,7 @@ const FATable: React.FC<Props> = ({ data,onRowClick }) => {
         </tr>
       </thead>
       <tbody className="divide-y divide-gray-700 bg-gray-800">
-        {pendingUsers.map((item, index) => (
+        {pendingApplicants.map((item, index) => (
           <tr 
             key={index} 
             onClick={() => onRowClick?.(item)} 
@@ -104,10 +86,9 @@ const FATable: React.FC<Props> = ({ data,onRowClick }) => {
                   />
                 </section>
                 <section>
-                  <p className="font-semibold">{item.uid}</p>
                   <p className="font-semibold">{item.username}</p>
-                  <p className="text-xs text-gray-400">
-                    {TypeHelper(item.type)}
+                  <p className="font-semibold">Bid amount: {item.BidAmount}</p>
+                  <p className="text-xs text-gray-400">Application date:  {item.ApplicationDate}
                   </p>
                 </section>
               </section>
@@ -126,13 +107,13 @@ const FATable: React.FC<Props> = ({ data,onRowClick }) => {
             {/* Approve and Deny buttons */}
             <td className="px-4 py-3 text-xs space-x-2">
               <button
-                onClick={() => handleApprove(item.uid)}
+                onClick={() => handleAccept(item.applicationid)}
                 className="px-2 py-1 font-semibold leading-tight rounded-full bg-green-700 text-green-100 transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
               >
                 Accept
               </button>
               <button
-                onClick={() => handleDeny(item.uid)}
+                onClick={() => handleReject(item.applicationid)}
                 className="px-2 py-1 font-semibold leading-tight rounded-full bg-red-700 text-red-100 transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
               >
                 Reject

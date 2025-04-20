@@ -113,8 +113,10 @@ const sendEmail = (to: string, subject: string, text: string) => {
   });
 };
 
+
+type OnProgressCallback = (progress: number) => void;
 //this fucntion will take in a file, the path in which the file must be stored and file name, it will then store the file in the database in the given path and return the url at which the file can be accessed
-const uploadFile = (file: File, path: string, name: string): Promise<string> => {
+const uploadFile = (file: File, path: string, name: string, onProgress?: OnProgressCallback): Promise<string> => {
   //promises to return a string this will be the url at which the file can be accessed
   return new Promise((resolve, reject) => {
     const storageRef = ref(storage, `${path}/${name}`);
@@ -141,4 +143,13 @@ const uploadFile = (file: File, path: string, name: string): Promise<string> => 
   });
 }
 
-export { getUser, getPendingUsers, approveUser, denyUser, setUserType, SetUserName, sendEmail, uploadFile};
+//this function will take in a users uid and return their username
+async function getUsername(uid: string): Promise<string>{
+    const user = await getUser(uid)
+    if (user !== null){
+      return user.username;
+    }
+    return "No username";
+} 
+export { getUser, getPendingUsers, approveUser, denyUser, setUserType, SetUserName, sendEmail, getUsername, uploadFile };
+
