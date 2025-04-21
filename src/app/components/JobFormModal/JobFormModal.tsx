@@ -33,7 +33,9 @@ const JobForm: React.FC<Props> = ({data}) => {
     const handleApplicationSubmit = (e: React.FormEvent) => 
     {
       e.preventDefault();
-      setApplicantID(user?.authUser.uid!);
+      if(user?.authUser.uid){
+        setApplicantID(user?.authUser.uid);
+      }
       handleUpload();
       setJobID(data.jobId);
       AddApplication(applicantID, bidAmount, CVURL, estismatedTimeline, jobID);
