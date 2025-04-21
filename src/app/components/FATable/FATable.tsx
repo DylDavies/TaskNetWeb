@@ -2,11 +2,12 @@
 import { acceptApplicant, rejectApplicant } from "@/app/server/services/ApplicationDatabaseServices";
 import React, { useEffect, useState } from "react";
 import ApplicantionStatus from "@/app/enums/ApplicantionStatus.enum";
-
+import { createNotification } from "@/app/server/services/NotificationService";
+import ClientModal from "../ClientModal/clientModal";
 
 interface Applicants  {
     
-
+    ApplicationID: string;
     ApplicantID: string;
     ApplicationDate: number;
     BidAmount: number;
@@ -16,9 +17,6 @@ interface Applicants  {
     Status: ApplicantionStatus;
     username: Promise<string>;
 }
-/*
-  previously was name, role and date
-*/
 
 interface Props {
   data: Applicants[];
@@ -35,35 +33,61 @@ const FATable: React.FC<Props> = ({ data,onRowClick }) => {
       JSON.stringify(data, null, 3)
     );
   }, [data]);
+  const [selectedApplicant, setSelectedApplicant] = useState<Applicants | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  
+    const handleApplicationView = (ApplicantID: Applicants) => {
+      
+      console.log("selected applicant",ApplicantID);
+      setSelectedApplicant(ApplicantID);
+      setModalOpen(true);
+    };
+  
+    const closeModal = () => {
+      setModalOpen(false);        
+      setSelectedApplicant(null); 
+    };
 
-  const handleAccept = async (aid: string) => {
+  const handleAccept = async (aid: string, uid: string) => {
     try {
       await acceptApplicant(aid);
       setPendingApplicants((currentApplicant) =>
-        currentApplicant.filter((applicant) => applicant.ApplicantID != aid)
+        currentApplicant.filter((applicant) => applicant.ApplicationID != aid)
       ); // for updating table when approved
-      console.log(`Successfully accepted applicant ${aid}`);
+      //console.log(`Successfully accepted applicant ${aid}`);
     } catch (error) {
       console.error(`Error when trying to accept applicant ${error}`);
     }
+    createNotification({
+      message: "Your application has been accepted",
+      seen: false,
+      uidFor: uid
+    })
+
+    console.log("user", uid);
   };
 
-  const handleReject = async (aid: string) => {
+  const handleReject = async (aid: string, uid: string ) => {
     try {
       await rejectApplicant(aid);
       setPendingApplicants((currentApplicant) =>
         currentApplicant.filter((applicant) => applicant.ApplicantID != aid)
       ); // for updating table when approved
-      console.log(`Successfully rejected applicant ${aid}`);
+      //console.log(`Successfully rejected applicant ${aid}`);
     } catch (error) {
       console.error(`Error when trying to reject applicant ${error}`);
     }
+    createNotification({
+      message: "Your application has been rejected",
+      seen: false,
+      uidFor: uid
+    })
   };
 
   return (
     <>
       <h4 className="mb-4 text-lg font-semibold text-gray-300">
-  Click to view an applicants application
+  Click to "view" to see an applicants application
 </h4>
 <section className="w-full mb-8 overflow-hidden rounded-lg shadow-xs box">
   <section className="w-full overflow-x-auto">
@@ -107,19 +131,30 @@ const FATable: React.FC<Props> = ({ data,onRowClick }) => {
               </strong>
             </td>
 
-            {/* Date column */}
-            {/*<td className="px-4 py-3 text-sm">{item.date}</td>*/}
-
-            {/* Approve and Deny buttons */}
+            {/* Accept, Reject and View buttons */}
             <td className="px-4 py-3 text-xs space-x-2">
               <button
-                onClick={() => handleAccept(item.ApplicantID)}
+                onClick={() => handleApplicationView(item)}
+                className="px-2 py-1 font-semibold leading-tight rounded-full bg-purple-800 text-purple-100 transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
+              >
+                  View
+                </button>
+                {/*Modal to display an applicants application*/}
+                {modalOpen && selectedApplicant && (
+                <ClientModal
+                 data={selectedApplicant}
+                isOpen={modalOpen}
+                onClose={closeModal} 
+          /> 
+            )}
+              <button
+                onClick={() => handleAccept(item.ApplicationID, item.ApplicantID)}
                 className="px-2 py-1 font-semibold leading-tight rounded-full bg-green-700 text-green-100 transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
               >
                 Accept
               </button>
               <button
-                onClick={() => handleReject(item.ApplicantID)}
+                onClick={() => handleReject(item.ApplicationID, item.ApplicantID)}
                 className="px-2 py-1 font-semibold leading-tight rounded-full bg-red-700 text-red-100 transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
               >
                 Reject

@@ -26,9 +26,12 @@ const ClientModal: React.FC<Props> = ({ data, isOpen, onClose }) => {
   const [modalIsOpen, setIsOpen] = React.useState(isOpen);
   const [jobTitle, setJobTitle] = React.useState<string>("");
 
-  useEffect(() => {
+  /*useEffect(() => {
     Modal.setAppElement("#root");
-  }, []);
+  }, []);*/
+  if (typeof window !== "undefined") {
+    Modal.setAppElement(document.body); // You can also use "#__next" if your layout root uses that
+  }
 
   useEffect(() => {
     const fetchJobTitle = async () => {
