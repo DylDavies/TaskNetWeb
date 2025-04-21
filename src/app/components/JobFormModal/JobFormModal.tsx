@@ -1,10 +1,11 @@
 import React, {useContext} from "react";
 import Modal from "react-modal";
-import './JobApplicationForm.css';
 import Button from "../button/Button";
 import { AuthContextType, AuthContext } from "../../AuthContext";
 import { AddApplication, uploadCV }from "@/app/server/services/ApplicationService";
 import { createNotification } from "@/app/server/services/NotificationService";
+import "./JobFormModal.css"
+import InputBar from "../inputbar/InputBar";
 
 type JobData = {
   company: string;
@@ -13,18 +14,25 @@ type JobData = {
 };
 
 type Props = {
-    data : JobData
+    data : JobData,
+    isOpen : boolean,
+    onClose: () => void; 
 }
 
-const JobForm: React.FC<Props> = ({data}) => {
+const JobForm: React.FC<Props> = ({data, isOpen, onClose}) => {
     const { user } = useContext(AuthContext) as AuthContextType;
     const [applicantID, setApplicantID] = React.useState("");
-    const [bidAmount, setBidAmount] = React.useState(0);
+    const [bidAmount, setBidAmount] = React.useState("");
     const [CV, setCV] = React.useState<File | null>(null);
-    const [estismatedTimeline, setEstismatedTimeline] = React.useState(0);
+    const [estismatedTimeline, setEstismatedTimeline] = React.useState("");
     const [jobID, setJobID] = React.useState("");
     const [CVURL, setCVURL] = React.useState("");
+
     const [modalIsOpen, setIsOpen] = React.useState(false);
+
+    React.useEffect(() => {
+            setIsOpen(isOpen);
+    }, [isOpen]);
 
     const handleUpload = async () => {
       const url = await uploadCV(CV!, applicantID);
@@ -39,39 +47,46 @@ const JobForm: React.FC<Props> = ({data}) => {
       }
       handleUpload();
       setJobID(data.jobId);
-      AddApplication(applicantID, bidAmount, CVURL, estismatedTimeline, jobID);
-      createNotification({message: `Pending Application for ${data.jobTitle} by ${data.company}`, seen: false, uidFor: applicantID});
-      closeModal();
-    }
-    
-    /*function openModal(){
-        setIsOpen(true);
-    }*/
-
-    function closeModal(){
-        setIsOpen(false);
+      AddApplication(applicantID, Number(bidAmount), CVURL, Number(estismatedTimeline), jobID);
+      createNotification({message: `Pending Application for ${data.jobTitle}`, seen: false, uidFor: applicantID});
+      onClose();
     }
 
   return (
-    <section>
       <Modal 
         isOpen = {modalIsOpen}
-        onRequestClose={closeModal}
-        className={"Modal"}
-        ariaHideApp={false}>
-            <form>
-            <button type="button" onClick={closeModal} className="Close">X</button> <br></br>
-            <header>Job Application Form for {data.jobTitle} by {data.company}</header> <br></br>
-            <label htmlFor="pdf">Please attach your cover letter</label><br></br>
+        onRequestClose={onClose}
+        className=" rounded-2xl p-6 w-full max-w-lg shadow-lg text-white max-h-[90vh] overflow-y-auto z-50"
+        overlayClassName="fixed inset-0 bg-purple bg-opacity-0 backdrop-blur-sm z-[100] flex items-center justify-center">
+          <section className="fixed inset-0 flex items-center justify-center z-50 bg-opacity-50 ">
+            <article className="bg-neutral-800 rounded-2xl p-6 w-full max-w-lg shadow-lg text-white max-h-[90vh] overflow-y-auto">
+            <section className="flex justify-between items-center mb-4">
+                <header className="text-xl font-bold">Job Application Form: {data.jobTitle}</header>
+                <button type="button" onClick={onClose} className="text-white text-xl hover:text-red-400">x</button>
+            </section>
+            <form  className="flex flex-col gap-1">
+              <section className="flex items-center gap-2 mb-2">
+                <label htmlFor="pdf">CV</label><br></br>
                 <input type="file" accept=".pdf" id ="pdf" name="pdf" onChange={(e) => {const file = e.target.files?.[0]; if(file){setCV(file);}}}></input><br></br>
-                <label htmlFor="timeLine">Please write down your estimated time line</label><br></br>
-                <input type="date" id="timeLine" name="timeLine" value ={estismatedTimeline} onChange={(e) => setEstismatedTimeline(Number(e.target.value))}></input><br></br>
-                <label htmlFor="bid">Please write down your bid</label><br></br>
-                <input type="text" id="bid" name ="bid" value={bidAmount} onChange={(e) => setBidAmount(Number(e.target.value))}></input><br></br>
-                <Button caption = {"Submit"} onClick={() => handleApplicationSubmit}></Button>
+              </section>
+
+                <section className="flex items-center gap-2 mb-2">
+                  <label htmlFor="timeLine" className="text-ms font-medium">Timeline</label>
+                  <InputBar type="date" value ={estismatedTimeline} onChange={(e) => setEstismatedTimeline(e.target.value)}/>
+                </section>
+
+                <section className="flex items-center gap-2 mb-2">
+                  <InputBar type="text" placeholder="Bid value" value={bidAmount} onChange={(e) => setBidAmount(e.target.value)}/>
+                </section>
+
+                <section className="flex justify-end">
+                  <Button caption = {"Submit"} onClick={() => handleApplicationSubmit}></Button>
+                </section>
+
             </form>
+            </article>
+          </section>
     </Modal>
-    </section>
   );
 };
 
