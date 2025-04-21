@@ -119,7 +119,6 @@ const uploadFile = (file: File, path: string, name: string): Promise<string> => 
   return new Promise((resolve, reject) => {
     const storageRef = ref(storage, `${path}/${name}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
-
     uploadTask.on(
       "state_changed",
       () => {},
