@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import ApplicantionStatus from "@/app/enums/ApplicantionStatus.enum";
 import { createNotification } from "@/app/server/services/NotificationService";
 import ClientModal from "../ClientModal/clientModal";
+import { formatDateAsString } from "@/app/server/formatters/FormatDates";
 
 interface Applicants  {
     
@@ -63,8 +64,6 @@ const FATable: React.FC<Props> = ({ data,onRowClick }) => {
       seen: false,
       uidFor: uid
     })
-
-    console.log("user", uid);
   };
 
   const handleReject = async (aid: string, uid: string ) => {
@@ -117,8 +116,8 @@ const FATable: React.FC<Props> = ({ data,onRowClick }) => {
                 </section>
                 <section>
                   <p className="font-semibold">{item.username}</p>
-                  <p className="font-semibold">Bid amount: {item.BidAmount}</p>
-                  <p className="text-xs text-gray-400">Application date:  {item.ApplicationDate}
+                  <p className="font-semibold">Bid amount: R{item.BidAmount}</p>
+                  <p className="text-xs text-gray-400">Application date:  {formatDateAsString(item.ApplicationDate)}
                   </p>
                 </section>
               </section>
