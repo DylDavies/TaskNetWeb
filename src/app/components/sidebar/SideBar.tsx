@@ -1,5 +1,6 @@
 import React, { JSX } from "react";
 import Link from "next/link";
+import CreateJobModal from "../CreateJobModal/CreateJobModal";
 
 /*
 ------NOTE TO USER OF THIS COMPONENT-----
@@ -57,7 +58,7 @@ const SideBar =  ({ items ,myfunction}: SideBarProps ) => {
           
     {myfunction &&(
        <li  className="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded hover-effect">
-      Create a Job
+      <CreateJobModal/>
      </li>
      )}
     </ul>

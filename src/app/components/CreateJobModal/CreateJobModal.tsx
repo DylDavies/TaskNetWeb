@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, ChangeEvent } from "react";
 import InputBar from "../inputbar/InputBar";
 import Button from "../button/Button";
 import "../button/Button.css";
@@ -212,6 +212,29 @@ const CreateJobModal = () => {
     setFilteredSkills(updatedAvailable);
   };
 
+  //This function will prevent crashing on invalid dates and instead warn the user
+  const handleDateChange = (e: { target: { value: any; }; }) => {
+    const inputValue = e.target.value;
+    
+    // Basic check if input is empty
+    if (!inputValue) {
+      toast.error("Please select a date");
+      return;
+    }
+    
+    // Parse the date
+    const newDate = new Date(inputValue);
+    
+    // Check if date is valid
+    if (isNaN(newDate.getTime())) {
+      toast.error("Invalid date format");
+      return;
+    }
+    
+    // If all checks pass
+    setDeadline(newDate);
+  };
+
   function openModal() {
     setIsOpen(true);
   }
@@ -312,7 +335,7 @@ const CreateJobModal = () => {
               </section>
               <InputBar
                 value={deadline.toISOString().split("T")[0]} // Only pass yyyy-mm-dd to the input field
-                onChange={(e) => setDeadline(new Date(e.target.value))} // Handle input as full Date
+                onChange={(e) => handleDateChange(e)} // Handle input as full Date
                 placeholder="Deadline"
                 type="date"
               />
