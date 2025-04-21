@@ -22,7 +22,9 @@ const routes: { [key: string]: UserType } = {
   "/client": UserType.Client,
   "/freelancer": UserType.Freelancer,
   "/admin": UserType.Admin,
-  "/signup": UserType.None
+  "/signup": UserType.None,
+  "/jobSearch": UserType.Freelancer,
+  "/FreelancerApplicationView": UserType.Client
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);

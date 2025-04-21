@@ -18,18 +18,15 @@ import { formatBudget } from "../server/formatters/Budget";
 import { getUsername } from "../server/services/DatabaseService";
 import ActiveJob from "../interfaces/ActiveJob.interface";
 import JobStore from "../JobStore";
+import { PropagateLoader } from "react-spinners";
 //import { sanitizeJobData } from "../server/formatters/JobDataSanitization";
 
-
-
 //constant for links to other pages
-
 const links = [{ name: "Home", href: "/" }];
-let ClickedJobId = "";
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
-  const [jobCards, setJobCards] = useState<ActiveJob[]>([]);
+  const [jobCards, setJobCards] = useState<ActiveJob[] | null>(null);
 
   const router = useRouter();
 
@@ -75,9 +72,7 @@ export default function Page() {
 
   // Click handler for clicking on a job card
   function handleCardClick(job: ActiveJob): void {
-    console.log(job.jobId); // need this for linter & testing
-    ClickedJobId = job.jobId;
-    JobStore.setJobId(ClickedJobId);
+    JobStore.setJobId(job.jobId);
     router.push("/FreelancerApplicationView")
   }
 
@@ -110,22 +105,26 @@ export default function Page() {
               <h2 className="text-2xl font-bold text-gray-300 flex justify-center">My job postings: </h2>
               <h3 className="text-2xl italic text-gray-300 flex justify-center">Click to see applicants: </h3>
               <section className ="border-2 border-gray-600 rounded-lg p-4 flex flex-wrap justify-center gap-6">
-              {jobCards.length > 0 ? (
-                jobCards.map((job, index) => (
-                  <JobCard
-                    key={index}
-                    company={username}
-                    jobTitle={job.jobData.title}
-                    budget={formatBudget(job.jobData.budgetMin, job.jobData.budgetMax)}
-                    deadline={formatDateAsString(job.jobData.deadline)}
-                    skills={Object.values(job.jobData.skills).flat()}
-                    onClick={() => handleCardClick(job)}
-                    hired={job.jobData.status}
-                  />
-                ))
-              ) : (
-                <p className="text-gray-300 text-lg">No job postings yet.</p>
-              )}
+                {
+                  jobCards == null ?
+                  <PropagateLoader color="#ffffff" className="mb-2"></PropagateLoader>
+                  : jobCards.length > 0 ? (
+                    jobCards.map((job, index) => (
+                      <JobCard
+                        key={index}
+                        company={username}
+                        jobTitle={job.jobData.title}
+                        budget={formatBudget(job.jobData.budgetMin, job.jobData.budgetMax)}
+                        deadline={formatDateAsString(job.jobData.deadline)}
+                        skills={Object.values(job.jobData.skills).flat()}
+                        onClick={() => handleCardClick(job)}
+                        hired={job.jobData.status}
+                      />
+                    ))
+                  ) : (
+                    <p className="text-gray-300 text-lg">No job postings yet.</p>
+                  )
+                }
               </section>
               
             </section>
