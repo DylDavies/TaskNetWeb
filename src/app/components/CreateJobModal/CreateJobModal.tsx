@@ -213,7 +213,7 @@ const CreateJobModal = () => {
   };
 
   //This function will prevent crashing on invalid dates and instead warn the user
-  const handleDateChange = (e: { target: { value: any; }; }) => {
+  const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     
     // Basic check if input is empty

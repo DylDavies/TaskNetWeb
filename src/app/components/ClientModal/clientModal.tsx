@@ -4,6 +4,7 @@ import Modal from "react-modal";
 import React, { useEffect } from "react";
 import "./clientModal.css";
 import { getJob } from "@/app/server/services/JobDatabaseService";
+import { formatDateAsString } from "@/app/server/formatters/FormatDates";
 
 interface Applicants {
   JobID: string;
@@ -86,7 +87,7 @@ const ClientModal: React.FC<Props> = ({ data, isOpen, onClose }) => {
 
               <section>
                 <h3 className="font-semibold">Estimated Timeline</h3>
-                <p>{data.EstimatedTimeline}</p>
+                <p>{formatDateAsString(data.EstimatedTimeline)}</p>
               </section>
 
               <section>
