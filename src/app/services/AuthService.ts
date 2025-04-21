@@ -15,8 +15,13 @@ export default class AuthService {
         const session = await ApiService.sessionExists();
     
         if (session.presence && session.customToken) {
-            await signInWithCustomToken(auth, session.customToken);
-            return true;
+            try {
+                await signInWithCustomToken(auth, session.customToken);
+                return true;
+            } catch (error) {
+                console.error(error);
+                return false;
+            }
         }
 
         return false;
@@ -28,8 +33,13 @@ export default class AuthService {
         const session = await ApiService.sessionExists();
     
         if (session.presence && session.customToken) {
-            await signInWithCustomToken(auth, session.customToken);
-            return true;
+            try {
+                await signInWithCustomToken(auth, session.customToken);
+                return true;
+            } catch (error) {
+                console.error(error);
+                return false;
+            }
         }
     
         try {
