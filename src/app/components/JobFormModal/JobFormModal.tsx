@@ -2,10 +2,14 @@ import React, {useContext} from "react";
 import Modal from "react-modal";
 import Button from "../button/Button";
 import { AuthContextType, AuthContext } from "../../AuthContext";
-import { AddApplication, uploadCV }from "@/app/server/services/ApplicationService";
+import { AddApplication, makeApplicationID}from "@/app/server/services/ApplicationService";
 import { createNotification } from "@/app/server/services/NotificationService";
 import "./JobFormModal.css"
 import InputBar from "../inputbar/InputBar";
+import { uploadFile } from "@/app/server/services/DatabaseService";
+import UploadComponent from "../FileUpload/FileUpload";
+import toast from "react-hot-toast";
+import { convertDateStringToNumber } from "@/app/server/formatters/FormatDates";
 
 type JobData = {
   company: string;
@@ -23,33 +27,71 @@ const JobForm: React.FC<Props> = ({data, isOpen, onClose}) => {
     const { user } = useContext(AuthContext) as AuthContextType;
     const [applicantID, setApplicantID] = React.useState("");
     const [bidAmount, setBidAmount] = React.useState("");
-    const [CV, setCV] = React.useState<File | null>(null);
     const [estismatedTimeline, setEstismatedTimeline] = React.useState("");
     const [jobID, setJobID] = React.useState("");
     const [CVURL, setCVURL] = React.useState("");
-
     const [modalIsOpen, setIsOpen] = React.useState(false);
 
     React.useEffect(() => {
-            setIsOpen(isOpen);
-    }, [isOpen]);
-
-    const handleUpload = async () => {
-      const url = await uploadCV(CV!, applicantID);
-      setCVURL(url);
-    }
-
-    const handleApplicationSubmit = (e: React.FormEvent) => 
-    {
-      e.preventDefault();
-      if(user?.authUser.uid){
-        setApplicantID(user?.authUser.uid);
+      setIsOpen(isOpen);
+    }, [isOpen]); // Separate effect just for isOpen sync
+    
+    React.useEffect(() => {
+      if (user?.authUser?.uid) {
+        setApplicantID(user.authUser.uid);
       }
-      handleUpload();
+    }, [user]); // Only run when user changes
+    
+    React.useEffect(() => {
       setJobID(data.jobId);
-      AddApplication(applicantID, Number(bidAmount), CVURL, Number(estismatedTimeline), jobID);
-      createNotification({message: `Pending Application for ${data.jobTitle}`, seen: false, uidFor: applicantID});
-      onClose();
+    }, [data.jobId]); // Only run when jobId changes
+    
+    // Derived application ID (no need for useEffect)
+    const applicationID = applicantID && jobID ? makeApplicationID(jobID, applicantID) : " ";
+
+    const handleUploadComplete = (url: string) => {
+      setCVURL(url);
+      // You can do more with the URL here, like save it to your database
+    };
+
+    const handleApplicationSubmit = async () => 
+    {
+      try {
+        if (!CVURL) {
+          toast.error("Please upload your CV first");
+          return;
+        }
+
+        if(!bidAmount){
+          toast.error("Please enter a bid amount first");
+          return;
+        }
+
+        if(!estismatedTimeline){
+          toast.error("Please enter your estimated timeline");
+          return;
+        }
+        console.log(estismatedTimeline);
+        await AddApplication(
+            applicantID, 
+            Number(bidAmount), 
+            CVURL, 
+            convertDateStringToNumber(estismatedTimeline), 
+            jobID
+        );
+
+
+        await createNotification({
+            message: `Pending Application for ${data.jobTitle}`, 
+            seen: false, 
+            uidFor: applicantID
+        });
+        toast.success("Application submitted successfuly!")
+        onClose();
+    } catch (error) {
+      toast.error("Submission failed, please try again");
+      console.error("Application sibmission error:", error);
+    }
     }
 
   return (
@@ -64,10 +106,15 @@ const JobForm: React.FC<Props> = ({data, isOpen, onClose}) => {
                 <header className="text-xl font-bold">Job Application Form: {data.jobTitle}</header>
                 <button type="button" onClick={onClose} className="text-white text-xl hover:text-red-400">x</button>
             </section>
-            <form  className="flex flex-col gap-1">
+           
               <section className="flex items-center gap-2 mb-2">
                 <label htmlFor="pdf">CV</label><br></br>
-                <input type="file" accept=".pdf" id ="pdf" name="pdf" onChange={(e) => {const file = e.target.files?.[0]; if(file){setCV(file);}}}></input><br></br>
+                <UploadComponent
+                  uploadFunction={uploadFile}
+                  path="CV"
+                  name={applicationID}
+                  onUploadComplete={handleUploadComplete}
+                />
               </section>
 
                 <section className="flex items-center gap-2 mb-2">
@@ -78,12 +125,10 @@ const JobForm: React.FC<Props> = ({data, isOpen, onClose}) => {
                 <section className="flex items-center gap-2 mb-2">
                   <InputBar type="text" placeholder="Bid value" value={bidAmount} onChange={(e) => setBidAmount(e.target.value)}/>
                 </section>
-
                 <section className="flex justify-end">
-                  <Button caption = {"Submit"} onClick={() => handleApplicationSubmit}></Button>
+                  <Button caption = {"Submit"} onClick={handleApplicationSubmit}></Button>
                 </section>
 
-            </form>
             </article>
           </section>
     </Modal>

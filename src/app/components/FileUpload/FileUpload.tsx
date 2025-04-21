@@ -1,7 +1,6 @@
 import { Upload } from "lucide-react";
-import { useState } from "react";
 import toast from "react-hot-toast";
-
+//props for upload funciton
 type UploadFunction = (
   file: File,
   path: string,
@@ -18,8 +17,6 @@ type UploadComponentProps = {
 
 function UploadComponent({ uploadFunction, path, name, onUploadComplete  }: UploadComponentProps) {
   //const [progress, setProgress] = useState<number>(0);
-  const [downloadURL, setDownloadURL] = useState<string | null>(null);
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
@@ -30,10 +27,8 @@ function UploadComponent({ uploadFunction, path, name, onUploadComplete  }: Uplo
 
       uploadFunction(file, path, name)
         .then((url) => {
-          setDownloadURL(url);
           toast.dismiss(toastId);
           toast.success("Upload complete!");
-          console.log(downloadURL);
 
           if (onUploadComplete) {
             onUploadComplete(url);
@@ -49,7 +44,7 @@ function UploadComponent({ uploadFunction, path, name, onUploadComplete  }: Uplo
   };
 
   return (
-    <section className="p-4 border rounded-lg w-80 flex flex-col items-center gap-4">
+    <section>
       <label className="cursor-pointer flex items-center gap-2 bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700">
         <Upload className="w-5 h-5" />
         Upload
