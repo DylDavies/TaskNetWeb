@@ -87,7 +87,7 @@ const FATable: React.FC<Props> = ({ data,onRowClick }) => {
   return (
     <>
       <h4 className="mb-4 text-lg font-semibold text-gray-300">
-  Click to "view" to see an applicants application
+  Click view to see an applicants application
 </h4>
 <section className="w-full mb-8 overflow-hidden rounded-lg shadow-xs box">
   <section className="w-full overflow-x-auto">
