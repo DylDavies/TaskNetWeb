@@ -15,28 +15,26 @@ async function getApplicant(ApplicantID: string): Promise<ApplicantData | null> 
 };
 
 // Fetch pending applicants Endpoint:
-async function getPendingApplicants(): Promise<{applicationid:string; Status:number, ApplicationDate: number, BidAmount: number, CVURL: string,EstimatedTimeline: number,JobID: string,username:Promise<string>}[]>{
+async function getPendingApplicants(JobID: string): Promise<{ApplicantID:string; Status:number, ApplicationDate: number, BidAmount: number, CVURL: string,EstimatedTimeline: number,JobID: string,username:Promise<string>}[]>{
     const dbRef = collection(db,'applications'); 
-    const pending = query(dbRef,where('Status', '==', ApplicantionStatus.Pending));
+    const pending = query(dbRef,where('Status', '==', ApplicantionStatus.Pending), where('JobID', '==', JobID));
     console.log(pending)
 
     const snapshot = await getDocs(pending);
 
     const pendingApplicants = snapshot.docs.map(doc => ({
 
-        applicationid: doc.id,
+        ApplicantID: doc.id,
         ApplicationDate: doc.data().ApplicationDate,
         BidAmount: doc.data().BidAmount,
         CVURL: doc.data().CVURL,
         EstimatedTimeline: doc.data().EstimatedTimeline,
         JobID: doc.data().JobID,
         Status: doc.data().Status,
-        username: getUsername(doc.data().ApplicantID)
+        username:getUsername(doc.data().ApplicantID)
         
         
     }));
-
-    console.log("poes",pendingApplicants);
 
     return pendingApplicants;
 };  
