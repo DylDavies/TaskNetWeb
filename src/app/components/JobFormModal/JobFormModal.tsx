@@ -4,6 +4,7 @@ import './JobApplicationForm.css';
 import Button from "../button/Button";
 import { AuthContextType, AuthContext } from "../../AuthContext";
 import { AddApplication, uploadCV }from "@/app/server/services/ApplicationService";
+import { createNotification } from "@/app/server/services/NotificationService";
 
 type JobData = {
   company: string;
@@ -39,6 +40,7 @@ const JobForm: React.FC<Props> = ({data}) => {
       handleUpload();
       setJobID(data.jobId);
       AddApplication(applicantID, bidAmount, CVURL, estismatedTimeline, jobID);
+      createNotification({message: `Pending Application for ${data.jobTitle} by ${data.company}`, seen: false, uidFor: applicantID});
       closeModal();
     }
     
