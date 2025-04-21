@@ -87,9 +87,16 @@ export default function Page() {
   const [selectedApplicant, setSelectedApplicant] = useState<ApplicantData | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const handleRowClick = (applicant: ApplicantData) => {
-    setSelectedApplicant(applicant);
+  const handleRowClick = (ApplicantID: ApplicantData) => {
+    
+    console.log("selected applicant",ApplicantID);
+    setSelectedApplicant(ApplicantID);
     setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);        
+    setSelectedApplicant(null); 
   };
 
 
@@ -118,14 +125,14 @@ export default function Page() {
 
               {/* FATable moved down */}
               <section className="w-full max-w-8xl mt-36">
-                <FATable data={pendingApplicants} onRowClick={handleRowClick}/>
+                <FATable data={pendingApplicants} onRowClick={(applicant) => handleRowClick(applicant)}/>
                 {/* Conditionally render the modal when selectedApplicant exists */}
-              {selectedApplicant && (
-              <ClientModal
-                data={selectedApplicant}
-                isOpen={modalOpen}
-              
-              />
+                {modalOpen && selectedApplicant && (
+          <ClientModal
+            data={selectedApplicant}
+            isOpen={modalOpen}
+            onClose={closeModal} // Pass the closeModal function
+          /> 
             )}
               </section>
             </section>

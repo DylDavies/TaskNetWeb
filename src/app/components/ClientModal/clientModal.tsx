@@ -1,5 +1,5 @@
 import Modal from "react-modal";
-import React from "react";
+import React, { useEffect } from "react";
 import "./clientModal.css"
 //import "./global.css"
 
@@ -17,19 +17,24 @@ interface Applicants  {
 interface Props {
     data: Applicants;
     isOpen: boolean;
+    onClose: () => void; 
   }
 
-const ClientModal:  React.FC<Props> = ({data})=> {
+  const ClientModal: React.FC<Props> = ({ data, isOpen, onClose }) => {
+    const [modalIsOpen, setIsOpen] = React.useState(isOpen);
 
-    const[modalIsOpen, setIsOpen] = React.useState(false);
     /*function openModal(){
         setIsOpen(true);
     }*/
 
-    function closeModal(){
-        setIsOpen(false);
-    }
+    useEffect(() => {
+        setIsOpen(isOpen);
+    }, [isOpen]);
 
+    function closeModal() {
+        setIsOpen(false);
+        onClose(); // Call the onClose callback
+    }
     
     return(
          

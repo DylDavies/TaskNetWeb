@@ -18,7 +18,6 @@ import { formatBudget } from "../server/formatters/Budget";
 import { getUsername } from "../server/services/DatabaseService";
 import ActiveJob from "../interfaces/ActiveJob.interface";
 import JobStore from "../JobStore";
-import { getJob } from "../server/services/JobDatabaseService";
 //import { sanitizeJobData } from "../server/formatters/JobDataSanitization";
 
 
@@ -31,8 +30,6 @@ let ClickedJobId = "";
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
   const [jobCards, setJobCards] = useState<ActiveJob[]>([]);
-  const [jobTitle, setJobTitle] = useState<string>("");
-
   const router = useRouter();
 
   //signs the user out of google
@@ -42,23 +39,6 @@ export default function Page() {
   }
   const clientUId = user?.authUser.uid ;
   const [username, setUsername] = useState<string>("");
-
-  //gets the job title to display in the heading
-  useEffect(() => {
-    async function fetchJobTitle() {
-      try {
-        const job = await getJob(JobStore.getJobId());
-        if (job) {
-          setJobTitle(job.title); // assumes title exists
-        }
-      } catch (err) {
-        console.error("Failed to fetch job:", err);
-      }
-    }
-  
-    fetchJobTitle();
-  }, []);
-  
   
 
   // Gets JobData data to populate cards, only will show cards created by the user (client)
@@ -121,7 +101,7 @@ export default function Page() {
 
           <section className="flex-1 p-4 flex flex-col items-center gap-6 overflow-y-auto">
             <WelcomeCard
-              username={jobTitle || "Job title"}
+              username={user?.userData.username || "Username"}
               type="client"
             />
             <section className="w-full px-6">

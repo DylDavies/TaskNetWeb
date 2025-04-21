@@ -11,7 +11,7 @@ import { useEffect } from 'react';
 import { getAllSkills } from "@/app/server/services/SkillsService";
 
 
-let dummySkills =await getAllSkills();
+let dummySkills =  await getAllSkills();
 
 
 const CreateJobModal = () => {
