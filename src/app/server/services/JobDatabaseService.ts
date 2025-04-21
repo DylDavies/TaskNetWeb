@@ -67,8 +67,7 @@ async function updateHiredUId(jobID: string, hiredUId:string){
     await updateDoc(doc(collection(db,"Jobs"),jobID),{
       hiredUId: hiredUId
     });
-  }
-  catch(error){
+  } catch(error){
     console.error("Error occurred when trying to update hiredUId: ", error)
   }
 }

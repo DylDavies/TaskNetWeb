@@ -32,8 +32,6 @@ async function getPendingUsers(): Promise<{uid:string; status:number, type:numbe
         
     }));
 
-    console.log(pendingUsers);
-
     return pendingUsers;
 };
 
@@ -48,7 +46,6 @@ async function setUserType(uid: string, type: number){
         await updateDoc(userRef, {
           type: type
         });
-        console.log(`User type is`, type);
 
       } catch (error) {
         console.error("Could not set user type", error);
@@ -77,18 +74,12 @@ async function denyUser(uid:string):Promise<void>{
 //  This function will take in a username as a string and set update it to the current user in the database
 async function SetUserName(uid: string, username: string){
     try {
-        //if there is a user, will update the username
-            console.log("User UID: ", uid);
-            const userRef = doc(db, "users", uid);
+        const userRef = doc(db, "users", uid);
         await updateDoc(userRef, {
           username: username
         });
-        console.log("Username is", username);
-
-
       } catch (error) {
         console.error("Could not set username", error);
-        throw error;
       };
 };
 
@@ -111,49 +102,34 @@ const sendEmail = (to: string, subject: string, text: string) => {
   };
 
   return new Promise((resolve, reject) => {
-    transporter.sendMail(mailOptions, function (error: Error | null, info: { response: string }) {
+    transporter.sendMail(mailOptions, (error: Error | null, info: { response: string }) => {
       if (error) {
         console.error('Email send error:', error);
         reject(error);
       } else {
-        console.log('Email sent:', info.response);
         resolve(info.response);
       }
     });
   });
 };
 
-
-type OnProgressCallback = (progress: number) => void;
 //this fucntion will take in a file, the path in which the file must be stored and file name, it will then store the file in the database in the given path and return the url at which the file can be accessed
-const uploadFile = (file: File, path: string, name: string, onProgress?: OnProgressCallback): Promise<string> => {
+const uploadFile = (file: File, path: string, name: string): Promise<string> => {
   //promises to return a string this will be the url at which the file can be accessed
   return new Promise((resolve, reject) => {
-    if (!file) {
-      console.log("No file uploaded");
-      reject("No file uploaded");
-      return;
-    }
-
     const storageRef = ref(storage, `${path}/${name}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
     uploadTask.on(
       "state_changed",
-      (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log(`Upload is ${progress.toFixed(0)}% done. State: ${snapshot.state}`);
-        if (onProgress) onProgress(progress);
-      },
+      () => {},
       (error) => {
         console.error("Upload failed", error);
         reject(error);
       },
       () => {
-        console.log("Upload complete");
         getDownloadURL(uploadTask.snapshot.ref)
           .then((downloadURL) => {
-            console.log("Upload complete. File available at:", downloadURL);
             resolve(downloadURL);
           })
           .catch((error) => {
