@@ -54,9 +54,12 @@ const SideBar =  ({ items ,myfunction}: SideBarProps ) => {
 
         </li>
       ))}
-          <li  className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded">
-    {myfunction && myfunction()}
-    </li>
+          
+    {myfunction &&(
+       <li  className="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded hover-effect">
+      Create a Job
+     </li>
+     )}
     </ul>
   </section>
 </aside>

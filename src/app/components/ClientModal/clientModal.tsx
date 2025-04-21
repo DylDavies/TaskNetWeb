@@ -1,94 +1,131 @@
+'use client';
+
 import Modal from "react-modal";
 import React, { useEffect } from "react";
-import "./clientModal.css"
-//import "./global.css"
+import "./clientModal.css";
+import { getJob } from "@/app/server/services/JobDatabaseService";
 
-interface Applicants  {
-    JobID: string;
-    ApplicantID: string;
-    ApplicationDate: number;
-    CVURL: string,
-    BidAmount: number;
-    EstimatedTimeline: number;
-    Status: number;  
-    username: Promise<string>;
+interface Applicants {
+  JobID: string;
+  ApplicantID: string;
+  ApplicationDate: number;
+  CVURL: string;
+  BidAmount: number;
+  EstimatedTimeline: number;
+  Status: number;
+  username: Promise<string>;
 }
 
 interface Props {
-    data: Applicants;
-    isOpen: boolean;
-    onClose: () => void; 
+  data: Applicants;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const ClientModal: React.FC<Props> = ({ data, isOpen, onClose }) => {
+  const [modalIsOpen, setIsOpen] = React.useState(isOpen);
+  const [jobTitle, setJobTitle] = React.useState<string>("");
+
+  /*useEffect(() => {
+    Modal.setAppElement("#root");
+  }, []);*/
+  if (typeof window !== "undefined") {
+    Modal.setAppElement(document.body); // You can also use "#__next" if your layout root uses that
   }
 
-  const ClientModal: React.FC<Props> = ({ data, isOpen, onClose }) => {
-    const [modalIsOpen, setIsOpen] = React.useState(isOpen);
+  useEffect(() => {
+    const fetchJobTitle = async () => {
+      if (data.JobID) {
+        const jobData = await getJob(data.JobID);
+        if (jobData?.title) {
+          setJobTitle(jobData.title);
+        }
+      }
+    };
 
-    /*function openModal(){
-        setIsOpen(true);
-    }*/
-
-    useEffect(() => {
-        setIsOpen(isOpen);
-    }, [isOpen]);
-
-    function closeModal() {
-        setIsOpen(false);
-        onClose(); // Call the onClose callback
+    if (isOpen) {
+      fetchJobTitle();
     }
-    
-    return(
-         
-        <Modal
-          isOpen={modalIsOpen}
-          onRequestClose={closeModal}>
-        <section className="p-6 rounded-xl shadow-md bg-gray-900 text-white max-w-xl mx-auto space-y-6">
-            <header>
-                <h2 className="text-3xl font-bold">Application Details</h2>
-            </header>
+  }, [isOpen, data.JobID]);
 
-            <section>
-                <h3 className="font-semibold">Job ID</h3>
-                <p>{data.JobID}</p>
+  useEffect(() => {
+    setIsOpen(isOpen);
+  }, [isOpen]);
+
+  function closeModal() {
+    setIsOpen(false);
+    onClose();
+  }
+  
+
+  return (
+    <section id="root">
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        className="bg-neutral-800 rounded-2xl p-6 w-full max-w-lg shadow-lg text-white max-h-[90vh] overflow-y-auto z-60"
+        overlayClassName="fixed inset-0 bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center"
+      >
+        <section className="fixed inset-0 flex items-center justify-center z-50 bg-opacity-50">
+          <article className="bg-neutral-800 rounded-2xl p-6 w-full max-w-lg shadow-lg text-white max-h-[90vh] overflow-y-auto">
+            <section className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Application Details</h2>
+              <button
+                onClick={closeModal}
+                className="text-white text-xl hover:text-red-400"
+              >
+                ×
+              </button>
             </section>
 
-            <section>
+            <section className="space-y-4">
+              <section>
+                <h3 className="font-semibold">Job Title</h3>
+                <p>{jobTitle || data.JobID}</p>
+              </section>
+
+              <section>
                 <h3 className="font-semibold">Estimated Timeline</h3>
                 <p>{data.EstimatedTimeline}</p>
-            </section>
+              </section>
 
-            <section>
+              <section>
                 <h3 className="font-semibold">Bid Amount</h3>
                 <p>R{data.BidAmount}</p>
-            </section>
+              </section>
 
-            <section>
-                <h3 className="font-semibold">Applicant ID</h3>
-                <p>{data.ApplicantID}</p>
-            </section>
+              <section>
+                <h3 className="font-semibold">Applicant Name</h3>
+                <p>{data.username}</p>
+              </section>
 
-            <section>
+              <section>
                 <h3 className="font-semibold">CV</h3>
                 <iframe
-                    src={data.CVURL}
-                    title="Applicant CV"
-                    width="100%"
-                    height="500px"
-                    className="rounded border border-gray-700 mt-2"
+                  src={data.CVURL}
+                  title="Applicant CV"
+                  width="100%"
+                  height="500px"
+                  className="rounded border border-gray-700 mt-2"
                 ></iframe>
                 <nav className="mt-2">
-                <a
+                  <a
                     href={data.CVURL}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-400 underline"
-                >
+                  >
                     Download CV
-                </a>
-            </nav>
+                  </a>
+                </nav>
+              </section>
             </section>
-            </section>
-          </Modal>
-    );
+          </article>
+        </section>
+      </Modal>
+    </section>
+  );
 };
+
 
 export default ClientModal;
