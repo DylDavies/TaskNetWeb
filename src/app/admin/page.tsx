@@ -21,8 +21,7 @@ import { AuthContext, AuthContextType } from "../AuthContext";
 const links = [
   { name: "Home", href: "/" },
   { name: "Client", href: "/client" },
-  { name: "Freelancer", href: "/freelancer" }
-];
+  { name: "Freelancer", href: "/freelancer" }];
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;

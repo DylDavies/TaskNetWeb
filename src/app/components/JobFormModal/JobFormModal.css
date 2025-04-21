@@ -1,32 +1,16 @@
-header{
-    text-align: center;
-    font-size: max(2vw, 20px);
-}
-
-.Modal{
-    position: relative;
-    margin-bottom: 20%;
-    padding: 10%;
-}
-
-form{
-    padding: 5%;
-    background-color:  rgba(30, 30, 30, 0.75);
-    opacity: 100%;
-    border-radius: 25px;
-}
-
-.Close{
-    float: right;
-}
-
-input{
-    background-color: rgb(255, 255, 255);
-    color: #1a202c;
-}
-
-label{
-    font-size: max(1.5vw, 15px);
+input {
+    width: 200px;
+    height: 38px;
+    box-shadow: 0 0 0 1.5px #2b2c37, 0 0 25px -17px #000;
+    border: 0;
+    border-radius: 12px;
+    background-color: #26272c;
+    outline: none;
+    color:white;
+    transition: all 0.25s cubic-bezier(0.19, 1, 0.22, 1);
+    cursor: text;
+    z-index: 0;
+    padding: 2%;
 }
 
 .job-card {

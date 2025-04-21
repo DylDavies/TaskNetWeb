@@ -16,12 +16,13 @@ import { getAllJobs } from "../server/services/JobDatabaseService";
 import { formatDateAsString } from "../server/formatters/FormatDates";
 import { formatBudget } from "../server/formatters/Budget";
 import ActiveJob from "../interfaces/ActiveJob.interface";
+import JobForm from "../components/JobFormModal/JobFormModal";
 //import { searchJobsBySkills } from "../server/services/JobDatabaseService";
 
 //constant for links to other pages
 const links = [
   { name: "Home", href: "/" },
-  { name: "freelancer", href: "/freelancer" },
+  { name: "freelancer", href: "/freelancer" }
 ];
 
 export default function Page() {
@@ -29,13 +30,25 @@ export default function Page() {
   const [skills, setSkills] = useState<string[]>([]); // all skills from all skills areas
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]); // Selected skills from filter
   const { user } = useContext(AuthContext) as AuthContextType;
+  const [modalOpen, setModalOpen] = useState(false);
   const router = useRouter();
+  const [data, setData] = useState<JobData>();
+
+  type JobData = {
+    company: string;
+    jobTitle: string;
+    jobId: string;
+  };
 
   //signs the user out of google
   function signoutClick() {
     AuthService.googleSignout();
     router.push("/");
   }
+
+  const closeModal = () => {
+    setModalOpen(false);        
+  };
 
   // Get all skills to populate array for auto-fill
   useEffect(() => {
@@ -79,7 +92,13 @@ export default function Page() {
   // Click handler for clicking on a job card
   function handleCardClick(job: ActiveJob): void {
     console.log(job); // need this for linter & testing
-    alert("Not implemented yet :(");
+    if(job?.jobData && job.jobId){
+      setData({company: job.jobData.clientUId, jobTitle: job.jobData.title, jobId: job.jobId});
+      setModalOpen(true);
+    }
+    else{
+      alert("Error: Something has gone wrong");
+    }
   }
 
   return (
@@ -118,6 +137,13 @@ export default function Page() {
                 onClick={() => handleCardClick(job)}
               />
             ))}
+            {modalOpen && data && (
+          <JobForm
+            data={data}
+            isOpen={modalOpen}
+            onClose={closeModal} 
+          /> 
+            )}
           </section>
         </section>
       </main>

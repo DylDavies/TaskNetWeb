@@ -21,9 +21,7 @@ import ApplicantionStatus from "@/app/enums/ApplicantionStatus.enum";
 
 
 const links = [
-  { name: "back", href: "/client" },
-  
-];
+  { name: "back", href: "/client" }];
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
