@@ -30,7 +30,6 @@ let ClickedJobId = "";
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
   const [jobCards, setJobCards] = useState<ActiveJob[]>([]);
-
   const router = useRouter();
 
   //signs the user out of google
@@ -40,7 +39,6 @@ export default function Page() {
   }
   const clientUId = user?.authUser.uid ;
   const [username, setUsername] = useState<string>("");
-  
   
 
   // Gets JobData data to populate cards, only will show cards created by the user (client)

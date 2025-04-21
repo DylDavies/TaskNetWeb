@@ -17,7 +17,9 @@ import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
 import JobStore from "../JobStore";
-//import { getJob } from "../server/services/JobDatabaseService";
+import { getJob } from "../server/services/JobDatabaseService";
+import ClientModal from "../components/ClientModal/clientModal";
+import ApplicantionStatus from "@/app/enums/ApplicantionStatus.enum";
 
 
 const links = [
@@ -40,20 +42,37 @@ export default function Page() {
 
   /* Testing fetching pending users (START)*/
   interface ApplicantData {
-    applicationid: string;
+    ApplicantID: string;
     ApplicationDate: number;
     BidAmount: number;
     CVURL: string;
     EstimatedTimeline: number;
     JobID: string;
-    Status: number;
+    Status: ApplicantionStatus;
     username: Promise<string>;
 
 }
+  const [jobTitle, setJobTitle] = useState<string>("");
+
+  //To set the job title of the page
+  useEffect(() => {
+    async function fetchJobTitle() {
+      try {
+        const job = await getJob(JobStore.getJobId());
+        if (job) {
+          setJobTitle(job.title); // assumes title exists
+        }
+      } catch (err) {
+        console.error("Failed to fetch job:", err);
+      }
+    }
+  
+    fetchJobTitle();
+  }, []);
 
   const [pendingApplicants, setPendingApplicants] = useState<ApplicantData[]>([]);
 
-  // To update the admin table after the Admin approves or denies user
+  // To update the table after the client accepts or rejects applicants
   useEffect(() => {
     async function fetchPendingApplicants() {
       const pendingApplicants = await getPendingApplicants(JobStore.getJobId());
@@ -65,6 +84,21 @@ export default function Page() {
   }, []);
 
   /* Testing fetching pending users (END) */
+  const [selectedApplicant, setSelectedApplicant] = useState<ApplicantData | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleRowClick = (ApplicantID: ApplicantData) => {
+    
+    console.log("selected applicant",ApplicantID);
+    setSelectedApplicant(ApplicantID);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);        
+    setSelectedApplicant(null); 
+  };
+
 
   return (
     <>
@@ -85,13 +119,21 @@ export default function Page() {
 
               <section className="px-6 py-4 bg-gray-800 text-black shadow rounded-xl m-4">
                 <h1 className="text-2xl font-semibold text-gray-300">
-                    Job Applicants for <span className="">{user?.userData.username}</span>
+                    Job Applicants for <strong className="">{jobTitle || "..."}</strong>
                 </h1>
                 </section>
 
               {/* FATable moved down */}
               <section className="w-full max-w-8xl mt-36">
-                <FATable data={pendingApplicants} />
+                <FATable data={pendingApplicants} onRowClick={(applicant) => handleRowClick(applicant)}/>
+                {/* Conditionally render the modal when selectedApplicant exists */}
+                {modalOpen && selectedApplicant && (
+          <ClientModal
+            data={selectedApplicant}
+            isOpen={modalOpen}
+            onClose={closeModal} // Pass the closeModal function
+          /> 
+            )}
               </section>
             </section>
           </section>
