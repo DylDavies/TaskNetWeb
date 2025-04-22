@@ -124,7 +124,7 @@ export default function Page() {
         const filtered = activeJobs.filter((job) => {
           if (job.jobData.status !== JobStatus.Posted) return;
           const flattenedSkills = Object.values(job.jobData.skills).flat(); // Get all skills from all skill areas
-          return selectedSkills.every((selected) =>
+          
           const jobTitle = job.jobData.title.toLowerCase();
   
           const matchesSkills = selectedSkills.every((selected) =>

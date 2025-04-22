@@ -51,6 +51,7 @@ const FATable = ({jobName}: Props) => {
       await updateJobStatus(jid, JobStatus.Employed);
 
       for await (const applicant of pendingApplicants) {
+        if (applicant.ApplicantID == aid) continue;
         await rejectApplicant(applicant.ApplicationID);
 
         await createNotification({
