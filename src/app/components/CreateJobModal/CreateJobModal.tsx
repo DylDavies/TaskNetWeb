@@ -175,7 +175,7 @@ const CreateJobModal = ({refetch}: Props) => {
     }
 
     try {
-      //await createJob(sanitizedJobData);
+      await createJob(sanitizedJobData);
       toast.success("Job created successfully!");
       refetch();
       closeModal(); // Close the modal after successful creation

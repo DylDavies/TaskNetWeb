@@ -79,6 +79,10 @@ export default function Page() {
     router.push("/FreelancerApplicationView")
   }
 
+  function refetch() {
+    fetchUserJobs();
+  }
+
   return (
     <>
       <section className="min-h-screen flex flex-col bg-[#cdd5f6] text-white font-sans bg-color">
@@ -96,7 +100,7 @@ export default function Page() {
          
 
           <section className="w-64">
-            <SideBar items={links} myfunction={CreateJobModal}/>
+            <SideBar items={links} myfunction={CreateJobModal({refetch})}/>
           </section>
 
           <section className="flex-1 p-4 flex flex-col items-center gap-6 overflow-y-auto">
