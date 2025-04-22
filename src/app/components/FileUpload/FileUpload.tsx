@@ -1,5 +1,4 @@
 import { Upload } from "lucide-react";
-import { useEffect } from "react";
 import toast from "react-hot-toast";
 //props for upload funciton
 type UploadFunction = (
