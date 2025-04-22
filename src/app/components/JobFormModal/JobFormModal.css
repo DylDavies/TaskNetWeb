@@ -1,0 +1,25 @@
+.input {
+    width: 200px;
+    height: 38px;
+    box-shadow: 0 0 0 1.5px #2b2c37, 0 0 25px -17px #000;
+    border: 0;
+    border-radius: 12px;
+    background-color: #26272c;
+    outline: none;
+    color:white;
+    transition: all 0.25s cubic-bezier(0.19, 1, 0.22, 1);
+    cursor: text;
+    z-index: 0;
+    padding: 2%;
+}
+
+.job-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  
+  .job-card:hover {
+    animation: shake 0.4s ease;
+    transform: scale(1.03); /* pop out slightly */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+  }

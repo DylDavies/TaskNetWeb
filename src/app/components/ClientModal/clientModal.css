@@ -1,0 +1,7 @@
+.job-description:hover {
+    box-shadow: 0 0 0 2.5px #b9bac5, 0px 0px 25px -15px #000 !important;
+  }
+  
+  .job-description:focus {
+    box-shadow: 0 0 0 2.5px #2f303d !important;
+  }

@@ -1,4 +1,6 @@
 import React from "react";
+import Notifications from "../Notifications/Notifications";
+import "./Header.css";
 
 type Props = {
   usertype: string; // freelancer or client to determine the messag
@@ -33,21 +35,7 @@ const Header: React.FC<Props> = ({ usertype, name }) => {
     {/* Right Side: User Info */}
     <section className="flex items-center gap-6 sm:gap-5">
       {/* Notification Icon */}
-      <button className="relative text-gray-300 hover:text-blue-500 focus:outline-none">
-        <svg
-          className="w-6 h-6 sm:w-7 sm:h-7"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V5a2 2 0 00-4 0v.083A6 6 0 004 11v3.159c0 .538-.214 1.055-.595 1.436L2 17h5m8 0a3.001 3.001 0 01-6 0h6z"
-          />
-        </svg>
-      </button>
+      <Notifications></Notifications>
 
       {/* Profile Photo */}
       <section className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-semibold text-sm sm:text-base">

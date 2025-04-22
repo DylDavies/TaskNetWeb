@@ -5,36 +5,37 @@ import "./components/sidebar/sidebar.css";
 import "./components/button/Button.css";
 import { useRouter } from "next/navigation";
 import { LoginRedirect } from "./Navigation/navigation";
+//import { PropagateLoader } from "react-spinners";
+import Image from "next/image";
+import logoImage from "../../public/images/Logo.png";
+import freelancerImage from "../../public/images/Freelancer-Planning.webp";
+import Loader from "./components/Loader/Loader";
 
 //Landing page UI
 export default function Home() {
   const [loading, setLoading] = useState(false);
 
-  // AuthService.autoSignIn();
   const router = useRouter();
 
   async function signinClick() {
-    console.log("clicked")
-    setLoading(true);
 
+    setLoading(true);
+    
     await AuthService.signin();
 
     LoginRedirect(router);
 
     setLoading(false);
   }
-
   return (
     <main className="flex h-screen">
-      <section style={{display: loading ? "block" : "none", position: "fixed", width: "100%", height: "100%", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 2}}>
-        <p style={{position: "absolute", top: "50%", left: "50%", fontSize: "50px", transform: "translate(-50%, -50%)"}}>Loading...</p>
-      </section>
+      <Loader loading={loading}></Loader>
       {/* Left Side */}
       <section className="w-1/2 bg-violet-700 text-neutral-900 flex items-center justify-center p-10">
         <article className="flex flex-col items-center text-center">
           {/* Logo */}
           <section className=" -mt-19 mb-0">
-            <img src="/images/Logo.png" alt="Logo" className="logo" />
+            <Image src={logoImage} alt="Logo" className="logo" />
           </section>
 
           {/* Main Text */}
@@ -88,8 +89,8 @@ export default function Home() {
       {/* Right Side */}
       <section className="w-1/2 bg-gray-900 flex justify-center items-center p-10">
         <article className="shadow-xl rounded-lg max-w-full h-auto">
-          <img
-            src="/images/Freelancer-Planning.webp"
+          <Image
+            src={freelancerImage}
             alt="Landing Page Example"
             className="rounded-lg"
           />

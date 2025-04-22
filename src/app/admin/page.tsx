@@ -1,4 +1,5 @@
-"use client"; // use state will crash without this
+"use client";
+
 import AdminTable from "../components/AdminTable/AdminTable";
 import "../components/AdminTable/AdminTable.css";
 //import SearchBar from "../components/searchbar/SearchBar";
@@ -11,69 +12,29 @@ import "./global.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import { getPendingUsers } from "../server/services/DatabaseService";
-import React, { useEffect, useState } from "react";
-import ActiveUser from "../interfaces/ActiveUser.interface";
+import React, { useContext, useEffect, useState } from "react";
 import AuthService from "../services/AuthService";
-import UserType from "../enums/UserType.enum";
 import { useRouter } from "next/navigation";
+import { AuthContext, AuthContextType } from "../AuthContext";
 
 
 const links = [
   { name: "Home", href: "/" },
   { name: "Client", href: "/client" },
-  { name: "Freelancer", href: "/freelancer" }
-];
-
-/*
-const userData = [
-  {
-    name: "Hans Burger",
-    role: "freelancer",
-    date: "6/10/2020",
-  },
-  {
-    name: "Jolina Angelie",
-    role: "client",
-    date: "6/10/2020",
-  },
-  {
-    name: "Sarah Curry",
-    role: "freelancer",
-    date: "6/10/2020",
-  },
-  {
-    name: "Rulia Joberts",
-    role: "client",
-    date: "6/10/2020",
-  },
-  {
-    name: "Wenzel Dashington",
-    role: "freelancer",
-    date: "6/10/2020",
-  },
-  {
-    name: "Dave Li",
-    role: "client",
-    date: "6/10/2020",
-  },
-  {
-    name: "Maria Ramovic",
-    role: "client",
-    date: "6/10/2020",
-  },
-];*/
+  { name: "Freelancer", href: "/freelancer" }];
 
 export default function Page() {
+  const { user } = useContext(AuthContext) as AuthContextType;
+
   const router = useRouter();
 
-      //signs the user out of google
+  //signs the user out of google
   function signoutClick() {
       AuthService.googleSignout();
      router.push("/");
   }
 
   //const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(true);
 
   /* Testing fetching pending users (START)*/
   interface User {
@@ -94,38 +55,16 @@ export default function Page() {
       setPendingUsers(pendingUsers);
     }
 
-    async function auth() {
-      const user = await AuthService.getCurrentUser();
-
-      if (user?.userData.type !== UserType.Admin) router.push("/");
-
-      setLoading(false);
-
-      fetchPendingUsers();
-    } 
-
-    auth();
+    fetchPendingUsers();
   }, []);
 
-  const [activeUser, setActiveUser] = useState<ActiveUser>()
-    useEffect(() =>{
-        (async () => { 
-            setActiveUser(
-                await AuthService.getCurrentUser() as ActiveUser
-            )
-        })()
-    },[] );
   /* Testing fetching pending users (END) */
-
-  if (loading) {
-    return (<p>Loading...</p>)
-  }
 
   return (
     <>
       <section className="min-h-screen flex flex-col bg-[#27274b] text-white font-sans">
         <header className="w-full bg-orange-500">
-          <Header name={activeUser?.userData.username || "Admin"} usertype="Admin" />
+          <Header name={user?.userData.username || "Admin"} usertype="Admin" />
         </header>
 
         <main className="flex flex-1 bg-[#cdd5f6] bg-color">

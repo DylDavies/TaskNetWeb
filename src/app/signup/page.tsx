@@ -1,43 +1,41 @@
 "use client";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import InputBar from "../components/inputbar/InputBar";
 import "../components/inputbar/inputBar.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import "./global.css";
 import { SetUserName, setUserType } from "../server/services/DatabaseService";
-import AuthService from "../services/AuthService";
 import UserType from "../enums/UserType.enum";
-import { Login } from "../Navigation/navigation";
+import { LoginRedirect } from "../Navigation/navigation";
 import { useRouter } from "next/navigation";
 import { sendEmail } from "../server/services/DatabaseService";
-
+import { AuthContext, AuthContextType } from "../AuthContext";
+import Image from "next/image";
+import signupImage from "../../../public/images/signup-freelance.jpg";
+import Loader from "../components/Loader/Loader";
 
 export default function Page() {
-    const [inputText, setInputText] = useState("");
-    const[type, setType] = useState(UserType.Client.toString());
-    const router = useRouter();
-  
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const { user } = useContext(AuthContext) as AuthContextType;
+
+  const [inputText, setInputText] = useState("");
+  const[type, setType] = useState(UserType.Client.toString());
+  const [ loading, setLoading ] = useState(false);
+  const router = useRouter();
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputText(e.target.value);
-    };
+  };
 
-    const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setType(e.target.value);
-    };
+  const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setType(e.target.value);
+  };
   
-     const handleSignupClick = async () => {
-       try {
-         const activeUser = await AuthService.getCurrentUser();
-         
-          if (!activeUser) {
-            alert("No active user found. Please log in first.");
-            return;
-          }
-
-      if (activeUser) {
-        const userEmail = activeUser.authUser.email;
-        const userName = activeUser.authUser.displayName;
+  const handleSignupClick = async () => {
+    try {
+      if (user) {
+        const userEmail = user.authUser.email;
+        const userName = user.authUser.displayName;
         console.log(userEmail);
         console.log(userName);
 
@@ -81,37 +79,30 @@ export default function Page() {
   };
 
 
-    async function LoginClick(usertype: number, username: string){
-
-        console.log(username, usertype);
-        //getting the current user
-        const activeUser = await AuthService.getCurrentUser();
-        
-        //if there is a user, will call set username and type
-        if (activeUser) {
-            const uid = activeUser.authUser.uid;
-            setUserType(uid,usertype);
-            SetUserName(uid,username);
-        }
-        else{
-            console.log("No active user");
-        }
-
-        await handleSignupClick();
-        Login(usertype, router);
-        
-    };
-          
+  async function LoginClick(usertype: number, username: string){    
+    setLoading(true);
     
+      //if there is a user, will call set username and type
+      if (user) {
+          const uid = user.authUser.uid;
+          await setUserType(uid,usertype);
+          await SetUserName(uid,username);
+      }
 
+      await handleSignupClick();
+      LoginRedirect(router);
 
+      setLoading(false);
+  };
+          
   return (
     <main className="flex items-center justify-center h-screen bg-neutral-900">
+      <Loader loading={loading}></Loader>
       <section className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl flex overflow-hidden">
         {/* Left side (Image section) */}
         <section className="w-1/2 bg-neutral-900 text-white flex justify-center items-center">
-          <img
-            src="/images/signup-freelance.jpg"
+          <Image
+            src={signupImage}
             className="w-full h-full object-cover"
             alt="Sign Up"
           />
