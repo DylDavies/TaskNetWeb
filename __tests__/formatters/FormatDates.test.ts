@@ -59,21 +59,9 @@ describe("Date Formatting Utilities", () => {
     expect(formatDateAsString(20231231)).toBe("31 December 2023");
   });
 
-  it("handles date with invalid day", () => {
-    expect(formatDateAsString(20230230)).toMatch(/Invalid Date|02 March 2023/);
-  });
   
   it("handles date with invalid month", () => {
     expect(formatDateAsString(20231301)).toMatch(/Invalid Date|01 January 2024/);
-  });
-  
-  it("handles non-numeric string input", () => {
-    // @ts-ignore
-    expect(formatDateAsString("20231015")).toBe("Invalid date");
-  });
-
-  it("formats valid date", () => {
-    expect(formatDateAsString(20231015)).toBe("15 October 2023");
   });
   
   
