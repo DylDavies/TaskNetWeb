@@ -33,6 +33,9 @@ export default function Page() {
   const [openModal, setModalOpen] = useState(false);
   const router = useRouter();
   const [data, setData] = useState<ActiveJob>();
+  const [clientUsernames, setClientUsernames] = useState<
+    Record<string, string>
+  >({});
 
   //signs the user out of google
   function signoutClick() {
@@ -58,6 +61,34 @@ export default function Page() {
 
     fetchSkills();
   }, []);
+
+  // Fetch usernames when jobCards changes
+  useEffect(() => {
+    const fetchUsernames = async () => {
+      const newUsernames: Record<string, string> = {};
+      const uniqueClientUIds = Array.from(
+        new Set(jobCards.map((job) => job.jobData.clientUId))
+      );
+
+      for (const uid of uniqueClientUIds) {
+        if (!clientUsernames[uid]) {
+          try {
+            const userData = await getUser(uid);
+            newUsernames[uid] = userData?.username || "Unknown";
+          } catch (error) {
+            console.error(`Failed to fetch username for UID ${uid}:`, error);
+            newUsernames[uid] = "Unknown";
+          }
+        }
+      }
+
+      if (Object.keys(newUsernames).length > 0) {
+        setClientUsernames((prev) => ({ ...prev, ...newUsernames }));
+      }
+    };
+
+    if (jobCards.length > 0) fetchUsernames();
+  }, [jobCards]);
 
   // Gets ActiveJob data to populate cards - can change to JobData if JobID isn't needed
   useEffect(() => {
@@ -120,7 +151,7 @@ export default function Page() {
             {jobCards.map((job, index) => (
               <JobCard
                 key={index}
-                company={job.jobData.clientUId}
+                company= {clientUsernames[job.jobData.clientUId] || "Loading..."}         
                 jobTitle={job.jobData.title}
                 budget={formatBudget(
                   job.jobData.budgetMin,

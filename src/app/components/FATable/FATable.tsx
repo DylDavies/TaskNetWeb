@@ -5,6 +5,7 @@ import ApplicantionStatus from "@/app/enums/ApplicantionStatus.enum";
 import { createNotification } from "@/app/server/services/NotificationService";
 import ClientModal from "../ClientModal/clientModal";
 import { formatDateAsString } from "@/app/server/formatters/FormatDates";
+import { updateHiredUId, updateJobStatus } from "@/app/server/services/JobDatabaseService";
 
 interface Applicants  {
     
@@ -49,9 +50,11 @@ const FATable: React.FC<Props> = ({ data,onRowClick }) => {
       setSelectedApplicant(null); 
     };
 
-  const handleAccept = async (aid: string, uid: string) => {
+  const handleAccept = async (aid: string, uid: string, jid:string) => {
     try {
       await acceptApplicant(aid);
+      await updateHiredUId(jid,aid);
+      await updateJobStatus(jid,1);
       setPendingApplicants((currentApplicant) =>
         currentApplicant.filter((applicant) => applicant.ApplicationID != aid)
       ); // for updating table when approved
@@ -147,7 +150,7 @@ const FATable: React.FC<Props> = ({ data,onRowClick }) => {
           /> 
             )}
               <button
-                onClick={() => handleAccept(item.ApplicationID, item.ApplicantID)}
+                onClick={() => handleAccept(item.ApplicationID, item.ApplicantID,item.JobID)}
                 className="px-2 py-1 font-semibold leading-tight rounded-full bg-green-700 text-green-100 transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
               >
                 Accept
