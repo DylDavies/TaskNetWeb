@@ -1,9 +1,15 @@
 import React, {useContext} from "react";
 import Modal from "react-modal";
-import './JobApplicationForm.css';
 import Button from "../button/Button";
 import { AuthContextType, AuthContext } from "../../AuthContext";
-import { AddApplication, uploadCV }from "@/app/server/services/ApplicationService";
+import { AddApplication, makeApplicationID}from "@/app/server/services/ApplicationService";
+import { createNotification } from "@/app/server/services/NotificationService";
+import "./JobFormModal.css"
+import InputBar from "../inputbar/InputBar";
+import { uploadFile } from "@/app/server/services/DatabaseService";
+import UploadComponent from "../FileUpload/FileUpload";
+import toast from "react-hot-toast";
+import { convertDateStringToNumber } from "@/app/server/formatters/FormatDates";
 
 type JobData = {
   company: string;
@@ -12,64 +18,120 @@ type JobData = {
 };
 
 type Props = {
-    data : JobData
+    data : JobData,
+    isOpen : boolean,
+    onClose: () => void; 
 }
 
-const JobForm: React.FC<Props> = ({data}) => {
+const JobForm: React.FC<Props> = ({data, isOpen, onClose}) => {
     const { user } = useContext(AuthContext) as AuthContextType;
     const [applicantID, setApplicantID] = React.useState("");
-    const [bidAmount, setBidAmount] = React.useState(0);
-    const [CV, setCV] = React.useState<File | null>(null);
-    const [estismatedTimeline, setEstismatedTimeline] = React.useState(0);
+    const [bidAmount, setBidAmount] = React.useState("");
+    const [estismatedTimeline, setEstismatedTimeline] = React.useState("");
     const [jobID, setJobID] = React.useState("");
     const [CVURL, setCVURL] = React.useState("");
     const [modalIsOpen, setIsOpen] = React.useState(false);
 
-    const handleUpload = async () => {
-      const url = await uploadCV(CV!, applicantID);
-      setCVURL(url);
-    }
-
-    const handleApplicationSubmit = (e: React.FormEvent) => 
-    {
-      e.preventDefault();
-      if(user?.authUser.uid){
-        setApplicantID(user?.authUser.uid);
-      }
-      handleUpload();
-      setJobID(data.jobId);
-      AddApplication(applicantID, bidAmount, CVURL, estismatedTimeline, jobID);
-      closeModal();
-    }
+    React.useEffect(() => {
+      setIsOpen(isOpen);
+    }, [isOpen]); // Separate effect just for isOpen sync
     
-    /*function openModal(){
-        setIsOpen(true);
-    }*/
+    React.useEffect(() => {
+      if (user?.authUser?.uid) {
+        setApplicantID(user.authUser.uid);
+      }
+    }, [user]); // Only run when user changes
+    
+    React.useEffect(() => {
+      setJobID(data.jobId);
+    }, [data.jobId]); // Only run when jobId changes
+    
+    // Derived application ID (no need for useEffect)
+    const applicationID = applicantID && jobID ? makeApplicationID(jobID, applicantID) : " ";
 
-    function closeModal(){
-        setIsOpen(false);
+    const handleUploadComplete = (url: string) => {
+      setCVURL(url);
+      // You can do more with the URL here, like save it to your database
+    };
+
+    const handleApplicationSubmit = async () => 
+    {
+      try {
+        if (!CVURL) {
+          toast.error("Please upload your CV first");
+          return;
+        }
+
+        if(!bidAmount){
+          toast.error("Please enter a bid amount first");
+          return;
+        }
+
+        if(!estismatedTimeline){
+          toast.error("Please enter your estimated timeline");
+          return;
+        }
+        console.log(estismatedTimeline);
+        await AddApplication(
+            applicantID, 
+            Number(bidAmount), 
+            CVURL, 
+            convertDateStringToNumber(estismatedTimeline), 
+            jobID
+        );
+
+
+        await createNotification({
+            message: `Pending Application for ${data.jobTitle}`, 
+            seen: false, 
+            uidFor: applicantID
+        });
+        toast.success("Application submitted successfuly!")
+        onClose();
+    } catch (error) {
+      toast.error("Submission failed, please try again");
+      console.error("Application sibmission error:", error);
+    }
     }
 
   return (
-    <section>
       <Modal 
         isOpen = {modalIsOpen}
-        onRequestClose={closeModal}
-        className={"Modal"}
-        ariaHideApp={false}>
-            <form>
-            <button type="button" onClick={closeModal} className="Close">X</button> <br></br>
-            <header>Job Application Form for {data.jobTitle} by {data.company}</header> <br></br>
-            <label htmlFor="pdf">Please attach your cover letter</label><br></br>
-                <input type="file" accept=".pdf" id ="pdf" name="pdf" onChange={(e) => {const file = e.target.files?.[0]; if(file){setCV(file);}}}></input><br></br>
-                <label htmlFor="timeLine">Please write down your estimated time line</label><br></br>
-                <input type="date" id="timeLine" name="timeLine" value ={estismatedTimeline} onChange={(e) => setEstismatedTimeline(Number(e.target.value))}></input><br></br>
-                <label htmlFor="bid">Please write down your bid</label><br></br>
-                <input type="text" id="bid" name ="bid" value={bidAmount} onChange={(e) => setBidAmount(Number(e.target.value))}></input><br></br>
-                <Button caption = {"Submit"} onClick={() => handleApplicationSubmit}></Button>
-            </form>
+        onRequestClose={onClose}
+        className=" rounded-2xl p-6 w-full max-w-lg shadow-lg text-white max-h-[90vh] overflow-y-auto z-50"
+        overlayClassName="fixed inset-0 bg-purple bg-opacity-0 backdrop-blur-sm z-[100] flex items-center justify-center">
+          <section className="fixed inset-0 flex items-center justify-center z-50 bg-opacity-50 ">
+            <article className="bg-neutral-800 rounded-2xl p-6 w-full max-w-lg shadow-lg text-white max-h-[90vh] overflow-y-auto">
+            <section className="flex justify-between items-center mb-4">
+                <header className="text-xl font-bold">Job Application Form: {data.jobTitle}</header>
+                <button type="button" onClick={onClose} className="text-white text-xl hover:text-red-400">x</button>
+            </section>
+           
+              <section className="flex items-center gap-2 mb-2">
+                <label htmlFor="pdf">CV</label><br></br>
+                <UploadComponent
+                  uploadFunction={uploadFile}
+                  path="CV"
+                  name={applicationID}
+                  onUploadComplete={handleUploadComplete}
+                />
+              </section>
+
+                <section className="flex items-center gap-2 mb-2">
+                  <label htmlFor="timeLine" className="text-ms font-medium">Timeline</label>
+                  <InputBar type="date" value ={estismatedTimeline} onChange={(e) => setEstismatedTimeline(e.target.value)}/>
+                </section>
+
+                <section className="flex items-center gap-2 mb-2">
+                  <InputBar type="text" placeholder="Bid value" value={bidAmount} onChange={(e) => setBidAmount(e.target.value)}/>
+                </section>
+                <section className="flex justify-end">
+                  <Button caption = {"Submit"} onClick={handleApplicationSubmit}></Button>
+                </section>
+
+            </article>
+          </section>
     </Modal>
-    </section>
   );
 };
 

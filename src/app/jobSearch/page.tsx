@@ -17,12 +17,15 @@ import { formatDateAsString } from "../server/formatters/FormatDates";
 import { formatBudget } from "../server/formatters/Budget";
 import ActiveJob from "../interfaces/ActiveJob.interface";
 import SearchBar from "../components/searchbar/SearchBar";
+import JobForm from "../components/JobFormModal/JobFormModal";
+import { getUser } from "../server/services/DatabaseService";
+
 //import { searchJobsBySkills } from "../server/services/JobDatabaseService";
 
 //constant for links to other pages
 const links = [
   { name: "Home", href: "/" },
-  { name: "freelancer", href: "/freelancer" },
+  { name: "freelancer", href: "/freelancer" }
 ];
 
 
@@ -32,13 +35,28 @@ export default function Page() {
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]); // Selected skills from filter
   const [jobNameFilter, setJobNameFilter] = useState("");
   const { user } = useContext(AuthContext) as AuthContextType;
+  const [modalOpen, setModalOpen] = useState(false);
   const router = useRouter();
+  const [data, setData] = useState<JobData>();
+  const [clientUsernames, setClientUsernames] = useState<
+    Record<string, string>
+  >({});
+
+  type JobData = {
+    company: string;
+    jobTitle: string;
+    jobId: string;
+  };
 
   //signs the user out of google
   function signoutClick() {
     AuthService.googleSignout();
     router.push("/");
   }
+
+  const closeModal = () => {
+    setModalOpen(false);        
+  };
 
   // Get all skills to populate array for auto-fill
   useEffect(() => {
@@ -54,6 +72,34 @@ export default function Page() {
 
     fetchSkills();
   }, []);
+
+  // Fetch usernames when jobCards changes
+  useEffect(() => {
+    const fetchUsernames = async () => {
+      const newUsernames: Record<string, string> = {};
+      const uniqueClientUIds = Array.from(
+        new Set(jobCards.map((job) => job.jobData.clientUId))
+      );
+
+      for (const uid of uniqueClientUIds) {
+        if (!clientUsernames[uid]) {
+          try {
+            const userData = await getUser(uid);
+            newUsernames[uid] = userData?.username || "Unknown";
+          } catch (error) {
+            console.error(`Failed to fetch username for UID ${uid}:`, error);
+            newUsernames[uid] = "Unknown";
+          }
+        }
+      }
+
+      if (Object.keys(newUsernames).length > 0) {
+        setClientUsernames((prev) => ({ ...prev, ...newUsernames }));
+      }
+    };
+
+    if (jobCards.length > 0) fetchUsernames();
+  }, [jobCards]);
 
   // Gets ActiveJob data to populate cards - can change to JobData if JobID isn't needed
   // useEffect(() => {
@@ -114,7 +160,13 @@ export default function Page() {
   // Click handler for clicking on a job card
   function handleCardClick(job: ActiveJob): void {
     console.log(job); // need this for linter & testing
-    alert("Not implemented yet :(");
+    if(job?.jobData && job.jobId){
+      setData({company: job.jobData.clientUId, jobTitle: job.jobData.title, jobId: job.jobId});
+      setModalOpen(true);
+    }
+    else{
+      alert("Error: Something has gone wrong");
+    }
   }
 
   return (
@@ -152,7 +204,7 @@ export default function Page() {
             {jobCards.map((job, index) => (
               <JobCard
                 key={index}
-                company={job.jobData.clientUId}
+                company= {clientUsernames[job.jobData.clientUId] || "Loading..."}         
                 jobTitle={job.jobData.title}
                 budget={formatBudget(
                   job.jobData.budgetMin,
@@ -163,6 +215,13 @@ export default function Page() {
                 onClick={() => handleCardClick(job)}
               />
             ))}
+            {modalOpen && data && (
+          <JobForm
+            data={data}
+            isOpen={modalOpen}
+            onClose={closeModal} 
+          /> 
+            )}
           </section>
         </section>
       </main>

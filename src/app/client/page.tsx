@@ -39,24 +39,21 @@ export default function Page() {
   }
   const clientUId = user?.authUser.uid ;
   const [username, setUsername] = useState<string>("");
-  
 
   // Gets JobData data to populate cards, only will show cards created by the user (client)
-  useEffect(() => {
-    async function fetchUserJobs() {
-      if (!clientUId) {
-        console.warn("Client ID is undefined");
-        return;
-      }
-        try {
-          const jobs = await getJobsByClientID(clientUId);
-          
-          setJobCards(jobs);
-        } catch (error) {
-          console.error("Error occurred when trying to fetch Jobs: ", error);
-        }
-      
+  async function fetchUserJobs() {
+    if (!clientUId) {
+      console.warn("Client ID is undefined");
+      return;
     }
+      try {
+        const jobs = await getJobsByClientID(clientUId); 
+        setJobCards(jobs);
+      } catch (error) {
+        console.error("Error occurred when trying to fetch Jobs: ", error);
+      } 
+  }
+  useEffect(() => {
     fetchUserJobs();
   }, [clientUId]);
   

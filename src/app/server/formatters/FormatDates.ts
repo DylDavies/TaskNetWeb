@@ -43,5 +43,11 @@ function formatDateAsNumber(date: Date): number {
 
 export default formatDateAsNumber;
 
+function convertDateStringToNumber(dateString: string): number {
+  // Remove all hyphens and convert to number
+  const numericDate = parseInt(dateString.replace(/-/g, ''), 10);
+  return numericDate;
+}
 
-export {formatDateAsDate, formatDateAsString, formatDateAsNumber}
+
+export {formatDateAsDate, formatDateAsString, formatDateAsNumber, convertDateStringToNumber}

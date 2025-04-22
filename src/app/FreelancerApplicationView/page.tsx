@@ -2,7 +2,6 @@
 
 import FATable from "../components/FATable/FATable";
 import "../components/FATable/FATable.css";
-//import SearchBar from "../components/searchbar/SearchBar";
 import "../components/searchbar/SearchBar.css";
 import Header from "../components/Header/header";
 import "../components/Header/Header.css";
@@ -18,14 +17,11 @@ import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
 import JobStore from "../JobStore";
 import { getJob } from "../server/services/JobDatabaseService";
-import ClientModal from "../components/ClientModal/clientModal";
 import ApplicantionStatus from "@/app/enums/ApplicantionStatus.enum";
 
 
 const links = [
-  { name: "back", href: "/client" },
-  
-];
+  { name: "back", href: "/client" }];
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
@@ -42,6 +38,7 @@ export default function Page() {
 
   /* Testing fetching pending users (START)*/
   interface ApplicantData {
+    ApplicationID: string;
     ApplicantID: string;
     ApplicationDate: number;
     BidAmount: number;
@@ -76,29 +73,11 @@ export default function Page() {
   useEffect(() => {
     async function fetchPendingApplicants() {
       const pendingApplicants = await getPendingApplicants(JobStore.getJobId());
-      //console.log("Pending users: ", pendingUsers);
       setPendingApplicants(pendingApplicants);
     }
 
     fetchPendingApplicants();
   }, []);
-
-  /* Testing fetching pending users (END) */
-  const [selectedApplicant, setSelectedApplicant] = useState<ApplicantData | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
-
-  const handleRowClick = (ApplicantID: ApplicantData) => {
-    
-    console.log("selected applicant",ApplicantID);
-    setSelectedApplicant(ApplicantID);
-    setModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);        
-    setSelectedApplicant(null); 
-  };
-
 
   return (
     <>
@@ -125,15 +104,7 @@ export default function Page() {
 
               {/* FATable moved down */}
               <section className="w-full max-w-8xl mt-36">
-                <FATable data={pendingApplicants} onRowClick={(applicant) => handleRowClick(applicant)}/>
-                {/* Conditionally render the modal when selectedApplicant exists */}
-                {modalOpen && selectedApplicant && (
-          <ClientModal
-            data={selectedApplicant}
-            isOpen={modalOpen}
-            onClose={closeModal} // Pass the closeModal function
-          /> 
-            )}
+                <FATable data={pendingApplicants} />
               </section>
             </section>
           </section>

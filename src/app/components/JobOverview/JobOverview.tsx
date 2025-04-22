@@ -52,7 +52,8 @@ const JobCard: React.FC<JobCardProps> = ({
   hired,
   onClick,
 }) => {
-  const initial = company.charAt(0).toUpperCase();
+  const displayName = company;
+  const initial = displayName.charAt(0).toUpperCase();
 
   return (
     <article
@@ -121,7 +122,7 @@ const JobCard: React.FC<JobCardProps> = ({
           <footer className="flex justify-between items-center text-sm text-gray-400 pt-1 border-t border-gray-700 mt-2">
             <address className="italic">{company}</address>
           {hired === JobStatus.Posted && (
-            <output className="italic text-yellow-400">Open to applicants</output>
+            <output className="italic text-orange-400">Open to applicants</output>
           )}
 
           {hired === JobStatus.Employed && (

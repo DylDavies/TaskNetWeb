@@ -14,6 +14,7 @@ interface JobData{
     hiredUId: string,
     clientUId: string, 
     createdAt:number, 
+   
 }
 
 // Date as a number format: YYYYMMDD
