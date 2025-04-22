@@ -18,6 +18,7 @@ import { formatBudget } from "../server/formatters/Budget";
 import ActiveJob from "../interfaces/ActiveJob.interface";
 import JobForm from "../components/JobFormModal/JobFormModal";
 import ViewJobModal from "../components/ViewJobModal/ViewJobModal";
+import MultiViewModal from "../components/MultiViewModal/MultiViewModal";
 //import { searchJobsBySkills } from "../server/services/JobDatabaseService";
 
 //constant for links to other pages
@@ -31,29 +32,9 @@ export default function Page() {
   const [skills, setSkills] = useState<string[]>([]); // all skills from all skills areas
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]); // Selected skills from filter
   const { user } = useContext(AuthContext) as AuthContextType;
-  const [applyModalOpen, setApplyModalOpen] = useState(false);
-  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [openModal, setModalOpen] = useState(false);
   const router = useRouter();
-  const [formData, setFormData] = useState<JobFormData>();
-  const [viewData, setViewData] = useState<JobViewData>();
-
-  type JobFormData = {
-    company: string;
-    jobTitle: string;
-    jobId: string;
-  };
-
-  interface JobViewData {
-    title: string;
-    company: string;
-    companyImage: string;
-    description: string;
-    minBudget: string;
-    maxBudget: string;
-    deadline: string;
-    status: string;
-    skills: string[]; // Added skills array
-  }
+  const [data, setData] = useState<ActiveJob>();
 
   //signs the user out of google
   function signoutClick() {
@@ -61,18 +42,9 @@ export default function Page() {
     router.push("/");
   }
 
-  const closeApplyModal = () => {
-    setApplyModalOpen(false);        
+  const closeModal = () => {
+    setModalOpen(false);        
   };
-
-  const closeViewModal = () =>{
-    setViewModalOpen(false);
-  };
-
-  const openApplyModal = () =>{
-    setApplyModalOpen(true);
-    setViewModalOpen(false);
-  }
 
   // Get all skills to populate array for auto-fill
   useEffect(() => {
@@ -117,9 +89,8 @@ export default function Page() {
   function handleCardClick(job: ActiveJob): void {
     console.log(job); // need this for linter & testing
     if(job?.jobData && job.jobId){
-      setViewData({title: job.jobData.title, company: job.jobData.title, companyImage: "", description: job.jobData.description, minBudget: String(job.jobData.budgetMin), maxBudget: String(job.jobData.budgetMax), deadline: String(job.jobData.deadline), status: String(job.jobData.status), skills: Object.values(job.jobData.skills).flat()});
-      setFormData({company: job.jobData.clientUId, jobTitle: job.jobData.title, jobId: job.jobId});
-      setViewModalOpen(true);
+      setData(job);
+      setModalOpen(true);
     }
     else{
       alert("Error: Something has gone wrong");
@@ -162,19 +133,11 @@ export default function Page() {
                 onClick={() => handleCardClick(job)}
               />
             ))}
-            {viewModalOpen && viewData && (
-              <ViewJobModal
-              job = {viewData}
-              isOpen={viewModalOpen}
-              onApply={openApplyModal}
-              onClose={closeViewModal}/>
-            )}
-            {applyModalOpen && formData && (
-          <JobForm
-            data={formData}
-            isOpen={applyModalOpen}
-            onClose={closeApplyModal} 
-          /> 
+            {openModal && data && (
+              <MultiViewModal
+              job = {data}
+              modalIsOpen = {openModal}
+              onClose={closeModal}/>
             )}
           </section>
         </section>
