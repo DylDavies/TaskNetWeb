@@ -2,8 +2,8 @@
 
 import { getDoc, doc, collection, where, query, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
-import ApplicantData from "../../interfaces/ApplicantData.interface";
-import ApplicantionStatus from "@/app/enums/ApplicantionStatus.enum";
+import ApplicantData from "../../interfaces/ApplicationData.interface";
+import ApplicationStatus from "@/app/enums/ApplicationStatus.enum";
 import { getUsername } from "./DatabaseService";
 
 async function getApplicant(ApplicantID: string): Promise<ApplicantData | null> {
@@ -15,10 +15,9 @@ async function getApplicant(ApplicantID: string): Promise<ApplicantData | null> 
 };
 
 // Fetch pending applicants Endpoint:
-async function getPendingApplicants(JobID: string): Promise<{ApplicationID: string; ApplicantID:string; Status:number, ApplicationDate: number, BidAmount: number, CVURL: string,EstimatedTimeline: number,JobID: string,username:Promise<string>}[]>{
+async function getPendingApplicants(JobID: string): Promise<ApplicantData[]>{
     const dbRef = collection(db,'applications'); 
-    const pending = query(dbRef,where('Status', '==', ApplicantionStatus.Pending), where('JobID', '==', JobID));
-    console.log(pending)
+    const pending = query(dbRef,where('Status', '==', ApplicationStatus.Pending), where('JobID', '==', JobID));
 
     const snapshot = await getDocs(pending);
 
@@ -45,7 +44,7 @@ async function acceptApplicant(aid:string):Promise<void>{
     const dbRef = doc(db,'applications', aid);
 
     await updateDoc(dbRef,{
-        Status:1, // 1 : Approve (temp)
+        Status: ApplicationStatus.Approved
     });
 };
 
@@ -54,7 +53,7 @@ async function rejectApplicant(aid:string):Promise<void>{
     const dbRef = doc(db,'applications', aid);
 
     await updateDoc(dbRef,{
-        Status:2, // 2 : Deny (temp)
+        Status: ApplicationStatus.Denied
     });
 };
 

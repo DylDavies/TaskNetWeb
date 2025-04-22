@@ -67,11 +67,15 @@ const JobForm: React.FC<Props> = ({data, isOpen, onClose}) => {
           return;
         }
 
+        if (isNaN(parseInt(bidAmount)) || parseInt(bidAmount) < 0) {
+          toast.error("Please input a valid bid amount");
+        }
+
         if(!estismatedTimeline){
           toast.error("Please enter your estimated timeline");
           return;
         }
-        console.log(estismatedTimeline);
+
         await AddApplication(
             applicantID, 
             Number(bidAmount), 

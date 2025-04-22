@@ -1,46 +1,40 @@
 "use client";
-import { acceptApplicant, rejectApplicant } from "@/app/server/services/ApplicationDatabaseServices";
-import React, { useEffect, useState } from "react";
-import ApplicantionStatus from "@/app/enums/ApplicantionStatus.enum";
+import { acceptApplicant, getPendingApplicants, rejectApplicant } from "@/app/server/services/ApplicationDatabaseServices";
+import React, { useContext, useEffect, useState } from "react";
 import { createNotification } from "@/app/server/services/NotificationService";
 import ClientModal from "../ClientModal/clientModal";
 import { formatDateAsString } from "@/app/server/formatters/FormatDates";
 import { updateHiredUId, updateJobStatus } from "@/app/server/services/JobDatabaseService";
-
-interface Applicants  {
-    
-    ApplicationID: string;
-    ApplicantID: string;
-    ApplicationDate: number;
-    BidAmount: number;
-    CVURL: string;
-    EstimatedTimeline: number;
-    JobID: string;
-    Status: ApplicantionStatus;
-    username: Promise<string>;
-}
+import ApplicationData from "@/app/interfaces/ApplicationData.interface";
+import JobStatus from "@/app/enums/JobStatus.enum";
+import { useRouter } from "next/navigation";
+import { JobContext, JobContextType } from "@/app/JobContext";
 
 interface Props {
-  data: Applicants[];
-  onRowClick?: (applicant: Applicants) => void;
+  jobName: string
 }
-const FATable: React.FC<Props> = ({ data,onRowClick }) => {
-  //console.log(`The data is: ${JSON.stringify(data, null, 2)}`); //sanity check
-  const [pendingApplicants, setPendingApplicants] = useState<Applicants[]>(data);
 
+const FATable = ({jobName}: Props) => {
+  const router = useRouter();
+
+  const { jobID } = useContext(JobContext) as JobContextType;
+
+  const [pendingApplicants, setPendingApplicants] = useState<ApplicationData[]>([]);
+
+  // To update the table after the client accepts or rejects applicants
   useEffect(() => {
-    setPendingApplicants(data);
-    console.log(
-      "new Updated pending applicants with new data:",
-      JSON.stringify(data, null, 3)
-    );
-  }, [data]);
-  const [selectedApplicant, setSelectedApplicant] = useState<Applicants | null>(null);
+    async function fetchPendingApplicants() {
+      const pendingApplicants = await getPendingApplicants(jobID as string);
+      setPendingApplicants(pendingApplicants);
+    }
+
+    fetchPendingApplicants();
+  }, []);
+
+  const [selectedApplicant, setSelectedApplicant] = useState<ApplicationData | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   
-    const handleApplicationView = (ApplicantID: Applicants) => {
-      
-      console.log("selected applicant",ApplicantID);
+    const handleApplicationView = (ApplicantID: ApplicationData) => {
       setSelectedApplicant(ApplicantID);
       setModalOpen(true);
     };
@@ -54,19 +48,28 @@ const FATable: React.FC<Props> = ({ data,onRowClick }) => {
     try {
       await acceptApplicant(aid);
       await updateHiredUId(jid,aid);
-      await updateJobStatus(jid,1);
-      setPendingApplicants((currentApplicant) =>
-        currentApplicant.filter((applicant) => applicant.ApplicationID != aid)
-      ); // for updating table when approved
-      //console.log(`Successfully accepted applicant ${aid}`);
+      await updateJobStatus(jid, JobStatus.Employed);
+
+      for await (let applicant of pendingApplicants) {
+        await rejectApplicant(applicant.ApplicationID);
+
+        await createNotification({
+          message: `${jobName} - Your application has been rejected`,
+          seen: false,
+          uidFor: applicant.ApplicantID
+        });
+      }
+
+      await createNotification({
+        message: `${jobName} - Your application has been accepted`,
+        seen: false,
+        uidFor: uid
+      });
+
+      router.push("/client");
     } catch (error) {
       console.error(`Error when trying to accept applicant ${error}`);
     }
-    createNotification({
-      message: "Your application has been accepted",
-      seen: false,
-      uidFor: uid
-    })
   };
 
   const handleReject = async (aid: string, uid: string ) => {
@@ -74,13 +77,12 @@ const FATable: React.FC<Props> = ({ data,onRowClick }) => {
       await rejectApplicant(aid);
       setPendingApplicants((currentApplicant) =>
         currentApplicant.filter((applicant) => applicant.ApplicantID != aid)
-      ); // for updating table when approved
-      //console.log(`Successfully rejected applicant ${aid}`);
+      );
     } catch (error) {
       console.error(`Error when trying to reject applicant ${error}`);
     }
     createNotification({
-      message: "Your application has been rejected",
+      message: `${jobName} Your application has been rejected`,
       seen: false,
       uidFor: uid
     })
@@ -106,7 +108,6 @@ const FATable: React.FC<Props> = ({ data,onRowClick }) => {
         {pendingApplicants.map((item, index) => (
           <tr 
             key={index} 
-            onClick={() => onRowClick?.(item)} 
             className="text-gray-400 cursor-pointer hover:bg-gray-700 transition duration-150"
           >
             <td className="px-4 py-3">

@@ -18,7 +18,11 @@ import toast from "react-hot-toast";
 import { sanitizeJobData } from "@/app/server/formatters/JobDataSanitization";
 import { createJob } from "@/app/server/services/JobDatabaseService";
 
-const CreateJobModal = () => {
+interface Props {
+  refetch: () => void
+}
+
+const CreateJobModal = ({refetch}: Props) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [deadline, setDeadline] = useState<Date>(new Date());
@@ -171,8 +175,9 @@ const CreateJobModal = () => {
     }
 
     try {
-      await createJob(sanitizedJobData);
+      //await createJob(sanitizedJobData);
       toast.success("Job created successfully!");
+      refetch();
       closeModal(); // Close the modal after successful creation
     } catch (err) {
       toast.error("Something went wrong when trying to create the job");
