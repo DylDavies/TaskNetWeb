@@ -16,8 +16,6 @@ import { getAllJobs } from "../server/services/JobDatabaseService";
 import { formatDateAsString } from "../server/formatters/FormatDates";
 import { formatBudget } from "../server/formatters/Budget";
 import ActiveJob from "../interfaces/ActiveJob.interface";
-import JobForm from "../components/JobFormModal/JobFormModal";
-import ViewJobModal from "../components/ViewJobModal/ViewJobModal";
 import MultiViewModal from "../components/MultiViewModal/MultiViewModal";
 //import { searchJobsBySkills } from "../server/services/JobDatabaseService";
 

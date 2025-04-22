@@ -18,7 +18,6 @@ interface JobData {
 }
 
 const ViewJobModal = ({ job, onClose, onApply }: { job: JobData, onClose: () => void, onApply: () => void}) => {
-  const [modalIsOpen, setIsOpen] = React.useState(false);
 
 return (
     <section className="fixed inset-0 flex items-center justify-center z-50">
