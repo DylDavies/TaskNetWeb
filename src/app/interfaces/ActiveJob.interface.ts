@@ -4,7 +4,6 @@ import JobData from "./JobData.interface";
 interface ActiveJob {
     jobId: string; 
     jobData: JobData;
-    username?:string;
 }
 
 export default ActiveJob;
