@@ -18,6 +18,7 @@ import { formatBudget } from "../server/formatters/Budget";
 import ActiveJob from "../interfaces/ActiveJob.interface";
 import SearchBar from "../components/searchbar/SearchBar";
 import JobForm from "../components/JobFormModal/JobFormModal";
+import MultiViewModal from "../components/MultiViewModal/MultiViewModal";
 import { getUser } from "../server/services/DatabaseService";
 
 //import { searchJobsBySkills } from "../server/services/JobDatabaseService";
@@ -35,18 +36,12 @@ export default function Page() {
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]); // Selected skills from filter
   const [jobNameFilter, setJobNameFilter] = useState("");
   const { user } = useContext(AuthContext) as AuthContextType;
-  const [modalOpen, setModalOpen] = useState(false);
+  const [openModal, setModalOpen] = useState(false);
   const router = useRouter();
-  const [data, setData] = useState<JobData>();
+  const [data, setData] = useState<ActiveJob>();
   const [clientUsernames, setClientUsernames] = useState<
     Record<string, string>
   >({});
-
-  type JobData = {
-    company: string;
-    jobTitle: string;
-    jobId: string;
-  };
 
   //signs the user out of google
   function signoutClick() {
@@ -161,7 +156,7 @@ export default function Page() {
   function handleCardClick(job: ActiveJob): void {
     console.log(job); // need this for linter & testing
     if(job?.jobData && job.jobId){
-      setData({company: job.jobData.clientUId, jobTitle: job.jobData.title, jobId: job.jobId});
+      setData(job);
       setModalOpen(true);
     }
     else{
@@ -215,12 +210,11 @@ export default function Page() {
                 onClick={() => handleCardClick(job)}
               />
             ))}
-            {modalOpen && data && (
-          <JobForm
-            data={data}
-            isOpen={modalOpen}
-            onClose={closeModal} 
-          /> 
+            {openModal && data && (
+              <MultiViewModal
+              job = {data}
+              modalIsOpen = {openModal}
+              onClose={closeModal}/>
             )}
           </section>
         </section>
