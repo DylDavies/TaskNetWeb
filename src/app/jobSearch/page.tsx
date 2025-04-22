@@ -1,10 +1,7 @@
 "use client";
 import Header from "../components/Header/header";
-import "../components/Header/Header.css";
 import SideBar from "../components/sidebar/SideBar";
-import "../components/sidebar/sidebar.css";
 import Button from "../components/button/Button";
-import "../components/button/Button.css";
 import { useState, useContext, useEffect } from "react";
 import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
@@ -17,7 +14,6 @@ import { formatDateAsString } from "../server/formatters/FormatDates";
 import { formatBudget } from "../server/formatters/Budget";
 import ActiveJob from "../interfaces/ActiveJob.interface";
 import SearchBar from "../components/searchbar/SearchBar";
-import JobForm from "../components/JobFormModal/JobFormModal";
 import MultiViewModal from "../components/MultiViewModal/MultiViewModal";
 import { getUser } from "../server/services/DatabaseService";
 
