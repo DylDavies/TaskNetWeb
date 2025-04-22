@@ -1,5 +1,4 @@
 import React, {useContext} from "react";
-import Modal from "react-modal";
 import Button from "../button/Button";
 import { AuthContextType, AuthContext } from "../../AuthContext";
 import { AddApplication, makeApplicationID}from "@/app/server/services/ApplicationService";

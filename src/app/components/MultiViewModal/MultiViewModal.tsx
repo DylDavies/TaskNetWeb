@@ -1,4 +1,4 @@
-import react, {useState, useEffect} from "react";
+import {useState, useEffect} from "react";
 import Modal from "react-modal";
 import ViewJobModal from "../ViewJobModal/ViewJobModal";
 import JobForm from "../JobFormModal/JobFormModal";
