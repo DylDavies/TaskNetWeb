@@ -107,7 +107,7 @@ const JobForm: React.FC<Props> = ({data, onClose}) => {
 
                 <section className="flex items-center gap-2 mb-2">
                   <label htmlFor="timeLine" className="text-ms font-medium">Timeline</label>
-                  <InputBar type="date" value ={estismatedTimeline} onChange={(e) => setEstismatedTimeline(e.target.value)}/>
+                  <input type="date" value ={estismatedTimeline} onChange={(e) => setEstismatedTimeline(e.target.value)} min={new Date().toISOString().split("T")[0]}/>
                 </section>
 
                 <section className="flex items-center gap-2 mb-2">

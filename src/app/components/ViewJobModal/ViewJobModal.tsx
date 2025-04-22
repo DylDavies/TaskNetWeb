@@ -63,7 +63,7 @@ return (
           {/* Deadline */}
           <section>
             <h4 className="font-semibold text-sm mb-1">Deadline</h4>
-            <p className="text-sm text-gray-300">{job.deadline}</p>
+            <p className="text-sm text-gray-300">{job.deadline.slice(0, 4) + "/" + job.deadline.slice(4, 6) + "/" + job.deadline.slice(6, 8)}</p>
           </section>
 
           {/* Status */}
