@@ -4,6 +4,7 @@ import React from "react";
 import "../button/Button.css";
 import "../inputbar/inputBar.css";
 import Button from "../button/Button";
+import Modal from "react-modal";
 
 interface JobData {
   title: string;
@@ -17,9 +18,21 @@ interface JobData {
   skills: string[]; // Added skills array
 }
 
-const ViewJobModal = ({ job, onClose }: { job: JobData; onClose: () => void }) => {
+const ViewJobModal = ({ job, isOpen, onClose, onApply }: { job: JobData, isOpen: boolean, onClose: () => void, onApply: () => void}) => {
+  const [modalIsOpen, setIsOpen] = React.useState(false);
+
+  React.useEffect(() => {
+        setIsOpen(isOpen);
+  }, [isOpen]);
+
   return (
-    <section className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+    <Modal 
+      isOpen = {modalIsOpen}
+      onRequestClose={onClose}
+      className=" rounded-2xl p-6 w-full max-w-lg shadow-lg text-white max-h-[90vh] overflow-y-auto z-50"
+      overlayClassName="fixed inset-0 bg-purple bg-opacity-0 backdrop-blur-sm z-[100] flex items-center justify-center"
+      ariaHideApp={false}>
+    <section className="fixed inset-0 flex items-center justify-center z-50">
       <article className="bg-neutral-800 rounded-2xl p-6 w-full max-w-lg shadow-lg text-white max-h-[90vh] overflow-y-auto">
         <section className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Job Details</h2>
@@ -85,10 +98,11 @@ const ViewJobModal = ({ job, onClose }: { job: JobData; onClose: () => void }) =
               ))}
             </section>
           </section>
-          <Button caption={"Apply"} />
+          <Button caption={"Apply"} onClick={onApply}/>
         </section>
       </article>
     </section>
+    </Modal>
   );
 };
 

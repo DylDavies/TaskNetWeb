@@ -99,7 +99,8 @@ const JobForm: React.FC<Props> = ({data, isOpen, onClose}) => {
         isOpen = {modalIsOpen}
         onRequestClose={onClose}
         className=" rounded-2xl p-6 w-full max-w-lg shadow-lg text-white max-h-[90vh] overflow-y-auto z-50"
-        overlayClassName="fixed inset-0 bg-purple bg-opacity-0 backdrop-blur-sm z-[100] flex items-center justify-center">
+        overlayClassName="fixed inset-0 bg-purple bg-opacity-0 backdrop-blur-sm z-[100] flex items-center justify-center"
+        ariaHideApp={false}>
           <section className="fixed inset-0 flex items-center justify-center z-50 bg-opacity-50 ">
             <article className="bg-neutral-800 rounded-2xl p-6 w-full max-w-lg shadow-lg text-white max-h-[90vh] overflow-y-auto">
             <section className="flex justify-between items-center mb-4">
