@@ -3,6 +3,7 @@ import Modal from "react-modal";
 import ViewJobModal from "../ViewJobModal/ViewJobModal";
 import JobForm from "../JobFormModal/JobFormModal";
 import ActiveJob from "@/app/interfaces/ActiveJob.interface";
+import { formatDateAsString } from "@/app/server/formatters/FormatDates";
 
 type Props = {
     job : ActiveJob; 
@@ -18,7 +19,7 @@ const MultiViewModal: React.FC<Props> = ({job, modalIsOpen, onClose}) => {
     useEffect(() => {
       if(modalIsOpen){
         setFormData({company: job.jobData.clientUId, jobTitle: job.jobData.title, jobId: job.jobId});
-        setViewData({title: job.jobData.title, company: job.jobData.title, companyImage: "", description: job.jobData.description, minBudget: String(job.jobData.budgetMin), maxBudget: String(job.jobData.budgetMax), deadline: String(job.jobData.deadline), status: String(job.jobData.status), skills: Object.values(job.jobData.skills).flat()});
+        setViewData({title: job.jobData.title, company: job.jobData.title, description: job.jobData.description, minBudget: job.jobData.budgetMin, maxBudget: job.jobData.budgetMax, deadline: formatDateAsString(job.jobData.deadline), skills: Object.values(job.jobData.skills).flat()});
       }
     }, [modalIsOpen, job]); 
 
@@ -31,12 +32,10 @@ const MultiViewModal: React.FC<Props> = ({job, modalIsOpen, onClose}) => {
       interface JobViewData {
         title: string;
         company: string;
-        companyImage: string;
         description: string;
-        minBudget: string;
-        maxBudget: string;
+        minBudget: number;
+        maxBudget: number;
         deadline: string;
-        status: string;
         skills: string[]; // Added skills array
       }
 

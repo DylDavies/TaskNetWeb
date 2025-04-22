@@ -57,7 +57,7 @@ export default function Page() {
   }
   useEffect(() => {
     fetchUserJobs();
-  }, [clientUId, fetchUserJobs]);
+  }, [clientUId]);
   
   useEffect(() => {
     async function fetchUsername() {

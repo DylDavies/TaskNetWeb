@@ -6,6 +6,7 @@ interface InputBarProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   className?: string;
   type?: string;
+  min?: number;
 }
 
 const InputBar: React.FC<InputBarProps> = ({
@@ -14,6 +15,7 @@ const InputBar: React.FC<InputBarProps> = ({
   onChange,
   className = "",
   type = "text",
+  min
 }) => {
   return (
     <input
@@ -22,6 +24,7 @@ const InputBar: React.FC<InputBarProps> = ({
       onChange={onChange}
       placeholder={placeholder}
       className={`border rounded px-4 py-2 input group  ${className}`}
+      min={min}
     />
   );
 };

@@ -62,6 +62,7 @@ const JobForm: React.FC<Props> = ({data, onClose}) => {
 
         if (isNaN(parseInt(bidAmount)) || parseInt(bidAmount) < 0) {
           toast.error("Please input a valid bid amount");
+          return;
         }
 
         if(!estismatedTimeline){
@@ -100,7 +101,7 @@ const JobForm: React.FC<Props> = ({data, onClose}) => {
             </section>
            
               <section className="flex items-center gap-2 mb-2">
-                <label htmlFor="pdf">CV</label><br></br>
+                <label htmlFor="pdf">Cover Letter</label><br></br>
                 <UploadComponent
                   uploadFunction={uploadFile}
                   path="CV"
@@ -115,7 +116,7 @@ const JobForm: React.FC<Props> = ({data, onClose}) => {
                 </section>
 
                 <section className="flex items-center gap-2 mb-2">
-                  <InputBar type="text" placeholder="Bid value" value={bidAmount} onChange={(e) => setBidAmount(e.target.value)}/>
+                  <InputBar type="number" min={1} placeholder="Bid value" value={bidAmount} onChange={(e) => setBidAmount(e.target.value)}/>
                 </section>
                 <section className="flex justify-end">
                   <Button caption = {"Submit"} onClick={handleApplicationSubmit}></Button>

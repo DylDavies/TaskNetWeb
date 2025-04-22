@@ -21,13 +21,13 @@ const FATable = ({jobName}: Props) => {
 
   const [pendingApplicants, setPendingApplicants] = useState<ApplicationData[]>([]);
 
+  async function fetchPendingApplicants() {
+    const pendingApplicants = await getPendingApplicants(jobID as string);
+    setPendingApplicants(pendingApplicants);
+  }
+
   // To update the table after the client accepts or rejects applicants
   useEffect(() => {
-    async function fetchPendingApplicants() {
-      const pendingApplicants = await getPendingApplicants(jobID as string);
-      setPendingApplicants(pendingApplicants);
-    }
-
     fetchPendingApplicants();
   }, [jobID]);
 
@@ -75,17 +75,17 @@ const FATable = ({jobName}: Props) => {
   const handleReject = async (aid: string, uid: string ) => {
     try {
       await rejectApplicant(aid);
-      setPendingApplicants((currentApplicant) =>
-        currentApplicant.filter((applicant) => applicant.ApplicantID != aid)
-      );
+
+      createNotification({
+        message: `${jobName} Your application has been rejected`,
+        seen: false,
+        uidFor: uid
+      });
+
+      await fetchPendingApplicants();
     } catch (error) {
       console.error(`Error when trying to reject applicant ${error}`);
     }
-    createNotification({
-      message: `${jobName} Your application has been rejected`,
-      seen: false,
-      uidFor: uid
-    })
   };
 
   return (
@@ -108,7 +108,7 @@ const FATable = ({jobName}: Props) => {
         {pendingApplicants.map((item, index) => (
           <tr 
             key={index} 
-            className="text-gray-400 cursor-pointer hover:bg-gray-700 transition duration-150"
+            className="text-gray-400 hover:bg-gray-700 transition duration-150"
           >
             <td className="px-4 py-3">
               <section className="flex items-center text-sm">
@@ -138,7 +138,7 @@ const FATable = ({jobName}: Props) => {
             <td className="px-4 py-3 text-xs space-x-2">
               <button
                 onClick={() => handleApplicationView(item)}
-                className="px-2 py-1 font-semibold leading-tight rounded-full bg-purple-800 text-purple-100 transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
+                className="px-2 py-1 cursor-pointer font-semibold leading-tight rounded-full bg-purple-800 text-purple-100 transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
               >
                   View
                 </button>
@@ -152,13 +152,13 @@ const FATable = ({jobName}: Props) => {
             )}
               <button
                 onClick={() => handleAccept(item.ApplicationID, item.ApplicantID,item.JobID)}
-                className="px-2 py-1 font-semibold leading-tight rounded-full bg-green-700 text-green-100 transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
+                className="px-2 py-1 cursor-pointer font-semibold leading-tight rounded-full bg-green-700 text-green-100 transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
               >
                 Accept
               </button>
               <button
                 onClick={() => handleReject(item.ApplicationID, item.ApplicantID)}
-                className="px-2 py-1 font-semibold leading-tight rounded-full bg-red-700 text-red-100 transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
+                className="px-2 py-1 cursor-pointer font-semibold leading-tight rounded-full bg-red-700 text-red-100 transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
               >
                 Reject
               </button>

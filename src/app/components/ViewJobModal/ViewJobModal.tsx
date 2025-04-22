@@ -4,16 +4,15 @@ import React from "react";
 import "../button/Button.css";
 import "../inputbar/inputBar.css";
 import Button from "../button/Button";
+import { formatBudget } from "@/app/server/formatters/Budget";
 
 interface JobData {
   title: string;
   company: string;
-  companyImage: string;
   description: string;
-  minBudget: string;
-  maxBudget: string;
+  minBudget: number;
+  maxBudget: number;
   deadline: string;
-  status: string;
   skills: string[]; // Added skills array
 }
 
@@ -37,14 +36,14 @@ return (
           <h3 className="text-2xl font-semibold">{job.title}</h3>
 
           {/* Company info */}
-          <section className="flex items-center gap-3">
+          {/* <section className="flex items-center gap-3">
             <img
               src={job.companyImage}
               alt={`${job.company} logo`}
               className="w-10 h-10 rounded-full object-cover"
             />
             <span className="text-lg font-medium">{job.company}</span>
-          </section>
+          </section> */}
 
           {/* Description */}
           <section>
@@ -56,7 +55,7 @@ return (
           <section>
             <h4 className="font-semibold text-sm mb-1">Budget</h4>
             <p className="text-sm text-gray-300">
-              ${job.minBudget} - ${job.maxBudget}
+              { formatBudget(job.minBudget, job.maxBudget) }
             </p>
           </section>
 
@@ -64,12 +63,6 @@ return (
           <section>
             <h4 className="font-semibold text-sm mb-1">Deadline</h4>
             <p className="text-sm text-gray-300">{job.deadline}</p>
-          </section>
-
-          {/* Status */}
-          <section>
-            <h4 className="font-semibold text-sm mb-1">Status</h4>
-            <p className="text-sm text-gray-300 capitalize">{job.status}</p>
           </section>
 
           {/* Skills Pills */}
