@@ -35,6 +35,7 @@ example:
 
 interface JobCardProps {
   company: string;
+  username?:string;
   jobTitle: string;
   budget: string;
   deadline: string;
@@ -45,6 +46,7 @@ interface JobCardProps {
 
 const JobCard: React.FC<JobCardProps> = ({
   company,
+  username,
   jobTitle,
   budget,
   deadline,
@@ -119,7 +121,7 @@ const JobCard: React.FC<JobCardProps> = ({
 
           {/* Company and Deadline inline at the bottom */}
           <footer className="flex justify-between items-center text-sm text-gray-400 pt-1 border-t border-gray-700 mt-2">
-            <address className="italic">{company}</address>
+            <address className="italic">{username||company}</address>
           {hired === JobStatus.Posted && (
             <output className="italic text-yellow-400">Open to applicants</output>
           )}

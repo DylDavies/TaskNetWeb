@@ -17,6 +17,7 @@ import { formatDateAsString } from "../server/formatters/FormatDates";
 import { formatBudget } from "../server/formatters/Budget";
 import ActiveJob from "../interfaces/ActiveJob.interface";
 import JobForm from "../components/JobFormModal/JobFormModal";
+import { getUsername } from "../server/services/DatabaseService";
 //import { searchJobsBySkills } from "../server/services/JobDatabaseService";
 
 //constant for links to other pages
@@ -71,7 +72,19 @@ export default function Page() {
       try {
         const activeJobs = await getAllJobs();
 
-        const filtered = activeJobs.filter((job) => {
+        // Fetch usernames for all jobs
+      // Create a new array with usernames
+      const jobsWithUsernames: ActiveJob[] = await Promise.all(
+        activeJobs.map(async (job) => {
+          const username = await getUsername(job.jobData.clientUId);
+          return {
+            ...job,
+            username // Add username to the job object
+          };
+        })
+      );
+
+        const filtered = jobsWithUsernames.filter((job) => {
           const flattenedSkills = Object.values(job.jobData.skills).flat(); // Get all skills from all skill areas
           return selectedSkills.every((selected) =>
             flattenedSkills.some(
@@ -126,7 +139,8 @@ export default function Page() {
             {jobCards.map((job, index) => (
               <JobCard
                 key={index}
-                company={job.jobData.clientUId}
+                company= {job.jobData.clientUId}
+                username={job.username}
                 jobTitle={job.jobData.title}
                 budget={formatBudget(
                   job.jobData.budgetMin,
