@@ -38,12 +38,6 @@ export default function Page() {
     Record<string, string>
   >({});
 
-  type JobData = {
-    company: string;
-    jobTitle: string;
-    jobId: string;
-  };
-
   //signs the user out of google
   function signoutClick() {
     AuthService.googleSignout();
