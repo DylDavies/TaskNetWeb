@@ -4,6 +4,7 @@ import "./globals.css";
 import AuthProvider from "./AuthContext";
 import NotificationProvider from "./NotificationContext";
 import { Toaster } from 'react-hot-toast';
+import JobProvider from "./JobContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +35,9 @@ export default function RootLayout({
         <Toaster position="top-center" reverseOrder={false} /> {/* This allows us to use toast messages on all pages, is used in the upload file component*/}
         <AuthProvider>
           <NotificationProvider>
-            {children}
+            <JobProvider>
+              {children}
+            </JobProvider>
           </NotificationProvider>
         </AuthProvider>
       </body>

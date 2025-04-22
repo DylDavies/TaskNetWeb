@@ -10,7 +10,7 @@ const NotificationList = () => {
 
     if (notifications) {
         notifications.sort((a, b) => 
-            a.sentTime.getTime() - b.sentTime.getTime()
+            b.sentTime.getTime() - a.sentTime.getTime()
         )
         notificationList = notifications.map((val, i) => 
             <NotificationListItem firstItem={i == 0} notification={val} markAsRead={() => {if (!val.seen) setNotificationSeen(val.uid, true)}} deleteFn={() => deleteNotification(val.uid)} key={val.uid}></NotificationListItem>)

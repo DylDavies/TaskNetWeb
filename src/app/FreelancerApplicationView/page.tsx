@@ -10,21 +10,19 @@ import "../components/sidebar/sidebar.css";
 import "./global.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
-import { getPendingApplicants } from "../server/services/ApplicationDatabaseServices";
 import React, { useContext, useEffect, useState } from "react";
 import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
-import JobStore from "../JobStore";
 import { getJob } from "../server/services/JobDatabaseService";
-import ApplicantionStatus from "@/app/enums/ApplicantionStatus.enum";
-
+import { JobContext, JobContextType } from "../JobContext";
 
 const links = [
   { name: "back", href: "/client" }];
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
+  const { jobID } = useContext(JobContext) as JobContextType;
 
   const router = useRouter();
 
@@ -36,26 +34,13 @@ export default function Page() {
 
   //const [searchQuery, setSearchQuery] = useState("");
 
-  /* Testing fetching pending users (START)*/
-  interface ApplicantData {
-    ApplicationID: string;
-    ApplicantID: string;
-    ApplicationDate: number;
-    BidAmount: number;
-    CVURL: string;
-    EstimatedTimeline: number;
-    JobID: string;
-    Status: ApplicantionStatus;
-    username: Promise<string>;
-
-}
   const [jobTitle, setJobTitle] = useState<string>("");
 
   //To set the job title of the page
   useEffect(() => {
     async function fetchJobTitle() {
       try {
-        const job = await getJob(JobStore.getJobId());
+        const job = await getJob(jobID as string);
         if (job) {
           setJobTitle(job.title); // assumes title exists
         }
@@ -65,18 +50,6 @@ export default function Page() {
     }
   
     fetchJobTitle();
-  }, []);
-
-  const [pendingApplicants, setPendingApplicants] = useState<ApplicantData[]>([]);
-
-  // To update the table after the client accepts or rejects applicants
-  useEffect(() => {
-    async function fetchPendingApplicants() {
-      const pendingApplicants = await getPendingApplicants(JobStore.getJobId());
-      setPendingApplicants(pendingApplicants);
-    }
-
-    fetchPendingApplicants();
   }, []);
 
   return (
@@ -104,7 +77,7 @@ export default function Page() {
 
               {/* FATable moved down */}
               <section className="w-full max-w-8xl mt-36">
-                <FATable data={pendingApplicants} />
+                <FATable jobName={jobTitle} />
               </section>
             </section>
           </section>

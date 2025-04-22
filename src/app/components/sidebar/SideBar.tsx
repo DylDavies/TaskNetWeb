@@ -21,7 +21,7 @@ import "./sidebar.css";
 
 type SideBarProps = {
   items: { name: string; href: string }[];
-  myfunction? :() => JSX.Element ;
+  myfunction?: JSX.Element ;
 }
 
 /*
@@ -58,7 +58,7 @@ const SideBar =  ({ items ,myfunction}: SideBarProps ) => {
           
     {myfunction &&(
        <li  className="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded hover-effect">
-        {myfunction()}
+        {myfunction}
      </li>
      )}
     </ul>

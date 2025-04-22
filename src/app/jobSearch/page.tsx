@@ -16,7 +16,7 @@ import ActiveJob from "../interfaces/ActiveJob.interface";
 import SearchBar from "../components/searchbar/SearchBar";
 import MultiViewModal from "../components/MultiViewModal/MultiViewModal";
 import { getUser } from "../server/services/DatabaseService";
-
+import JobStatus from "../enums/JobStatus.enum";
 //import { searchJobsBySkills } from "../server/services/JobDatabaseService";
 
 //constant for links to other pages
@@ -90,7 +90,7 @@ export default function Page() {
     };
 
     if (jobCards.length > 0) fetchUsernames();
-  }, [jobCards]);
+  }, [jobCards, clientUsernames]);
 
   // Gets ActiveJob data to populate cards - can change to JobData if JobID isn't needed
   // useEffect(() => {
@@ -122,7 +122,9 @@ export default function Page() {
         const activeJobs = await getAllJobs();
   
         const filtered = activeJobs.filter((job) => {
-          const flattenedSkills = Object.values(job.jobData.skills).flat();
+          if (job.jobData.status !== JobStatus.Posted) return;
+          const flattenedSkills = Object.values(job.jobData.skills).flat(); // Get all skills from all skill areas
+          
           const jobTitle = job.jobData.title.toLowerCase();
   
           const matchesSkills = selectedSkills.every((selected) =>
@@ -150,7 +152,6 @@ export default function Page() {
 
   // Click handler for clicking on a job card
   function handleCardClick(job: ActiveJob): void {
-    console.log(job); // need this for linter & testing
     if(job?.jobData && job.jobId){
       setData(job);
       setModalOpen(true);

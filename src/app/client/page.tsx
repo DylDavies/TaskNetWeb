@@ -17,7 +17,8 @@ import { formatDateAsString } from "../server/formatters/FormatDates";
 import { formatBudget } from "../server/formatters/Budget";
 import { getUsername } from "../server/services/DatabaseService";
 import ActiveJob from "../interfaces/ActiveJob.interface";
-import JobStore from "../JobStore";
+import { JobContext, JobContextType } from "../JobContext";
+import JobStatus from "../enums/JobStatus.enum";
 //import { sanitizeJobData } from "../server/formatters/JobDataSanitization";
 
 
@@ -25,10 +26,11 @@ import JobStore from "../JobStore";
 //constant for links to other pages
 
 const links = [{ name: "Home", href: "/" }];
-let ClickedJobId = "";
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
+  const { setJobID } = useContext(JobContext) as JobContextType; 
+
   const [jobCards, setJobCards] = useState<ActiveJob[]>([]);
   const router = useRouter();
 
@@ -70,10 +72,14 @@ export default function Page() {
 
   // Click handler for clicking on a job card
   function handleCardClick(job: ActiveJob): void {
-    console.log(job.jobId); // need this for linter & testing
-    ClickedJobId = job.jobId;
-    JobStore.setJobId(ClickedJobId);
+    if (job.jobData.status != JobStatus.Posted) return;
+
+    setJobID(job.jobId);
     router.push("/FreelancerApplicationView")
+  }
+
+  function refetch() {
+    fetchUserJobs();
   }
 
   return (
@@ -93,7 +99,7 @@ export default function Page() {
          
 
           <section className="w-64">
-            <SideBar items={links} myfunction={CreateJobModal}/>
+            <SideBar items={links} myfunction={CreateJobModal({refetch})}/>
           </section>
 
           <section className="flex-1 p-4 flex flex-col items-center gap-6 overflow-y-auto">

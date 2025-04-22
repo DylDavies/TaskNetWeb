@@ -101,10 +101,10 @@ const ClientModal: React.FC<Props> = ({ data, isOpen, onClose }) => {
               </section>
 
               <section>
-                <h3 className="font-semibold">CV</h3>
+                <h3 className="font-semibold">Cover Letter</h3>
                 <iframe
                   src={data.CVURL}
-                  title="Applicant CV"
+                  title="Applicant Cover Letter"
                   width="100%"
                   height="500px"
                   className="rounded border border-gray-700 mt-2"
@@ -116,7 +116,7 @@ const ClientModal: React.FC<Props> = ({ data, isOpen, onClose }) => {
                     rel="noopener noreferrer"
                     className="text-blue-400 underline"
                   >
-                    Download CV
+                    Download Cover Letter
                   </a>
                 </nav>
               </section>
