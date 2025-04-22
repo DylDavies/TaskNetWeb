@@ -29,7 +29,7 @@ const FATable = ({jobName}: Props) => {
     }
 
     fetchPendingApplicants();
-  }, []);
+  }, [jobID]);
 
   const [selectedApplicant, setSelectedApplicant] = useState<ApplicationData | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -50,7 +50,7 @@ const FATable = ({jobName}: Props) => {
       await updateHiredUId(jid,aid);
       await updateJobStatus(jid, JobStatus.Employed);
 
-      for await (let applicant of pendingApplicants) {
+      for await (const applicant of pendingApplicants) {
         await rejectApplicant(applicant.ApplicationID);
 
         await createNotification({

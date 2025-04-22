@@ -95,7 +95,7 @@ export default function Page() {
     };
 
     if (jobCards.length > 0) fetchUsernames();
-  }, [jobCards]);
+  }, [jobCards, clientUsernames]);
 
   // Gets ActiveJob data to populate cards - can change to JobData if JobID isn't needed
   useEffect(() => {
@@ -123,7 +123,6 @@ export default function Page() {
 
   // Click handler for clicking on a job card
   function handleCardClick(job: ActiveJob): void {
-    console.log(job); // need this for linter & testing
     if(job?.jobData && job.jobId){
       setData({company: job.jobData.clientUId, jobTitle: job.jobData.title, jobId: job.jobId});
       setModalOpen(true);

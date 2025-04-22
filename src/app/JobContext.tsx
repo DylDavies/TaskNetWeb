@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, Dispatch, FC, ReactNode, SetStateAction, useState } from "react"
+import { createContext, FC, ReactNode, useState } from "react"
 
 export type JobContextType = {
     jobID: string | null,

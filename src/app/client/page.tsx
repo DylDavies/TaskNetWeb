@@ -26,7 +26,6 @@ import JobStatus from "../enums/JobStatus.enum";
 //constant for links to other pages
 
 const links = [{ name: "Home", href: "/" }];
-let ClickedJobId = "";
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
@@ -58,7 +57,7 @@ export default function Page() {
   }
   useEffect(() => {
     fetchUserJobs();
-  }, [clientUId]);
+  }, [clientUId, fetchUserJobs]);
   
   useEffect(() => {
     async function fetchUsername() {
