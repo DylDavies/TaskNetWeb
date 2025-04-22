@@ -54,7 +54,8 @@ const JobCard: React.FC<JobCardProps> = ({
   hired,
   onClick,
 }) => {
-  const initial = company.charAt(0).toUpperCase();
+  const displayName = username|| jobTitle;
+  const initial = displayName.charAt(0).toUpperCase();
 
   return (
     <article
