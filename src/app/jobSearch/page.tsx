@@ -18,6 +18,7 @@ import { formatBudget } from "../server/formatters/Budget";
 import ActiveJob from "../interfaces/ActiveJob.interface";
 import MultiViewModal from "../components/MultiViewModal/MultiViewModal";
 import { getUser } from "../server/services/DatabaseService";
+import JobStatus from "../enums/JobStatus.enum";
 //import { searchJobsBySkills } from "../server/services/JobDatabaseService";
 
 //constant for links to other pages
@@ -98,6 +99,7 @@ export default function Page() {
         const activeJobs = await getAllJobs();
 
         const filtered = activeJobs.filter((job) => {
+          if (job.jobData.status !== JobStatus.Posted) return;
           const flattenedSkills = Object.values(job.jobData.skills).flat(); // Get all skills from all skill areas
           return selectedSkills.every((selected) =>
             flattenedSkills.some(
