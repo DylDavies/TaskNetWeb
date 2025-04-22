@@ -1,5 +1,4 @@
 import React, {useContext} from "react";
-import Modal from "react-modal";
 import Button from "../button/Button";
 import { AuthContextType, AuthContext } from "../../AuthContext";
 import { AddApplication, makeApplicationID}from "@/app/server/services/ApplicationService";
@@ -19,22 +18,16 @@ type JobData = {
 
 type Props = {
     data : JobData,
-    isOpen : boolean,
     onClose: () => void; 
 }
 
-const JobForm: React.FC<Props> = ({data, isOpen, onClose}) => {
+const JobForm: React.FC<Props> = ({data, onClose}) => {
     const { user } = useContext(AuthContext) as AuthContextType;
     const [applicantID, setApplicantID] = React.useState("");
     const [bidAmount, setBidAmount] = React.useState("");
     const [estismatedTimeline, setEstismatedTimeline] = React.useState("");
     const [jobID, setJobID] = React.useState("");
     const [CVURL, setCVURL] = React.useState("");
-    const [modalIsOpen, setIsOpen] = React.useState(false);
-
-    React.useEffect(() => {
-      setIsOpen(isOpen);
-    }, [isOpen]); // Separate effect just for isOpen sync
     
     React.useEffect(() => {
       if (user?.authUser?.uid) {
@@ -99,11 +92,6 @@ const JobForm: React.FC<Props> = ({data, isOpen, onClose}) => {
     }
 
   return (
-      <Modal 
-        isOpen = {modalIsOpen}
-        onRequestClose={onClose}
-        className=" rounded-2xl p-6 w-full max-w-lg shadow-lg text-white max-h-[90vh] overflow-y-auto z-50"
-        overlayClassName="fixed inset-0 bg-purple bg-opacity-0 backdrop-blur-sm z-[100] flex items-center justify-center">
           <section className="fixed inset-0 flex items-center justify-center z-50 bg-opacity-50 ">
             <article className="bg-neutral-800 rounded-2xl p-6 w-full max-w-lg shadow-lg text-white max-h-[90vh] overflow-y-auto">
             <section className="flex justify-between items-center mb-4">
@@ -135,7 +123,6 @@ const JobForm: React.FC<Props> = ({data, isOpen, onClose}) => {
 
             </article>
           </section>
-    </Modal>
   );
 };
 
