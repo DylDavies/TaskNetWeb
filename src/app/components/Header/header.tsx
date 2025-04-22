@@ -1,5 +1,6 @@
 import React from "react";
 import Notifications from "../Notifications/Notifications";
+import "./Header.css";
 
 type Props = {
   usertype: string; // freelancer or client to determine the messag

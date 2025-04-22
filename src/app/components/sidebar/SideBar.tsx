@@ -1,5 +1,7 @@
 import React, { JSX } from "react";
 import Link from "next/link";
+import "./sidebar.css";
+
 /*
 ------NOTE TO USER OF THIS COMPONENT-----
   This component dynamically renders items onto the sidebar 

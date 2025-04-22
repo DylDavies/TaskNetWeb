@@ -1,10 +1,7 @@
 "use client";
 import Header from "../components/Header/header";
-import "../components/Header/Header.css";
 import SideBar from "../components/sidebar/SideBar";
-import "../components/sidebar/sidebar.css";
 import Button from "../components/button/Button";
-import "../components/button/Button.css";
 import { useState, useContext, useEffect } from "react";
 import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
@@ -16,6 +13,7 @@ import { getAllJobs } from "../server/services/JobDatabaseService";
 import { formatDateAsString } from "../server/formatters/FormatDates";
 import { formatBudget } from "../server/formatters/Budget";
 import ActiveJob from "../interfaces/ActiveJob.interface";
+import SearchBar from "../components/searchbar/SearchBar";
 import MultiViewModal from "../components/MultiViewModal/MultiViewModal";
 import { getUser } from "../server/services/DatabaseService";
 import JobStatus from "../enums/JobStatus.enum";
@@ -27,10 +25,12 @@ const links = [
   { name: "freelancer", href: "/freelancer" }
 ];
 
+
 export default function Page() {
   const [jobCards, setJobCards] = useState<ActiveJob[]>([]);
   const [skills, setSkills] = useState<string[]>([]); // all skills from all skills areas
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]); // Selected skills from filter
+  const [jobNameFilter, setJobNameFilter] = useState("");
   const { user } = useContext(AuthContext) as AuthContextType;
   const [openModal, setModalOpen] = useState(false);
   const router = useRouter();
@@ -93,29 +93,62 @@ export default function Page() {
   }, [jobCards, clientUsernames]);
 
   // Gets ActiveJob data to populate cards - can change to JobData if JobID isn't needed
+  // useEffect(() => {
+  //   async function filterJobsBySkills() {
+  //     try {
+  //       const activeJobs = await getAllJobs();
+
+  //       const filtered = activeJobs.filter((job) => {
+  //         const flattenedSkills = Object.values(job.jobData.skills).flat(); // Get all skills from all skill areas
+  //         return selectedSkills.every((selected) =>
+  //           flattenedSkills.some(
+  //             (skill) => skill.toLowerCase() === selected.toLowerCase()
+  //           )
+  //         );
+  //       });
+
+  //       setJobCards(filtered);
+  //     } catch (error) {
+  //       console.error("Error occurred when trying to fetch Jobs: ", error);
+  //     }
+  //   }
+
+  //   filterJobsBySkills();
+  // }, [selectedSkills]);
+
   useEffect(() => {
-    async function filterJobsBySkills() {
+    async function filterJobs() {
       try {
         const activeJobs = await getAllJobs();
-
+  
         const filtered = activeJobs.filter((job) => {
           if (job.jobData.status !== JobStatus.Posted) return;
           const flattenedSkills = Object.values(job.jobData.skills).flat(); // Get all skills from all skill areas
           return selectedSkills.every((selected) =>
+          const jobTitle = job.jobData.title.toLowerCase();
+  
+          const matchesSkills = selectedSkills.every((selected) =>
             flattenedSkills.some(
               (skill) => skill.toLowerCase() === selected.toLowerCase()
             )
           );
+  
+          const matchesTitle =
+            jobNameFilter.trim() === "" ||
+            jobTitle.includes(jobNameFilter.toLowerCase());
+  
+          return matchesSkills && matchesTitle;
         });
-
+  
         setJobCards(filtered);
       } catch (error) {
-        console.error("Error occurred when trying to fetch Jobs: ", error);
+        console.error("Error fetching jobs:", error);
       }
     }
-
-    filterJobsBySkills();
-  }, [selectedSkills]);
+  
+    filterJobs();
+  }, [selectedSkills, jobNameFilter]);
+  
 
   // Click handler for clicking on a job card
   function handleCardClick(job: ActiveJob): void {
@@ -130,25 +163,35 @@ export default function Page() {
 
   return (
     <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
-      <header className="w-full bg-orange-500 ">
+      <header className="w-full bg-orange-500">
         <Header
           name={user?.userData.username || "Username"}
           usertype="Find a Job"
         />
       </header>
-
+  
       <main className="flex flex-1 bg-color dark:bg-[#cdd5f6]">
         {/* Sidebar */}
         <section className="w-64">
           <SideBar items={links} />
         </section>
-
+  
         <section className="flex-1 flex flex-col items-center p-6 gap-6">
-          <section className="w-full max-w-3xl flex justify-center mb-10">
+          {/* Filter Bars */}
+          <section className="w-full max-w-4xl flex flex-col items-center gap-4 mb-10">
+            {/* Job Title Filter */}
+            <SearchBar
+              placeholder="Filter by job title..."
+              value={jobNameFilter}
+              onChange={(e) => setJobNameFilter(e.target.value)}
+              className="w-full max-w-md"
+            />
+  
+            {/* Skill Filter */}
             <MultiSelect skills={skills} onSelect={setSelectedSkills} />
           </section>
-
-          {/* Generate Job cards dynamically  */}
+  
+          {/* Job Cards */}
           <section className="w-full flex flex-wrap justify-center gap-6">
             {jobCards.map((job, index) => (
               <JobCard
@@ -173,11 +216,13 @@ export default function Page() {
           </section>
         </section>
       </main>
-
+  
       {/* Footer */}
       <footer className="py-4 flex justify-end bg-gray-900 box-footer">
         <Button caption={"Log out"} onClick={() => signoutClick()} />
       </footer>
     </section>
   );
+  
+
 }
