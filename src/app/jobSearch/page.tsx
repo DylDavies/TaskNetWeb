@@ -16,40 +16,56 @@ import { getAllJobs } from "../server/services/JobDatabaseService";
 import { formatDateAsString } from "../server/formatters/FormatDates";
 import { formatBudget } from "../server/formatters/Budget";
 import ActiveJob from "../interfaces/ActiveJob.interface";
+import JobForm from "../components/JobFormModal/JobFormModal";
 import { getUser } from "../server/services/DatabaseService";
+//import { searchJobsBySkills } from "../server/services/JobDatabaseService";
 
 //constant for links to other pages
 const links = [
   { name: "Home", href: "/" },
-  { name: "freelancer", href: "/freelancer" },
+  { name: "freelancer", href: "/freelancer" }
 ];
 
 export default function Page() {
   const [jobCards, setJobCards] = useState<ActiveJob[]>([]);
-  const [skills, setSkills] = useState<string[]>([]);
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [skills, setSkills] = useState<string[]>([]); // all skills from all skills areas
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]); // Selected skills from filter
+  const { user } = useContext(AuthContext) as AuthContextType;
+  const [modalOpen, setModalOpen] = useState(false);
+  const router = useRouter();
+  const [data, setData] = useState<JobData>();
   const [clientUsernames, setClientUsernames] = useState<
     Record<string, string>
   >({});
-  const { user } = useContext(AuthContext) as AuthContextType;
-  const router = useRouter();
 
-  // Signs the user out of google
+  type JobData = {
+    company: string;
+    jobTitle: string;
+    jobId: string;
+  };
+
+  //signs the user out of google
   function signoutClick() {
     AuthService.googleSignout();
     router.push("/");
   }
 
+  const closeModal = () => {
+    setModalOpen(false);        
+  };
+
   // Get all skills to populate array for auto-fill
   useEffect(() => {
     async function fetchSkills() {
       try {
-        const skillData = await getAllSkills();
+        const skillData = await getAllSkills(); // gets all skills as an array
+        //console.log(skillData);
         setSkills(skillData);
       } catch (err) {
         console.error("could not fetch skillData: ", err);
       }
     }
+
     fetchSkills();
   }, []);
 
@@ -81,14 +97,14 @@ export default function Page() {
     if (jobCards.length > 0) fetchUsernames();
   }, [jobCards]);
 
-  // Gets ActiveJob data to populate cards
+  // Gets ActiveJob data to populate cards - can change to JobData if JobID isn't needed
   useEffect(() => {
     async function filterJobsBySkills() {
       try {
         const activeJobs = await getAllJobs();
 
         const filtered = activeJobs.filter((job) => {
-          const flattenedSkills = Object.values(job.jobData.skills).flat();
+          const flattenedSkills = Object.values(job.jobData.skills).flat(); // Get all skills from all skill areas
           return selectedSkills.every((selected) =>
             flattenedSkills.some(
               (skill) => skill.toLowerCase() === selected.toLowerCase()
@@ -105,9 +121,16 @@ export default function Page() {
     filterJobsBySkills();
   }, [selectedSkills]);
 
+  // Click handler for clicking on a job card
   function handleCardClick(job: ActiveJob): void {
-    console.log(job);
-    alert("Not implemented yet :(");
+    console.log(job); // need this for linter & testing
+    if(job?.jobData && job.jobId){
+      setData({company: job.jobData.clientUId, jobTitle: job.jobData.title, jobId: job.jobId});
+      setModalOpen(true);
+    }
+    else{
+      alert("Error: Something has gone wrong");
+    }
   }
 
   return (
@@ -130,12 +153,12 @@ export default function Page() {
             <MultiSelect skills={skills} onSelect={setSelectedSkills} />
           </section>
 
-          {/* Generate Job cards dynamically */}
+          {/* Generate Job cards dynamically  */}
           <section className="w-full flex flex-wrap justify-center gap-6">
             {jobCards.map((job, index) => (
               <JobCard
                 key={index}
-                company={clientUsernames[job.jobData.clientUId] || "Loading..."}
+                company= {clientUsernames[job.jobData.clientUId] || "Loading..."}         
                 jobTitle={job.jobData.title}
                 budget={formatBudget(
                   job.jobData.budgetMin,
@@ -146,6 +169,13 @@ export default function Page() {
                 onClick={() => handleCardClick(job)}
               />
             ))}
+            {modalOpen && data && (
+          <JobForm
+            data={data}
+            isOpen={modalOpen}
+            onClose={closeModal} 
+          /> 
+            )}
           </section>
         </section>
       </main>
