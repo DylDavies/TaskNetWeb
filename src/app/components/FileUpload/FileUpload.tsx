@@ -12,14 +12,24 @@ type UploadComponentProps = {
   uploadFunction: UploadFunction;
   path: string;
   name: string;
-  onUploadComplete?: (url: string) => void;
+  onUploadComplete?: (url: string, file: File) => void;
 };
 
-function UploadComponent({ uploadFunction, path, name, onUploadComplete  }: UploadComponentProps) {
+function UploadComponent({ uploadFunction, path, name, onUploadComplete  }: UploadComponentProps) 
+{
+
   //const [progress, setProgress] = useState<number>(0);
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
+
+      const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+
+      //checking file size
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error("File size exceeds 10MB limit");
+        return;
+      }
 
      // setProgress(0);
       // Show uploading toast
@@ -29,9 +39,8 @@ function UploadComponent({ uploadFunction, path, name, onUploadComplete  }: Uplo
         .then((url) => {
           toast.dismiss(toastId);
           toast.success("Upload complete!");
-
           if (onUploadComplete) {
-            onUploadComplete(url);
+            onUploadComplete(url, file);
           }
           
         })
