@@ -1,5 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation";
+//import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ActiveMessage from "../interfaces/ActiveMessage.interface";
 import { getAllMessages } from "../server/services/MessageDatabaseServices";
@@ -9,13 +9,13 @@ import Chat from "../components/Chat/Chat";
 import UserList from "../components/UserList/UserList";
 
 //constant for links to other pages
-const links = [
-  { name: "Home", href: "/" },
-  { name: "back", href: "/freelancer" },
-];
+// const links = [
+//   { name: "Home", href: "/" },
+//   { name: "back", href: "/freelancer" },
+// ];
 
 export default function Page() {
-  const router = useRouter();
+  //const router = useRouter();
 
   const [messages, setMessages] = useState<ActiveMessage[]>([]);
 
@@ -41,6 +41,8 @@ export default function Page() {
   return (
     <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans body">
       <section className="container">
+        <p>{messages[0]?.messageData?.status || "HADES"}</p>{" "}
+        {/*for linter error */}
         <UserList />
         <Chat />
         <Detail />

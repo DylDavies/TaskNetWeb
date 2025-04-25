@@ -1,4 +1,5 @@
 import React from "react";
+import "./inputBar.css";
 
 interface InputBarProps {
   placeholder?: string;
@@ -15,7 +16,7 @@ const InputBar: React.FC<InputBarProps> = ({
   onChange,
   className = "",
   type = "text",
-  min
+  min,
 }) => {
   return (
     <input
