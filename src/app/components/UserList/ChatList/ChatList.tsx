@@ -10,18 +10,10 @@ import Image from "next/image";
           className="avatar"
         />*/
 const ChatList = () => {
-  const [inputValue, setInputValue] = useState("");
-
   return (
     <section className="chatList scrollable">
       <section className="search">
-        <InputBar
-          placeholder="Type something..."
-          value={"SOMETHING"}
-          onChange={(e) => setInputValue(e.target.value)}
-          className="search"
-        />
-        <p>{inputValue}</p> {/*for linter*/}
+        <InputBar className="searchbar" /> {/*add all the props*/}
       </section>
 
       {/* items from the user list */}

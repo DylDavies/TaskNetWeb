@@ -33,7 +33,8 @@ const UserInfo: React.FC<Props> = ({ name }) => {
       </section>
       <section className="icons">
         {/*20 min in vid*/}
-        <Image src="/more.png" alt="More" width={24} height={24} />
+        <Image src="/more.png" alt="More" width={24} height={24} />{" "}
+        {/*actually add these things*/}
         <Image src="/video.png" alt="Video" width={24} height={24} />
         <Image src="/edit.png" alt="Edit" width={24} height={24} />
       </section>
