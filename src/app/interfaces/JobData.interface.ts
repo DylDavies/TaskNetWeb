@@ -1,5 +1,4 @@
 import JobStatus from "../enums/JobStatus.enum";
-import MilestoneStatus from "../enums/MilestoneStatus.enum";
 
 // Info for a Job from Jobs collection
 interface JobData{
@@ -15,9 +14,6 @@ interface JobData{
     hiredUId: string,
     clientUId: string, 
     createdAt:number, 
-    milestones: {
-        [title: string, description: string, status: MilestoneStatus, deadline: number, payment: number]:string []
-    }
 }
 
 // Date as a number format: YYYYMMDD

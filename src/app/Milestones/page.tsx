@@ -1,6 +1,5 @@
 "use client";
 
-import FATable from "../components/FATable/FATable";
 import "../components/FATable/FATable.css";
 import "../components/searchbar/SearchBar.css";
 import Header from "../components/Header/header";
@@ -64,7 +63,10 @@ export default function Page() {
   
     fetchJobTitle();
   }, []);
-  
+
+  function handleMilestoneClick() {
+    alert("This hasn't been implemented yet.");
+  }
 
   return (
     <>
@@ -91,7 +93,7 @@ export default function Page() {
 
               {/* FATable moved down */}
               <section className="w-full max-w-8xl mt-36">
-                <MilestonesTable jobName={jobTitle} />
+                <MilestonesTable onMilestoneClick={handleMilestoneClick} />
               </section>
             </section>
           </section>

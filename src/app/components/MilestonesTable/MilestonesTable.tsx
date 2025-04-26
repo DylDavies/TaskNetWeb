@@ -1,31 +1,42 @@
 "use client";
 import React, { useContext, useEffect, useState } from "react";
 import { formatDateAsString } from "@/app/server/formatters/FormatDates";
-import ApplicationData from "@/app/interfaces/ApplicationData.interface";
 import { useRouter } from "next/navigation";
 import { JobContext, JobContextType } from "@/app/JobContext";
+import MilestoneData from "@/app/interfaces/Milestones.interface";
+import { getMilestones } from "@/app/server/services/MilestoneService";
+import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
 
 interface Props {
-  jobName: string
+  
+  onMilestoneClick?: (milestone: MilestoneData) => void;
 }
 
-const MilestonesTable = ({jobName}: Props) => {
+const MilestonesTable = ({ onMilestoneClick}: Props) => {
   const router = useRouter();
 
   const { jobID } = useContext(JobContext) as JobContextType;
 
-  const [pendingApplicants, setPendingApplicants] = useState<ApplicationData[]>([]);
+  const [milestones, setMilestones] = useState<MilestoneData[]>([]);
 
-  /*async function fetchPendingApplicants() {
-    const pendingApplicants = await getPendingApplicants(jobID as string);
-    setPendingApplicants(pendingApplicants);
-  }
-
-  // To update the table after the client accepts or rejects applicants
   useEffect(() => {
-    fetchPendingApplicants();
-  }, [jobID]);*/
+    async function fetchMilestones() {
+      if (!jobID) return; // Safety check
+      try {
+        const data = await getMilestones(jobID); 
+        setMilestones(data);
+      } catch (error) {
+        console.error("Error fetching milestones:", error);
+      }
+    }
+  
+    fetchMilestones();
+  }, [jobID]);
 
+  function MilestoneStatusToString(value: MilestoneStatus| undefined): string {
+    if (value === undefined) return 'Unknown';
+    return MilestoneStatus[value] || '...';
+    }
     
   return (
     <>
@@ -39,14 +50,13 @@ const MilestonesTable = ({jobName}: Props) => {
         <tr className="text-xs font-semibold tracking-wide text-left uppercase border-b border-gray-700 bg-gray-800 text-gray-400">
           <th className="px-4 py-3">Milestone</th>
           <th className="px-4 py-3">Status</th>
-          {/*<th className="px-4 py-3">Date</th>*/}
-          <th className="px-4 py-3">Actions</th>
         </tr>
       </thead>
       <tbody className="divide-y divide-gray-700 bg-gray-800">
-        {pendingApplicants.map((item, index) => (
+        {milestones.map((item, index) => (
           <tr 
             key={index} 
+            onClick={() => onMilestoneClick?.(item)}
             className="text-gray-400 hover:bg-gray-700 transition duration-150"
           >
             <td className="px-4 py-3">
@@ -58,35 +68,28 @@ const MilestonesTable = ({jobName}: Props) => {
                   />
                 </section>
                 <section>
-                  <p className="font-semibold">{item.username}</p>
-                  <p className="font-semibold">Bid amount: R{item.BidAmount}</p>
-                  <p className="text-xs text-gray-400">Application date:  {formatDateAsString(item.ApplicationDate)}
+                  <p className="font-semibold">{item.title}</p>
+                  <p className="font-semibold">Payment: R{item.payment}</p>
+                  <p className="text-xs text-gray-400">Deadline:  {formatDateAsString(item.deadline)}
                   </p>
                 </section>
               </section>
             </td>
 
-            {/* Always show Pending in orange */}
-            <td className="px-4 py-3 text-xs">
-              <strong className="px-2 py-1 font-semibold leading-tight rounded-full text-white bg-orange-600">
-                put functionality for status
-              </strong>
-            </td>
-
+            
             {/* Any buttons needed */}
             <td className="px-4 py-3 text-xs space-x-2">
-              <button
-                
-                className="px-2 py-1 cursor-pointer font-semibold leading-tight rounded-full bg-green-700 text-green-100 transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
-              >
-                Accept
-              </button>
-              <button
-                
-                className="px-2 py-1 cursor-pointer font-semibold leading-tight rounded-full bg-red-700 text-red-100 transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
-              >
-                Reject
-              </button>
+                <strong
+                    className={`px-2 py-1 font-semibold leading-tight rounded-full text-white 
+                    ${item.status === MilestoneStatus.InProgress 
+                        ? 'bg-yellow-500' // Yellow if InProgress
+                        : item.status === MilestoneStatus.Completed
+                        ? 'bg-green-600' // Green if Completed
+                        : 'bg-orange-600' // Default: Orange if Pending
+                    }`}
+                    >
+                    {MilestoneStatusToString(item.status)}
+                </strong>
             </td>
           </tr>
         ))}
