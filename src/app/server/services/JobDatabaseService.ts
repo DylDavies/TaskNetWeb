@@ -185,4 +185,32 @@ async function getJobByClientIdAndHiredId(clientID: string, hiredID: string): Pr
   }
 }
 
-export { getJob, createJob, getAllJobs, searchByTitle, updateHiredUId, updateJobStatus, searchJobsBySkills, getJobsByClientID, getJobByClientIdAndHiredId };
+async function getJobsByFreelancerID(FreelancerID: string): Promise<ActiveJob[]> {
+  try {
+    const Query = query(
+      collection(db, "Jobs")  
+    );
+    const jobDocs = await getDocs(Query);
+
+    const jobs: ActiveJob[] = [];
+
+    jobDocs.forEach((doc) => {
+      const jobData = doc.data() as JobData;
+      if (jobData.hiredUId.includes(FreelancerID)) {
+        const activeJob: ActiveJob = {
+          jobId: doc.id,
+          jobData,
+        };
+        jobs.push(activeJob);
+      }
+    });
+
+    return jobs;
+    
+  } catch (error) {
+    console.error("Error getting jobs by freelancer ID:", error);
+    throw error;
+  }
+}
+
+export { getJob, createJob, getAllJobs, searchByTitle, updateHiredUId, updateJobStatus, searchJobsBySkills, getJobsByClientID, getJobByClientIdAndHiredId, getJobsByFreelancerID};

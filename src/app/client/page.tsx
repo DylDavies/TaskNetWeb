@@ -19,7 +19,6 @@ import { getUsername } from "../server/services/DatabaseService";
 import ActiveJob from "../interfaces/ActiveJob.interface";
 import { JobContext, JobContextType } from "../JobContext";
 import JobStatus from "../enums/JobStatus.enum";
-//import { sanitizeJobData } from "../server/formatters/JobDataSanitization";
 
 
 
