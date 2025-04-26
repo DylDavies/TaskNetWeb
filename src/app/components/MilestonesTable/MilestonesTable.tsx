@@ -81,8 +81,8 @@ const MilestonesTable = ({ onMilestoneClick}: Props) => {
             <td className="px-4 py-3 text-xs space-x-2">
                 <strong
                     className={`px-2 py-1 font-semibold leading-tight rounded-full text-white 
-                    ${item.status === MilestoneStatus.InProgress 
-                        ? 'bg-yellow-500' // Yellow if InProgress
+                    ${item.status === MilestoneStatus.OnHalt 
+                        ? 'bg-red-500' // Yellow if InProgress
                         : item.status === MilestoneStatus.Completed
                         ? 'bg-green-600' // Green if Completed
                         : 'bg-orange-600' // Default: Orange if Pending
