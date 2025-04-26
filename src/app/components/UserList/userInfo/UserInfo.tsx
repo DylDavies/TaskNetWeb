@@ -1,9 +1,7 @@
-import Button from "../../button/Button";
+import { AuthContext, AuthContextType } from "@/app/AuthContext";
 import "./userInfo.css";
 import Image from "next/image";
-type Props = {
-  name: string; // name displayed in message
-};
+import { useContext, useEffect } from "react";
 
 /*
 replaced images:
@@ -17,10 +15,9 @@ replaced images:
         <Image src="/edit.png" alt="Edit" width={24} height={24} />
  */
 
-const UserInfo: React.FC<Props> = ({ name }) => {
-  // test:
-  name = "Sudhir";
-  const initial = name.charAt(0).toUpperCase();
+const UserInfo = () => {
+  const { user } = useContext(AuthContext) as AuthContextType;
+  //console.log(user?.userData.type);
 
   return (
     <section className="userInfo">
@@ -28,10 +25,10 @@ const UserInfo: React.FC<Props> = ({ name }) => {
         {/*<Button caption="Back" />*/}
         {/* Profile Photo might eventually allow the user to put their own one, for now, use the blue with initial */}
         <section className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-semibold text-sm sm:text-base">
-          {initial}
+          {user?.userData.username?.charAt(0)}
         </section>
         {/* <img src="./avatar.png" alt=""/> */}
-        <h2>John Doe</h2>
+        <h2>{user?.userData.username}</h2>
       </section>
       <section className="icons">
         {/*20 min in vid*/}

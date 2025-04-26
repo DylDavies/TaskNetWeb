@@ -1,7 +1,16 @@
 import Button from "../button/Button";
 import "./Detail.css";
+import { useRouter } from "next/navigation";
+import AuthService from "@/app/services/AuthService";
 
 const Detail = () => {
+  const router = useRouter();
+
+  function signoutClick() {
+    AuthService.googleSignout();
+    router.push("/");
+  }
+
   return (
     <section className="detail">
       <section className="user">
@@ -73,7 +82,7 @@ const Detail = () => {
           </section>
         </section>
         <Button caption="Block user" />
-        <Button caption="Logout" />
+        <Button caption="Logout" onClick={() => signoutClick()} />
       </section>
     </section>
   );

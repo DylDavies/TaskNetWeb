@@ -3,7 +3,7 @@ import JobStatus from "@/app/enums/JobStatus.enum";
 import { db } from "@/app/firebase";
 import ActiveJob from "@/app/interfaces/ActiveJob.interface";
 import JobData from "@/app/interfaces/JobData.interface";
-import { addDoc, and, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { addDoc, and, collection, doc, getDoc, getDocs, or, query, updateDoc, where } from "firebase/firestore";
 
 // Endpoint to get the Job by its JobID
 async function getJob(uid: string): Promise<JobData | null> {
@@ -185,4 +185,41 @@ async function getJobByClientIdAndHiredId(clientID: string, hiredID: string): Pr
   }
 }
 
-export { getJob, createJob, getAllJobs, searchByTitle, updateHiredUId, updateJobStatus, searchJobsBySkills, getJobsByClientID, getJobByClientIdAndHiredId };
+// Endpoint to get ActiveJobData for clients and freelancers who are working together on the same job
+async function getContracted(userID: string): Promise<ActiveJob[]> {
+  try {
+    if (!userID) {
+      throw new Error("Valid userID has not been given");
+    }
+
+    const Query = query(
+      collection(db, "Jobs"),
+      and(
+        where("clientUId", "==", userID),   
+        or(                                 
+          where("status", "==", JobStatus.Employed),
+          where("status", "==", JobStatus.Completed)
+        )
+      )
+    );
+
+    const jobDocs = await getDocs(Query);
+    const jobs: ActiveJob[] = [];
+
+    jobDocs.forEach((doc) => {
+      const jobData = doc.data() as JobData;
+      const activeJob: ActiveJob = {
+        jobId: doc.id,
+        jobData,
+      };
+      jobs.push(activeJob);
+    });
+
+    return jobs;
+  } catch (error) {
+    console.error("Error fetching jobs by client and hired ID:", error);
+    throw error;
+  }
+}
+
+export { getJob, createJob, getAllJobs, searchByTitle, updateHiredUId, updateJobStatus, searchJobsBySkills, getJobsByClientID, getJobByClientIdAndHiredId, getContracted };
