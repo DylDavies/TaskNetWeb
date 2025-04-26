@@ -31,7 +31,60 @@ const Chat = () => {
           <img src="./info.png" alt="" />
         </section>
       </section>
-      <section className="center"></section>
+      <section className="center">
+        {/*other user message*/}
+        <section className="message">
+          <img src="./avatar.png" alt="" />
+          <section className="text">
+            <img src="" alt="" /> {/* for when the user sends a message */}
+            <p>
+              Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+              Accusantium, officia, ratione repellat saepe quae ducimus rem
+              provident eveniet aperiam voluptates sint labore amet, nobis
+              nesciunt quas corrupti eius adipisci. Iure.
+            </p>
+            <em>1 min ago</em>
+          </section>
+        </section>
+
+        {/*my own message*/}
+        <section className="message own">
+          <section className="text">
+            <p>
+              Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+              Accusantium, officia, ratione repellat saepe quae ducimus rem
+              provident eveniet aperiam voluptates sint labore amet, nobis
+              nesciunt quas corrupti eius adipisci. Iure.
+            </p>
+            <em>1 min ago</em>
+          </section>
+        </section>
+
+        <section className="message own">
+          <section className="text">
+            <p>
+              Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+              Accusantium, officia, ratione repellat saepe quae ducimus rem
+              provident eveniet aperiam voluptates sint labore amet, nobis
+              nesciunt quas corrupti eius adipisci. Iure.i
+            </p>
+            <em>1 min ago</em>
+          </section>
+        </section>
+
+        <section className="message">
+          <img src="./avatar.png" alt="" />
+          <section className="text">
+            <p>
+              Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+              Accusantium, officia, ratione repellat saepe quae ducimus rem
+              provident eveniet aperiam voluptates sint labore amet, nobis
+              nesciunt quas corrupti eius adipisci. Iure.
+            </p>
+            <em>1 min ago</em>
+          </section>
+        </section>
+      </section>
 
       <section className="bottom">
         <section className="icons">

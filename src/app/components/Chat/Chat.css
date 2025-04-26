@@ -1,4 +1,4 @@
-.chat{
+.chat{ /*styling for the "middle" flex item*/
     display: flex;
     flex-direction: column;
     flex: 2;
@@ -7,7 +7,7 @@
 
     height: 100%;
 
-    .top{
+    .top{ /*Header with user info*/
         padding: 20px;
         display: flex;
         align-items: center;
@@ -57,13 +57,91 @@
     }
 
 
-    .center{
+    .center{ /*actual chat logs with messages*/
         padding: 20px;
         flex: 1;
-        border-bottom: 1px solid #dddddd35;
+         border-bottom: 1px solid #dddddd35; 
+    
+        /*scroll bar when chat log gets long*/
+        overflow-y: scroll; /*find out how to hide the scroll bar if there is no overflow yet*/
+
+        &::-webkit-scrollbar {
+            width: 8px;
+          }
+        
+          &::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+          }
+        
+          &::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+          }
+        
+          &::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.6);
+          }
+
+        /*messages display*/
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        /*message css*/
+        .message{
+            max-width: 70%;
+            display: flex;
+            gap: 20px;
+
+            &.own{ /*if its a message and its my own message*/
+                align-self: flex-end;
+
+                .text{
+                    p{
+                        background-color: #5183fe;
+                    }
+                }
+            }
+
+            img{
+                width: 30px;
+                height: 30px;
+                border: 50%;
+                object-fit: cover;
+            }
+
+            .text{
+                flex:1;
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+
+                /* for the images sent by users*/
+                img{
+                    width: 100%;
+                    height: 300px;
+                    border: 50%;
+                    border-radius: 30px;
+                    object-fit: cover;
+                }
+
+                p{
+                    padding: 20px;
+                    background-color: rgba(17, 25, 40, 0.3); /* if not our own message*/
+                    border-radius: 30px; /*for the circular style on messages*/
+                }
+
+                em{
+                    font-size: 12; /*font size of date/ when message was sent*/
+                }
+            }
+
+
+        }
     }
 
-    .bottom{
+    .bottom{ /*input bar emojis etc*/
         padding: 20px;
         margin-top: auto;
         gap: 20px;
