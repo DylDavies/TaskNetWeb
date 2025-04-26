@@ -18,6 +18,8 @@ import { getUsername } from "../server/services/DatabaseService";
 import { getJobsByFreelancerID } from "../server/services/JobDatabaseService";
 import { formatDateAsString } from "../server/formatters/FormatDates";
 import { formatBudget } from "../server/formatters/Budget";
+import JobStatus from "../enums/JobStatus.enum";
+import { JobContext, JobContextType } from "../JobContext";
 
 //constant for links to other pages
 const links = [
@@ -32,6 +34,7 @@ export default function Page() {
   const [jobCards, setJobCards] = useState<ActiveJob[]>([]);
   const [username, setUsername] = useState<string>("");
   const FreelancerUId = user?.authUser.uid ;
+  const { setJobID } = useContext(JobContext) as JobContextType; 
 
   //signs the user out of google
   function signoutClick() {
@@ -64,6 +67,16 @@ export default function Page() {
     }
     fetchUsername();
   }, [FreelancerUId]);
+
+  function handleCardClick(job: ActiveJob): void {
+
+    const currentJobStatus = job.jobData.status
+    if (currentJobStatus == JobStatus.Deleted) return;
+
+    setJobID(job.jobId);
+    router.push("/Milestones");
+    
+  }
 
   return (
     <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
@@ -104,7 +117,7 @@ export default function Page() {
                     budget={formatBudget(job.jobData.budgetMin, job.jobData.budgetMax)}
                     deadline={formatDateAsString(job.jobData.deadline)}
                     skills={Object.values(job.jobData.skills).flat()}
-                    onClick={() => null}
+                    onClick={() => handleCardClick(job)}
                     hired={job.jobData.status}
                   />
                 ))
