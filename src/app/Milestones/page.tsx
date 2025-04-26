@@ -17,12 +17,13 @@ import { AuthContext, AuthContextType } from "../AuthContext";
 import { getJob } from "../server/services/JobDatabaseService";
 import { JobContext, JobContextType } from "../JobContext";
 import UserType from "../enums/UserType.enum";
+import MilestonesTable from "../components/MilestonesTable/MilestonesTable";
 
 const linksClient = [
   { name: "back", href: "/client" }];
 
-const linksFreelanver = [
-    { name: "back", href: "/client" }
+const linksFreelancer = [
+    { name: "back", href: "/freelancer" }
 ]
 
 
@@ -30,13 +31,13 @@ export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
   const { jobID } = useContext(JobContext) as JobContextType;
   
-  
+  //This function converts the usetype to a string to be displayed in the header
   function userTypeToString(value: UserType| undefined): string {
     if (value === undefined) return 'Unknown';
-    return UserType[value] || 'Invalid';
-}
-const userTypeNum = user?.userData.type
-const userTypeString = userTypeToString(userTypeNum)
+    return UserType[value] || '...';
+    }
+    const userTypeNum = user?.userData.type
+    const userTypeString = userTypeToString(userTypeNum)
 
   const router = useRouter();
 
@@ -45,8 +46,6 @@ const userTypeString = userTypeToString(userTypeNum)
       AuthService.googleSignout();
      router.push("/");
   }
-
-  //const [searchQuery, setSearchQuery] = useState("");
 
   const [jobTitle, setJobTitle] = useState<string>("");
 
@@ -71,14 +70,14 @@ const userTypeString = userTypeToString(userTypeNum)
     <>
       <section className="min-h-screen flex flex-col bg-[#27274b] text-white font-sans">
         <header className="w-full">
-          <Header name={user?.userData.username || "Loading"} usertype= {userTypeString } />
+          <Header name={user?.userData.username || "..."} usertype= {userTypeString } />
         </header>
 
         
 
         <main className="flex flex-1 bg-[#cdd5f6] bg-color">
           <aside className="w-64">
-            <SideBar items={linksClient} />
+            <SideBar items={userTypeString === 'Client' ? linksClient: linksFreelancer} />
           </aside>
 
           <section className="flex-1 p-4">
@@ -86,13 +85,13 @@ const userTypeString = userTypeToString(userTypeNum)
 
               <section className="px-6 py-4 bg-gray-800 text-black shadow rounded-xl m-4">
                 <h1 className="text-2xl font-semibold text-gray-300">
-                    Job Applicants for <strong className="">{jobTitle || "..."}</strong>
+                    Milestones for <strong className="">{jobTitle || "..."}</strong>
                 </h1>
                 </section>
 
               {/* FATable moved down */}
               <section className="w-full max-w-8xl mt-36">
-                <FATable jobName={jobTitle} />
+                <MilestonesTable jobName={jobTitle} />
               </section>
             </section>
           </section>
