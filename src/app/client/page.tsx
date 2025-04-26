@@ -77,9 +77,11 @@ export default function Page() {
     if (currentJobStatus == JobStatus.Deleted) return;
 
     setJobID(job.jobId);
-    currentJobStatus === JobStatus.Posted
-    ?  router.push("/FreelancerApplicationView")
-    : router.push("/Milestones")
+    if (currentJobStatus === JobStatus.Posted) {
+      router.push("/FreelancerApplicationView");
+    } else {
+      router.push("/Milestones");
+    }
     
    
   }

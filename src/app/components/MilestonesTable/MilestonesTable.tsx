@@ -13,7 +13,7 @@ interface Props {
 }
 
 const MilestonesTable = ({ onMilestoneClick}: Props) => {
-  const router = useRouter();
+  //const router = useRouter();
 
   const { jobID } = useContext(JobContext) as JobContextType;
 
