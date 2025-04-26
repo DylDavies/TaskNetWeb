@@ -71,10 +71,18 @@ export default function Page() {
 
   // Click handler for clicking on a job card
   function handleCardClick(job: ActiveJob): void {
-    if (job.jobData.status != JobStatus.Posted) return;
+
+    const currentJobStatus = job.jobData.status
+    if (currentJobStatus == JobStatus.Deleted) return;
 
     setJobID(job.jobId);
-    router.push("/FreelancerApplicationView")
+    if (currentJobStatus === JobStatus.Posted) {
+      router.push("/FreelancerApplicationView");
+    } else {
+      router.push("/Milestones");
+    }
+    
+   
   }
 
   function refetch() {
