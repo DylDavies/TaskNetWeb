@@ -37,26 +37,31 @@ const Detail = () => {
             <section className="photoItem">
               <section className="photoDetail">
                 <img src="" alt="" /> {/*image*/}
+                <em>photo_2025_2.png</em> {/*photo name*/}
               </section>
-              <em>photo_2025_2.png</em> {/*photo name*/}
+              <img src="./download.png" alt="" className="icon" />
+              {/*download icon*/}
             </section>
-            <img src="./download.png" alt="" /> {/*download icon*/}
+
             {/*photo item 2*/}
             <section className="photoItem">
               <section className="photoDetail">
                 <img src="" alt="" /> {/*image*/}
+                <em>photo_2025_2.png</em> {/*photo name*/}
               </section>
-              <em>photo_2025_2.png</em> {/*photo name*/}
+              <img src="./download.png" alt="" className="icon" />
+              {/*download icon*/}
             </section>
-            <img src="./download.png" alt="" /> {/*download icon*/}
+
             {/*photo item 3*/}
             <section className="photoItem">
               <section className="photoDetail">
                 <img src="" alt="" /> {/*image*/}
+                <em>photo_2025_2.png</em> {/*photo name*/}
               </section>
-              <em>photo_2025_2.png</em> {/*photo name*/}
+              <img src="./download.png" alt="" className="icon" />
+              {/*download icon*/}
             </section>
-            <img src="./download.png" alt="" /> {/*download icon*/}
           </section>
         </section>
 
@@ -68,6 +73,7 @@ const Detail = () => {
           </section>
         </section>
         <Button caption="Block user" />
+        <Button caption="Logout" />
       </section>
     </section>
   );

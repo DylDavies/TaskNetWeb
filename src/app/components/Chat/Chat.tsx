@@ -2,11 +2,20 @@ import "./Chat.css";
 import InputBar from "../inputbar/InputBar";
 import Button from "../button/Button";
 import EmojiPicker from "emoji-picker-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const Chat = () => {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
+
+  const endRef = useRef<HTMLElement>(null);
+
+  // scrolling auto to a particular message
+  useEffect(() => {
+    endRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, []);
 
   // Maybe get rid of these emojis, it is very delayed
   const handleEmoji = (e) => {
@@ -84,6 +93,7 @@ const Chat = () => {
             <em>1 min ago</em>
           </section>
         </section>
+        <section ref={endRef}></section>
       </section>
 
       <section className="bottom">
