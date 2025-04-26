@@ -1,7 +1,8 @@
 enum MilestoneStatus{
-    Pending,
+    OnHalt,
     InProgress,
-    Completed
+    Completed,
+    
 }
 // 0 -> 2
 
