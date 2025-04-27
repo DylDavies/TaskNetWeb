@@ -1,10 +1,11 @@
 enum MilestoneStatus{
-    Posted,
-    In_Progress,
-    Testing,
-    Completed
+
+    OnHalt,
+    InProgress,
+    Completed    
 }
-// 0 -> 3
+// 0 -> 2
+
 
 
 export default MilestoneStatus
