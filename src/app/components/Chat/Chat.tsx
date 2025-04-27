@@ -35,7 +35,7 @@ const Chat = () => {
   useEffect(() => {
     if (user && !activeConversation) {
       const fetchActiveConversation = async () => {
-        const job = await getContracted(user.authUser.uid); // fetch the first job
+        const job = await getContracted(user.authUser.uid, user.userData.type); // fetch the first job
         if (job && job[0]) {
           const userData = await getUser(job[0].jobData.hiredUId); // note this needs to change it is only getting the freelancer id (so this is only working for the client)
           setActiveConversation({ job: job[0], userData }); // set that active conversation to the first job
