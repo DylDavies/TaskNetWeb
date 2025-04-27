@@ -7,6 +7,9 @@ import { AuthContext, AuthContextType } from "@/app/AuthContext";
 import { getContracted } from "@/app/server/services/JobDatabaseService";
 import { getUser } from "@/app/server/services/DatabaseService";
 import { useChatStore } from "@/app/stores/chatStore";
+import { sendMessage } from "@/app/server/services/MessageDatabaseServices";
+import MessageStatus from "@/app/enums/MessageStatus.enum";
+import MessageType from "@/app/enums/MessageType.enum";
 
 const Chat = () => {
   const { user } = useContext(AuthContext) as AuthContextType;
@@ -26,7 +29,7 @@ const Chat = () => {
     endRef.current?.scrollIntoView({
       behavior: "smooth",
     });
-  }, []);
+  }, [messages]);
 
   // If the user is logged in and there is no active conversation then set it
   useEffect(() => {
@@ -48,7 +51,19 @@ const Chat = () => {
     setText((prev) => prev + e.emoji); // take prev value and write it again, but also add the emoji
     setOpen(false);
   };
-  //console.log(text);
+
+  async function handleSendMessage() {
+    if (!text.trim() || !activeConversation) return; // Don't send empty messages
+
+    await sendMessage(activeConversation.job.jobId, {
+      senderUId: user?.authUser.uid || "",
+      type: MessageType.Standard,
+      status: MessageStatus.Delivered,
+      message: text.trim(),
+    });
+
+    setText(""); // Clear input after sending
+  }
 
   return (
     <section className="chat">
@@ -82,6 +97,14 @@ const Chat = () => {
             const isOwnMessage =
               message.messageData.senderUId === user!.authUser.uid;
 
+            // Check if the message has DateTimeSent and is not null
+            const dateTimeSent = message.messageData.DateTimeSent;
+
+            // Check if DateTimeSent exists and is a valid Timestamp
+            const formattedDate = dateTimeSent
+              ? dateTimeSent.toDate().toLocaleString()
+              : "Unknown time"; // You can show a default or placeholder string here
+
             return (
               <section
                 className={`message ${isOwnMessage ? "own" : ""}`}
@@ -91,15 +114,12 @@ const Chat = () => {
                 {/* Display avatar for other user's messages */}
                 <section className="text">
                   <p>{message.messageData.message}</p>
-                  <em>
-                    {message.messageData.DateTimeSent.toDate().toLocaleString()}
-                  </em>
+                  <em>{formattedDate}</em>
                 </section>
               </section>
             );
           })
         )}
-
         <section ref={endRef}></section>
       </section>
 
@@ -116,6 +136,13 @@ const Chat = () => {
           className="input-class"
           value={text}
           onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault(); // prevent newline
+              handleSendMessage();
+            }
+            // else allow normal typing (including Shift+Enter)
+          }}
         />
 
         <section className="emoji">
@@ -129,7 +156,7 @@ const Chat = () => {
           </section>
         </section>
         <section className="sendButton">
-          <Button caption="Send" />
+          <Button caption="Send" onClick={handleSendMessage} />
         </section>
       </section>
     </section>
