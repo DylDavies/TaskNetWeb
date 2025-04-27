@@ -6,7 +6,6 @@ import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { db } from '../firebase';
 import MessageData from '../interfaces/MessageData.interface';
 import UserType from '../enums/UserType.enum';
-import { User } from 'lucide-react';
 import UserStatus from '../enums/UserStatus.enum';
 
 export const useChatStore = create<ChatStore>((set) =>({
