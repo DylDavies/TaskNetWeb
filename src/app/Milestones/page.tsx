@@ -24,6 +24,9 @@ const linksClient = [
 const linksFreelancer = [
     { name: "back", href: "/freelancer" }
 ]
+const linksAdmin = [
+    { name: "back", href: "/admin" }
+]
 
 
 export default function Page() {
@@ -77,9 +80,10 @@ export default function Page() {
 
         
 
-        <main className="flex flex-1 bg-[#cdd5f6] bg-color">
+        <main className="flex flex-1 bg-[#cdd5f6]">
           <aside className="w-64">
-            <SideBar items={userTypeString === 'Client' ? linksClient: linksFreelancer} />
+            <SideBar items={userTypeString === 'Client' ? linksClient
+                        : userTypeString ==='Freelancer'? linksFreelancer: linksAdmin } />
           </aside>
 
           <section className="flex-1 p-4">
