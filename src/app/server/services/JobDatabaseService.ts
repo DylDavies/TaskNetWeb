@@ -188,7 +188,8 @@ async function getJobByClientIdAndHiredId(clientID: string, hiredID: string): Pr
 async function getJobsByFreelancerID(FreelancerID: string): Promise<ActiveJob[]> {
   try {
     const Query = query(
-      collection(db, "Jobs")  
+      collection(db, "Jobs"),
+      where("hiredUId", "==", FreelancerID)
     );
     const jobDocs = await getDocs(Query);
 
@@ -196,13 +197,11 @@ async function getJobsByFreelancerID(FreelancerID: string): Promise<ActiveJob[]>
 
     jobDocs.forEach((doc) => {
       const jobData = doc.data() as JobData;
-      if (jobData.hiredUId.includes(FreelancerID)) {
-        const activeJob: ActiveJob = {
-          jobId: doc.id,
-          jobData,
-        };
-        jobs.push(activeJob);
-      }
+      const activeJob: ActiveJob = {
+        jobId: doc.id,
+        jobData,
+      };
+      jobs.push(activeJob);
     });
 
     return jobs;
