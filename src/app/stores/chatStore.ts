@@ -5,6 +5,9 @@ import JobWithUser from '../interfaces/JobWithOtherUser.interface';
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { db } from '../firebase';
 import MessageData from '../interfaces/MessageData.interface';
+import UserType from '../enums/UserType.enum';
+import { User } from 'lucide-react';
+import UserStatus from '../enums/UserStatus.enum';
 
 export const useChatStore = create<ChatStore>((set) =>({
     jobsWithUsers: [],
@@ -14,18 +17,35 @@ export const useChatStore = create<ChatStore>((set) =>({
     isLoadingMessages: false,
 
 
-    fetchJobsWithUsers: async(uid:string) =>{
+    fetchJobsWithUsers: async(uid:string, userType:UserType) =>{
         set({ isLoadingJobs:true });
 
         try{
             const { getContracted } = await import("@/app/server/services/JobDatabaseService")
             const { getUser } = await import("@/app/server/services/DatabaseService");
 
-            const jobs = await getContracted(uid); // get array of all jobs contracted to the active user
+            const jobs = await getContracted(uid, userType); // get array of all jobs contracted to the active user
             const jobsWithUsers = await Promise.all(
                 jobs.map(async (job) =>{
-                    const userData = await getUser(job.jobData.hiredUId); // note this only works if the active user is a client
-                    return { job, userData }
+                    let userData;
+                    if (userType == UserType.Admin || userType == UserType.Client){
+                        userData = await getUser(job.jobData.hiredUId); // get data from clients POV
+                    }
+
+                    if (userType == UserType.Admin || userType == UserType.Freelancer){
+                        userData = await getUser(job.jobData.clientUId); // get data from the freelancers POV
+                    }
+                    
+                    if(userData){
+                        return { job, userData }
+                    }
+                    else{
+                        return{
+                            job,
+                            userData: { type: UserType.None, status: UserStatus.Denied, username: "Error", date: 20250202, },
+                        } // return this "Error" object os jobsWithUsers isnt null or undefined
+                    }
+                    
                 })
             );
             console.log("Entered fetch jobs ");

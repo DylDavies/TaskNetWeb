@@ -1,5 +1,6 @@
 'use server'
 import JobStatus from "@/app/enums/JobStatus.enum";
+import UserType from "@/app/enums/UserType.enum";
 import { db } from "@/app/firebase";
 import ActiveJob from "@/app/interfaces/ActiveJob.interface";
 import JobData from "@/app/interfaces/JobData.interface";
@@ -186,34 +187,52 @@ async function getJobByClientIdAndHiredId(clientID: string, hiredID: string): Pr
 }
 
 // Endpoint to get ActiveJobData for clients and freelancers who are working together on the same job
-async function getContracted(userID: string): Promise<ActiveJob[]> {
+async function getContracted(userID: string, userType:UserType): Promise<ActiveJob[]> {
   try {
     if (!userID) {
       throw new Error("Valid userID has not been given");
     }
 
-    const Query = query(
-      collection(db, "Jobs"),
-      and(
-        where("clientUId", "==", userID),   
-        or(                                 
-          where("status", "==", JobStatus.Employed),
-          where("status", "==", JobStatus.Completed)
+    let Query;
+    if(userType == UserType.Client || userType == UserType.Admin){
+      Query = query(
+        collection(db, "Jobs"),
+        and(
+          where("clientUId", "==", userID),   
+          or(                                 
+            where("status", "==", JobStatus.Employed),
+            where("status", "==", JobStatus.Completed)
+          )
         )
-      )
-    );
+      );
+    }
+    
+    if(userType == UserType.Freelancer || userType == UserType.Admin){
+      Query = query(
+        collection(db, "Jobs"),
+        and(
+          where("hiredUId", "==", userID),   
+          or(                                 
+            where("status", "==", JobStatus.Employed),
+            where("status", "==", JobStatus.Completed)
+          )
+        )
+      );
+    }
 
-    const jobDocs = await getDocs(Query);
     const jobs: ActiveJob[] = [];
+    if(Query){
+      const jobDocs = await getDocs(Query);
 
-    jobDocs.forEach((doc) => {
-      const jobData = doc.data() as JobData;
-      const activeJob: ActiveJob = {
-        jobId: doc.id,
-        jobData,
-      };
-      jobs.push(activeJob);
-    });
+      jobDocs.forEach((doc) => {
+        const jobData = doc.data() as JobData;
+        const activeJob: ActiveJob = {
+          jobId: doc.id,
+          jobData,
+        };
+        jobs.push(activeJob);
+      });
+    }
 
     return jobs;
   } catch (error) {

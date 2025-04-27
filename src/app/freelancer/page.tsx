@@ -17,6 +17,7 @@ import JobData from "../interfaces/JobData.interface";
 const links = [
   { name: "Home", href: "/" },
   { name: "Find Jobs", href: "/jobSearch" },
+  { name: "Chat", href: "/chat" },
 ];
 
 export default function Page() {

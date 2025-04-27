@@ -21,7 +21,7 @@ const ChatList = () => {
   useEffect(() => {
     if (user) {
       //console.log("USE EFFECT USERID: ", user.authUser.uid);
-      fetchJobsWithUsers(user.authUser.uid); // Fetch jobs for logged in user
+      fetchJobsWithUsers(user.authUser.uid, user.userData.type); // Fetch jobs for logged in user
     }
   }, [user, fetchJobsWithUsers]);
 
