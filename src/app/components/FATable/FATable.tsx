@@ -47,7 +47,7 @@ const FATable = ({jobName}: Props) => {
   const handleAccept = async (aid: string, uid: string, jid:string) => {
     try {
       await acceptApplicant(aid);
-      await updateHiredUId(jid,aid);
+      await updateHiredUId(jid,uid);
       await updateJobStatus(jid, JobStatus.Employed);
 
       for await (const applicant of pendingApplicants) {
