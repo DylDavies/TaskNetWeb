@@ -2,17 +2,12 @@ import Button from "../button/Button";
 import "./Detail.css";
 import { useRouter } from "next/navigation";
 import AuthService from "@/app/services/AuthService";
-import { useContext, useEffect, useState } from "react";
-import ActiveMessage from "@/app/interfaces/ActiveMessage.interface";
-import JobWithUser from "@/app/interfaces/JobWithOtherUser.interface";
-import { getContracted } from "@/app/server/services/JobDatabaseService";
-import { AuthContext, AuthContextType } from "@/app/AuthContext";
-import { getUser } from "@/app/server/services/DatabaseService";
-import { getAllMessages } from "@/app/server/services/MessageDatabaseServices";
+// import { useContext} from "react";
+// import { AuthContext, AuthContextType } from "@/app/AuthContext";
 import { useChatStore } from "@/app/stores/chatStore";
 
 const Detail = () => {
-  const { user } = useContext(AuthContext) as AuthContextType;
+  //const { user } = useContext(AuthContext) as AuthContextType;
 
   const router = useRouter();
 

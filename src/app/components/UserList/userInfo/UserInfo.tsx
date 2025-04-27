@@ -1,7 +1,7 @@
 import { AuthContext, AuthContextType } from "@/app/AuthContext";
 import "./userInfo.css";
 import Image from "next/image";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 
 /*
 replaced images:

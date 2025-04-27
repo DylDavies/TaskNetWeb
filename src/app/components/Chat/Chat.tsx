@@ -47,7 +47,11 @@ const Chat = () => {
   }, [user, setActiveConversation, activeConversation]);
 
   // Maybe get rid of these emojis, it is very delayed
-  const handleEmoji = (e) => {
+  interface EmojiData {
+    // for the linter
+    emoji: string;
+  }
+  const handleEmoji = (e: EmojiData) => {
     setText((prev) => prev + e.emoji); // take prev value and write it again, but also add the emoji
     setOpen(false);
   };

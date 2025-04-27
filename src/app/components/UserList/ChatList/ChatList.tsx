@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import InputBar from "../../inputbar/InputBar";
 import "./ChatList.css";
 import Image from "next/image";
@@ -6,6 +6,8 @@ import { AuthContext, AuthContextType } from "@/app/AuthContext";
 import { useChatStore } from "@/app/stores/chatStore";
 
 const ChatList = () => {
+  const [text, setText] = useState("");
+
   const { user } = useContext(AuthContext) as AuthContextType;
   //console.log("ACTIVE USER UID: ", user?.authUser.uid); // sanity check
 
@@ -31,7 +33,14 @@ const ChatList = () => {
   return (
     <section className="chatList scrollable">
       <section className="search">
-        <InputBar className="searchbar" /> {/*add all the props*/}
+        <InputBar
+          type="text"
+          placeholder="Type a message..."
+          className="input-class searchbar"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />{" "}
+        {/*add all the props*/}
       </section>
 
       {/* items from the user list */}

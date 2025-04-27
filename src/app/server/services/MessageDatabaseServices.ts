@@ -1,5 +1,3 @@
-import MessageStatus from "@/app/enums/MessageStatus.enum";
-import MessageType from "@/app/enums/MessageType.enum";
 import { db } from "@/app/firebase";
 import ActiveMessage from "@/app/interfaces/ActiveMessage.interface";
 import MessageData from "@/app/interfaces/MessageData.interface";

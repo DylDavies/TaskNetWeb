@@ -4,6 +4,7 @@ import JobWithUser from '../interfaces/JobWithOtherUser.interface';
 // import { getAllMessages } from '../server/services/MessageDatabaseServices';
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { db } from '../firebase';
+import MessageData from '../interfaces/MessageData.interface';
 
 export const useChatStore = create<ChatStore>((set) =>({
     jobsWithUsers: [],
@@ -51,9 +52,10 @@ export const useChatStore = create<ChatStore>((set) =>({
         const unsubscribe = onSnapshot(q, (snapshot) => {
           const msgs = snapshot.docs.map((doc) => ({
             MessageID: doc.id,
-            messageData: doc.data() as any,
+            messageData: doc.data() as MessageData,
           }));
 
+          console.log("unsubscribe: ",unsubscribe);
           console.log("Entered messages ");
     
           set({ messages: msgs, isLoadingMessages: false });
