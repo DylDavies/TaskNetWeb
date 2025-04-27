@@ -9,7 +9,12 @@ const ChatList = () => {
   const { user } = useContext(AuthContext) as AuthContextType;
   //console.log("ACTIVE USER UID: ", user?.authUser.uid); // sanity check
 
-  const { jobsWithUsers, fetchJobsWithUsers, isLoadingJobs } = useChatStore();
+  const {
+    jobsWithUsers,
+    fetchJobsWithUsers,
+    isLoadingJobs,
+    setActiveConversation,
+  } = useChatStore();
 
   useEffect(() => {
     if (user) {
@@ -31,7 +36,11 @@ const ChatList = () => {
 
       {/* items from the user list */}
       {jobsWithUsers.map((item, index) => (
-        <section className="item" key={index}>
+        <section
+          className="item"
+          key={index}
+          onClick={() => setActiveConversation(item)}
+        >
           <Image
             src="/avatar.png" // you can later update this to dynamic user avatars
             alt="User avatar"

@@ -9,57 +9,14 @@ import { getContracted } from "@/app/server/services/JobDatabaseService";
 import { AuthContext, AuthContextType } from "@/app/AuthContext";
 import { getUser } from "@/app/server/services/DatabaseService";
 import { getAllMessages } from "@/app/server/services/MessageDatabaseServices";
+import { useChatStore } from "@/app/stores/chatStore";
 
 const Detail = () => {
   const { user } = useContext(AuthContext) as AuthContextType;
 
   const router = useRouter();
 
-  const [messages, setMessages] = useState<ActiveMessage[]>([]);
-
-  const [jobUsers, setJobUsers] = useState<JobWithUser[]>([]);
-
-  // Testing getting jobs where people are contracted - may need to become a global state
-  useEffect(() => {
-    const fetchJobs = async () => {
-      if (!user) return; // ⬅️ only run if user exists
-
-      try {
-        const jobs = await getContracted(user.authUser.uid);
-        //console.log("JOB DATA: ", jobs);
-
-        const jobsWithUsers: JobWithUser[] = await Promise.all(
-          jobs.map(async (job) => {
-            //console.log("HIRED UID: ", job.jobData.hiredUId);
-            const userData = await getUser(job.jobData.hiredUId);
-            //console.log("USERDATA: ", userData);
-            return { job, userData };
-          })
-        );
-
-        setJobUsers(jobsWithUsers);
-      } catch (error) {
-        console.error("Failed to fetch jobs:", error);
-      }
-    };
-
-    fetchJobs();
-  }, [user]); // 👈 Depend on 'user' here
-
-  // Test for fetching messages
-  const testingJobID = "BFtUtw3vOMd2JpbhurLY";
-  useEffect(() => {
-    async function fetchMessages() {
-      try {
-        const messageData = await getAllMessages(jobUsers[0].job.jobId);
-        //console.log("fetched message data: ", messageData);
-        setMessages(messageData);
-      } catch (error) {
-        console.error("Error occurred while trying to fetch messages: ", error);
-      }
-    }
-    fetchMessages();
-  }, [jobUsers]);
+  const { activeConversation } = useChatStore();
 
   function signoutClick() {
     AuthService.googleSignout();
@@ -69,17 +26,17 @@ const Detail = () => {
   return (
     <section className="detail">
       <section className="user">
-        <img src="./avatar.png" alt="" />
-        {jobUsers.length > 0 ? (
-          <h2>{jobUsers[0].userData?.username}</h2>
-        ) : (
-          <h2>Loading...</h2> // or some other placeholder
-        )}
-        {jobUsers.length > 0 ? (
-          <p>{jobUsers[0].job.jobData.title}</p>
-        ) : (
-          <p>Loading...</p>
-        )}
+        <img src="avatar.png" alt="" />
+        <section className="texts">
+          {activeConversation ? (
+            <>
+              <em>{activeConversation.userData?.username}</em>
+              <p>{activeConversation.job.jobData.title}</p>
+            </>
+          ) : (
+            <em>Loading...</em>
+          )}
+        </section>
       </section>
       <section className="info">
         {/* Option 1 */}
