@@ -41,7 +41,7 @@ export const useChatStore = create<ChatStore>((set) =>({
     
         const messagesRef = collection(
           db,
-          "jobs",
+          "Jobs",
           jobWithUser.job.jobId,
           "messages"
         );

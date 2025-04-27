@@ -22,7 +22,6 @@ export default function Page() {
   return (
     <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans body">
       <section className="container">
-        {/*for linter error */}
         <UserList />
         <Chat />
         <Detail />

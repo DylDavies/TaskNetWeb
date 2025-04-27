@@ -26,13 +26,13 @@ const Detail = () => {
 
       try {
         const jobs = await getContracted(user.authUser.uid);
-        console.log("JOB DATA: ", jobs);
+        //console.log("JOB DATA: ", jobs);
 
         const jobsWithUsers: JobWithUser[] = await Promise.all(
           jobs.map(async (job) => {
-            console.log("HIRED UID: ", job.jobData.hiredUId);
+            //console.log("HIRED UID: ", job.jobData.hiredUId);
             const userData = await getUser(job.jobData.hiredUId);
-            console.log("USERDATA: ", userData);
+            //console.log("USERDATA: ", userData);
             return { job, userData };
           })
         );
@@ -52,7 +52,7 @@ const Detail = () => {
     async function fetchMessages() {
       try {
         const messageData = await getAllMessages(jobUsers[0].job.jobId);
-        console.log("fetched message data: ", messageData);
+        //console.log("fetched message data: ", messageData);
         setMessages(messageData);
       } catch (error) {
         console.error("Error occurred while trying to fetch messages: ", error);

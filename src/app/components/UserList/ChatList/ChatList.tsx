@@ -7,12 +7,13 @@ import { useChatStore } from "@/app/stores/chatStore";
 
 const ChatList = () => {
   const { user } = useContext(AuthContext) as AuthContextType;
-  console.log("ACTIVE USER UID: ", user?.authUser.uid); // sanity check
+  //console.log("ACTIVE USER UID: ", user?.authUser.uid); // sanity check
 
   const { jobsWithUsers, fetchJobsWithUsers, isLoadingJobs } = useChatStore();
 
   useEffect(() => {
     if (user) {
+      //console.log("USE EFFECT USERID: ", user.authUser.uid);
       fetchJobsWithUsers(user.authUser.uid); // Fetch jobs for logged in user
     }
   }, [user, fetchJobsWithUsers]);
@@ -47,13 +48,13 @@ const ChatList = () => {
       ))}
 
       <section className="item">
-        <Image
+        {/*<Image
           src="/avatar.png"
           alt="User avatar"
           width={50}
           height={50}
           className="avatar"
-        />
+        />*/}
         <section className="texts">
           <em>Jane Doe</em> {/*username*/}
           <p>Hello</p> {/*latest message from that chat*/}
