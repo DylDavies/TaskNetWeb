@@ -1,44 +1,26 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import InputBar from "../../inputbar/InputBar";
 import "./ChatList.css";
 import Image from "next/image";
-import { getContracted } from "@/app/server/services/JobDatabaseService";
 import { AuthContext, AuthContextType } from "@/app/AuthContext";
-import JobWithUser from "@/app/interfaces/JobWithOtherUser.interface";
-import { getUser } from "@/app/server/services/DatabaseService";
+import { useChatStore } from "@/app/stores/chatStore";
 
 const ChatList = () => {
   const { user } = useContext(AuthContext) as AuthContextType;
   console.log("ACTIVE USER UID: ", user?.authUser.uid); // sanity check
 
-  const [jobUsers, setJobUsers] = useState<JobWithUser[]>([]);
+  const { jobsWithUsers, fetchJobsWithUsers, isLoadingJobs } = useChatStore();
 
-  // Testing getting jobs where people are contracted - may need to become a global state
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        // fetches the jobs where the active user and another user are contracted (this currently is only working for clients)
-        const jobs = await getContracted(user!.authUser.uid);
-        console.log("JOB DATA: ", jobs);
+    if (user) {
+      fetchJobsWithUsers(user.authUser.uid); // Fetch jobs for logged in user
+    }
+  }, [user, fetchJobsWithUsers]);
 
-        // For each job, fetch the hired user's data
-        const jobsWithUsers: JobWithUser[] = await Promise.all(
-          jobs.map(async (job) => {
-            console.log("HIRED UID: ", job.jobData.hiredUId);
-            const userData = await getUser(job.jobData.hiredUId);
-            console.log("USERDATA: ", userData);
-            return { job, userData };
-          })
-        );
-
-        setJobUsers(jobsWithUsers);
-      } catch (error) {
-        console.error("Failed to fetch jobs:", error);
-      }
-    };
-
-    fetchJobs();
-  }, [user]);
+  // Change this
+  if (isLoadingJobs) {
+    return <section>Loading Chats...</section>;
+  }
 
   return (
     <section className="chatList scrollable">
@@ -47,7 +29,7 @@ const ChatList = () => {
       </section>
 
       {/* items from the user list */}
-      {jobUsers.map((item, index) => (
+      {jobsWithUsers.map((item, index) => (
         <section className="item" key={index}>
           <Image
             src="/avatar.png" // you can later update this to dynamic user avatars
