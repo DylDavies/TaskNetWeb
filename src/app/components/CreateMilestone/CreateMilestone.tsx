@@ -4,18 +4,21 @@ import React, { useState, useEffect, ChangeEvent } from "react";
 //import { AuthContext, AuthContextType } from "@/app/AuthContext";
 import Modal from "react-modal";
 import formatDateAsNumber from "@/app/server/formatters/FormatDates";
-//import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
 import toast from "react-hot-toast";
 import InputBar from "../inputbar/InputBar"; 
 import Button from "../button/Button";
 import "../button/Button.css";
 import "../inputbar/inputBar.css";
 import "./CreateMilestone.css";
-// interface Props {
-//     refetch: () => void
-// }
+import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
+import {  sanitizeMilestoneData } from "@/app/server/formatters/MilestoneDataSanitization";
+import { addMilestone } from "@/app/server/services/MilestoneService";
 
-const CreateMilestone = () => {
+ interface Props {
+     refetch: () => void
+ }
+
+const CreateMilestone = ({refetch}: Props) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [deadline, setDeadline] = useState<Date>(new Date());
@@ -31,10 +34,8 @@ const CreateMilestone = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        //const currentDate = formatDateAsNumber(new Date());
-        //const status = MilestoneStatus.Posted;
-        //const clientUid = user?.authUser.uid;
-        //const hiredUid = "";
+        const status = MilestoneStatus.OnHalt;
+        
 
         if (title === "") {
             toast("Please enter a title for the job");
@@ -68,17 +69,32 @@ const CreateMilestone = () => {
             return;
         }
 
-        // const milestone = {
-        //     title,
-        //     description,
-        //     payment: payment,
-        //     deadline: formattedDeadline,
-        //     status,
-        //     hiredUId: hiredUid,
-        //     clientUId: clientUid,
-        //     createdAt: currentDate,
-        // };
-    }
+        const milestone = {
+        title,
+        description,
+        payment: pay,
+        deadline: formattedDeadline,
+        status
+    
+        };
+
+        let sanitizedMilestoneData 
+        try{
+            sanitizedMilestoneData = sanitizeMilestoneData(milestone);
+        }catch (err){
+            console.error("Milestone data validation failed: ", err);
+            return;
+        }
+        const confirmed = window.confirm(
+            "Are you sure you want to create this milestone with the details provided?"
+
+        );
+        if(!confirmed){
+            return;
+        }
+        try {
+            await addMilestone(jobID,sanitizedMilestoneData);
+        }
 
     function openModal() {
         setIsOpen(true);
@@ -193,6 +209,7 @@ const CreateMilestone = () => {
     </section>
     );
 };
+}
 
 export default CreateMilestone;
 
