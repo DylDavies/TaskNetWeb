@@ -2,11 +2,64 @@ import "./Chat.css";
 import InputBar from "../inputbar/InputBar";
 import Button from "../button/Button";
 import EmojiPicker from "emoji-picker-react";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import ActiveMessage from "@/app/interfaces/ActiveMessage.interface";
+import { getAllMessages } from "@/app/server/services/MessageDatabaseServices";
+import { AuthContext, AuthContextType } from "@/app/AuthContext";
+import JobWithUser from "@/app/interfaces/JobWithOtherUser.interface";
+import { getContracted } from "@/app/server/services/JobDatabaseService";
+import { getUser } from "@/app/server/services/DatabaseService";
 
 const Chat = () => {
+  const { user } = useContext(AuthContext) as AuthContextType;
+
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
+  const [messages, setMessages] = useState<ActiveMessage[]>([]);
+
+  const [jobUsers, setJobUsers] = useState<JobWithUser[]>([]);
+
+  // Testing getting jobs where people are contracted - may need to become a global state
+  useEffect(() => {
+    const fetchJobs = async () => {
+      if (!user) return; // ⬅️ only run if user exists
+
+      try {
+        const jobs = await getContracted(user.authUser.uid);
+        console.log("JOB DATA: ", jobs);
+
+        const jobsWithUsers: JobWithUser[] = await Promise.all(
+          jobs.map(async (job) => {
+            console.log("HIRED UID: ", job.jobData.hiredUId);
+            const userData = await getUser(job.jobData.hiredUId);
+            console.log("USERDATA: ", userData);
+            return { job, userData };
+          })
+        );
+
+        setJobUsers(jobsWithUsers);
+      } catch (error) {
+        console.error("Failed to fetch jobs:", error);
+      }
+    };
+
+    fetchJobs();
+  }, [user]); // 👈 Depend on 'user' here
+
+  // Test for fetching messages
+  const testingJobID = "BFtUtw3vOMd2JpbhurLY";
+  useEffect(() => {
+    async function fetchMessages() {
+      try {
+        const messageData = await getAllMessages(jobUsers[0].job.jobId);
+        console.log("fetched message data: ", messageData);
+        setMessages(messageData);
+      } catch (error) {
+        console.error("Error occurred while trying to fetch messages: ", error);
+      }
+    }
+    fetchMessages();
+  }, [jobUsers]);
 
   const endRef = useRef<HTMLElement>(null);
 
@@ -30,8 +83,17 @@ const Chat = () => {
         <section className="user">
           <img src="avatar.png" alt="" />
           <section className="texts">
-            <em>Jane Doe</em>
-            <p>Lorem ipsum dolor sit amet.</p>
+            {jobUsers.length > 0 ? (
+              <em>{jobUsers[0].userData?.username}</em>
+            ) : (
+              <em>Loading...</em> // or some other placeholder
+            )}
+
+            {jobUsers.length > 0 ? (
+              <p>{jobUsers[0].job.jobData.title}</p>
+            ) : (
+              <p>Loading...</p>
+            )}
           </section>
         </section>
         <section className="icons">
@@ -57,17 +119,19 @@ const Chat = () => {
         </section>
 
         {/*my own message*/}
-        <section className="message own">
-          <section className="text">
-            <p>
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-              Accusantium, officia, ratione repellat saepe quae ducimus rem
-              provident eveniet aperiam voluptates sint labore amet, nobis
-              nesciunt quas corrupti eius adipisci. Iure.
-            </p>
-            <em>1 min ago</em>
+        {messages.map((message, index) => (
+          <section className="message" key={index}>
+            <img src="/avatar.png" alt="User Avatar" />{" "}
+            {/* Can replace with dynamic user avatar later */}
+            <section className="text">
+              <p>{message.messageData.message}</p> {/* the message content */}
+              <em>
+                {message.messageData.DateTimeSent.toDate().toLocaleString()}
+              </em>{" "}
+              {/* nicely formatted time */}
+            </section>
           </section>
-        </section>
+        ))}
 
         <section className="message own">
           <section className="text">

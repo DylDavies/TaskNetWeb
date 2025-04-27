@@ -9,6 +9,7 @@ import { getUser } from "@/app/server/services/DatabaseService";
 
 const ChatList = () => {
   const { user } = useContext(AuthContext) as AuthContextType;
+  console.log("ACTIVE USER UID: ", user?.authUser.uid); // sanity check
 
   const [jobUsers, setJobUsers] = useState<JobWithUser[]>([]);
 
@@ -17,7 +18,7 @@ const ChatList = () => {
     const fetchJobs = async () => {
       try {
         // fetches the jobs where the active user and another user are contracted (this currently is only working for clients)
-        const jobs = await getContracted("a51lgtG2VAPTUubLGZZDrGeRRo23");
+        const jobs = await getContracted(user!.authUser.uid);
         console.log("JOB DATA: ", jobs);
 
         // For each job, fetch the hired user's data
@@ -37,7 +38,7 @@ const ChatList = () => {
     };
 
     fetchJobs();
-  }, []);
+  }, [user]);
 
   return (
     <section className="chatList scrollable">
