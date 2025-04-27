@@ -43,6 +43,7 @@
         padding: 20px;
         cursor: pointer;
         border-bottom: 1px solid #dddddd35;
+        transition: background-color 0.3s ease; /* Smooth transition for the background color */
 
         img{
             height: 50px;
@@ -65,5 +66,9 @@
                 font-weight: 300;
             }
         }
+    }
+
+    .item:hover {
+        background-color: rgba(0, 0, 0, 0.3); /* Darker background on hover */
     }
 }

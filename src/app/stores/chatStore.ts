@@ -27,6 +27,7 @@ export const useChatStore = create<ChatStore>((set) =>({
                     return { job, userData }
                 })
             );
+            console.log("Entered fetch jobs ");
 
             set({ jobsWithUsers, isLoadingJobs:false });
         }
@@ -52,6 +53,8 @@ export const useChatStore = create<ChatStore>((set) =>({
             MessageID: doc.id,
             messageData: doc.data() as any,
           }));
+
+          console.log("Entered messages ");
     
           set({ messages: msgs, isLoadingMessages: false });
         });

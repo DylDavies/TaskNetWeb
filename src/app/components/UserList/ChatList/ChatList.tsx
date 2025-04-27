@@ -46,20 +46,6 @@ const ChatList = () => {
           </section>
         </section>
       ))}
-
-      <section className="item">
-        {/*<Image
-          src="/avatar.png"
-          alt="User avatar"
-          width={50}
-          height={50}
-          className="avatar"
-        />*/}
-        <section className="texts">
-          <em>Jane Doe</em> {/*username*/}
-          <p>Hello</p> {/*latest message from that chat*/}
-        </section>
-      </section>
     </section>
   );
 };
