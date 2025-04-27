@@ -1,10 +1,11 @@
 enum MilestoneStatus{
+
     OnHalt,
     InProgress,
-    Completed,
-    
+    Completed    
 }
 // 0 -> 2
+
 
 
 export default MilestoneStatus
