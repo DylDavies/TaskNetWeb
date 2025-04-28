@@ -25,6 +25,11 @@ const linksClient = [
 const linksFreelancer = [
     { name: "back", href: "/freelancer" }
 ]
+const linksAdmin = [
+    {name: "Admin Dashboard", href: "/admin"},
+    {name: "Admin client view", href: "/client"},
+    {name: "Admin freelancer view", href: "/freelancer"}
+]
 
 
 export default function Page() {
@@ -42,6 +47,11 @@ export default function Page() {
     }
     const userTypeNum = user?.userData.type
     const userTypeString = userTypeToString(userTypeNum)
+
+    const links = 
+    user?.userData.type === UserType.Admin ? linksAdmin :
+    user?.userData.type === UserType.Client ? linksClient : 
+     linksFreelancer;
 
   const router = useRouter();
 
@@ -84,7 +94,7 @@ export default function Page() {
 
         <main className="flex flex-1 bg-[#cdd5f6] bg-color">
           <aside className="w-64">
-            <SideBar items={userTypeString === 'Client' ? linksClient: linksFreelancer} />
+            <SideBar items={links} />
           </aside>
 
           <section className="flex-1 p-4">
@@ -96,7 +106,9 @@ export default function Page() {
                 </h1>
             </section>
             <section className="w-full max-w-8xl flex justify-start mb-4 ">
-                <CreateMilestone refetch={fakeRefetch}/>
+                {(user?.userData.type === UserType.Client || user?.userData.type === UserType.Admin) && (
+                <CreateMilestone refetch={fakeRefetch} />
+                )}
             </section>
                
 

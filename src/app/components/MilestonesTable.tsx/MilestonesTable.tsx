@@ -21,10 +21,12 @@ const MilestonesTable = ({ onMilestoneClick}: Props) => {
 
   useEffect(() => {
     async function fetchMilestones() {
-      if (!jobID) return; // Safety check
+      if (!jobID) return;
       try {
-        const data = await getMilestones(jobID); 
-        setMilestones(data);
+        const data = await getMilestones(jobID);
+        // Sort milestones by deadline (closest first)
+        const sortedData = [...data].sort((a, b) => a.deadline - b.deadline);
+        setMilestones(sortedData);
       } catch (error) {
         console.error("Error fetching milestones:", error);
       }
@@ -82,10 +84,12 @@ const MilestonesTable = ({ onMilestoneClick}: Props) => {
                 <strong
                     className={`px-2 py-1 font-semibold leading-tight rounded-full text-white 
                     ${item.status === MilestoneStatus.OnHalt 
-                        ? 'bg-red-500' // Yellow if InProgress
+                        ? 'bg-red-500' // Red if on halt
                         : item.status === MilestoneStatus.Completed
-                        ? 'bg-green-600' // Green if Completed
-                        : 'bg-orange-600' // Default: Orange if Pending
+                        ? 'bg-yellow-600' // Green if Completed
+                        : item.status ===MilestoneStatus.InProgress
+                        ? 'bg-orange-600' // Default: Orange if in progress
+                        :'bg-green-600'
                     }`}
                     >
                     {MilestoneStatusToString(item.status)}

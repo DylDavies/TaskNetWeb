@@ -12,8 +12,9 @@ import "../inputbar/inputBar.css";
 import "./CreateMilestone.css";
 import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
 import {  sanitizeMilestoneData } from "@/app/server/formatters/MilestoneDataSanitization";
-import { addMilestone } from "@/app/server/services/MilestoneService";
+import { addMilestone, getMilestones } from "@/app/server/services/MilestoneService";
 import { JobContext, JobContextType } from "@/app/JobContext";
+import MilestoneData from "@/app/interfaces/Milestones.interface";
 
  interface Props {
      refetch: () => void
@@ -27,16 +28,26 @@ const CreateMilestone = ({refetch}: Props) => {
     const [deadline, setDeadline] = useState<Date>(new Date());
     const [payment, setPayment] = useState("");
     const [modalIsOpen, setIsOpen] = useState(false);
-    //const[reportURL, setReport] = useState("");
-
-    //const { user } = useContext(AuthContext) as AuthContextType;
+    const [existingMilestones, setExistingMilestones] = useState<MilestoneData[]>([]);
 
     useEffect(() => {
         Modal.setAppElement("#root");
     }, []);
 
-    function openModal() {
-        setIsOpen(true);
+    async function openModal() {
+        if (!jobID) {
+            toast.error("Job ID is missing");
+            return;
+        }
+        try {
+            // Fetch existing milestones when modal opens
+            const milestones = await getMilestones(jobID);
+            setExistingMilestones(milestones);
+            setIsOpen(true);
+        } catch (error) {
+            console.error("Error fetching milestones:", error);
+            toast.error("Failed to load existing milestones");
+        }
     }
     
     function closeModal() {
@@ -57,6 +68,20 @@ const CreateMilestone = ({refetch}: Props) => {
         // Check if date is valid
         if (isNaN(newDate.getTime())) {
             toast.error("Invalid date format");
+            return;
+        }
+        //  Check against existing milestones (if any)
+        if (existingMilestones.length > 0) {
+            const latestMilestoneDate = new Date(Math.max(...existingMilestones.map(m => m.deadline)));
+            if (newDate < latestMilestoneDate) {
+                toast.error("New milestone deadline cannot be earlier than existing milestones");
+                return;
+            }
+        }
+
+        //  Check if deadline is in the future
+        if (newDate <= new Date()) {
+            toast.error("Please ensure the deadline is in the future");
             return;
         }
         
@@ -107,7 +132,7 @@ const CreateMilestone = ({refetch}: Props) => {
         description,
         payment: pay,
         deadline: formattedDeadline,
-        //reportURL: reportURL,
+        reportURL:"",
         status
     
         };
@@ -139,7 +164,7 @@ const CreateMilestone = ({refetch}: Props) => {
             setDescription("");
             setDeadline(new Date());
             setPayment("");
-            //setReport("");
+            
         } catch (err) {
             toast.error("Something went wrong when trying to create the milestone");
             console.error(err);
