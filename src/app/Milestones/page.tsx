@@ -1,6 +1,5 @@
 "use client";
 
-import "../components/FATable/FATable.css";
 import "../components/searchbar/SearchBar.css";
 import Header from "../components/Header/header";
 import "../components/Header/Header.css";
@@ -16,7 +15,9 @@ import { AuthContext, AuthContextType } from "../AuthContext";
 import { getJob } from "../server/services/JobDatabaseService";
 import { JobContext, JobContextType } from "../JobContext";
 import UserType from "../enums/UserType.enum";
-import MilestonesTable from "../components/MilestonesTable/MilestonesTable";
+import MilestonesTable from "../components/MilestonesTable.tsx/MilestonesTable";
+import CreateMilestone from "../components/CreateMilestone/CreateMilestone";
+
 
 const linksClient = [
   { name: "back", href: "/client" }];
@@ -29,6 +30,10 @@ const linksFreelancer = [
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
   const { jobID } = useContext(JobContext) as JobContextType;
+
+  const fakeRefetch = () => {
+    console.log("Refetch called (fake)");
+  };
   
   //This function converts the usetype to a string to be displayed in the header
   function userTypeToString(value: UserType| undefined): string {
@@ -89,7 +94,11 @@ export default function Page() {
                 <h1 className="text-2xl font-semibold text-gray-300">
                     Milestones for <strong className="">{jobTitle || "..."}</strong>
                 </h1>
-                </section>
+            </section>
+            <section className="w-full max-w-8xl flex justify-start mb-4 ">
+                <CreateMilestone refetch={fakeRefetch}/>
+            </section>
+               
 
               {/* FATable moved down */}
               <section className="w-full max-w-8xl mt-36">
@@ -110,4 +119,5 @@ export default function Page() {
       </section>
     </>
   );
+
 }
