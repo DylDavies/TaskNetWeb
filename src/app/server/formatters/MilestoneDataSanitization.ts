@@ -45,6 +45,7 @@ const sanitizeMilestoneData = (MilestoneData: Partial<MilestoneData>): Milestone
     deadline: MilestoneData.deadline!,
     status: status,
     payment: MilestoneData.payment!,
+    reportURL: MilestoneData.reportURL!
     
   };
 }
