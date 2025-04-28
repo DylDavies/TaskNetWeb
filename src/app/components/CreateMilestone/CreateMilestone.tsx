@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent, useContext } from "react";
 //import { AuthContext, AuthContextType } from "@/app/AuthContext";
 import Modal from "react-modal";
 import formatDateAsNumber from "@/app/server/formatters/FormatDates";
@@ -13,17 +13,21 @@ import "./CreateMilestone.css";
 import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
 import {  sanitizeMilestoneData } from "@/app/server/formatters/MilestoneDataSanitization";
 import { addMilestone } from "@/app/server/services/MilestoneService";
+import { JobContext, JobContextType } from "@/app/JobContext";
 
  interface Props {
      refetch: () => void
  }
 
+
 const CreateMilestone = ({refetch}: Props) => {
+    const { jobID } = useContext(JobContext) as JobContextType;
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [deadline, setDeadline] = useState<Date>(new Date());
     const [payment, setPayment] = useState("");
     const [modalIsOpen, setIsOpen] = useState(false);
+    const[reportURL, setReport] = useState("");
 
     //const { user } = useContext(AuthContext) as AuthContextType;
 
@@ -31,11 +35,39 @@ const CreateMilestone = ({refetch}: Props) => {
         Modal.setAppElement("#root");
     }, []);
 
+    function openModal() {
+        setIsOpen(true);
+    }
+    
+    function closeModal() {
+        setIsOpen(false);
+    }
+    const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+        
+        // Basic check if input is empty
+        if (!inputValue) {
+            toast.error("Please select a date");
+            return;
+        }
+        
+        // Parse the date
+        const newDate = new Date(inputValue);
+        
+        // Check if date is valid
+        if (isNaN(newDate.getTime())) {
+            toast.error("Invalid date format");
+            return;
+        }
+        
+        // If all checks pass
+        setDeadline(newDate);
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const status = MilestoneStatus.OnHalt;
-        
 
         if (title === "") {
             toast("Please enter a title for the job");
@@ -69,11 +101,13 @@ const CreateMilestone = ({refetch}: Props) => {
             return;
         }
 
+        const reportURL = "";
         const milestone = {
         title,
         description,
         payment: pay,
         deadline: formattedDeadline,
+        reportURL: reportURL,
         status
     
         };
@@ -89,46 +123,38 @@ const CreateMilestone = ({refetch}: Props) => {
             "Are you sure you want to create this milestone with the details provided?"
 
         );
-        if(!confirmed){
+        
+        
+        if(!confirmed || !jobID){
             return;
         }
         try {
             await addMilestone(jobID,sanitizedMilestoneData);
-        }
+            toast.success("Milestone created successfully!");
+            refetch();
+            closeModal(); // Close the modal after successful creation
 
-    function openModal() {
-        setIsOpen(true);
-    }
+            // Reset fields
+            setTitle("");
+            setDescription("");
+            setDeadline(new Date());
+            setPayment("");
+            setReport("");
+        } catch (err) {
+            toast.error("Something went wrong when trying to create the milestone");
+            console.error(err);
+          }
+        };
+
+          
+
     
-    function closeModal() {
-        setIsOpen(false);
-    }
 
-    const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const inputValue = e.target.value;
-        
-        // Basic check if input is empty
-        if (!inputValue) {
-            toast.error("Please select a date");
-            return;
-        }
-        
-        // Parse the date
-        const newDate = new Date(inputValue);
-        
-        // Check if date is valid
-        if (isNaN(newDate.getTime())) {
-            toast.error("Invalid date format");
-            return;
-        }
-        
-        // If all checks pass
-        setDeadline(newDate);
-    };
+    
 
     return (
         <section id="root">
-        <button onClick={openModal}> Create Milestone </button>
+        <Button caption={"Create Milestone"} onClick={openModal}/>
         <Modal
             isOpen={modalIsOpen}
             onRequestClose={closeModal}
@@ -209,7 +235,7 @@ const CreateMilestone = ({refetch}: Props) => {
     </section>
     );
 };
-}
+
 
 export default CreateMilestone;
 

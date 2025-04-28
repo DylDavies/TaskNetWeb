@@ -6,6 +6,7 @@ interface MilestoneData {
     status: MilestoneStatus;
     deadline: number;
     payment: number;   
+    reportURL?: string;
 }
 
 export default MilestoneData;
