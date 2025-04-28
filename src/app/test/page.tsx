@@ -5,6 +5,8 @@ import ViewMilestones from "../components/viewMilestoneFreelancer/viewMilestoneF
 export default function TestPage() {
   const fakeData = {
     jobId: "job001",
+    clientUID: "test",
+    HiredUID: "tester2",
     milestone: {
       title: "Initial Consultation",
       description: "Talk with client and draft first ideas",
@@ -18,6 +20,7 @@ export default function TestPage() {
     <ViewMilestones
       data={fakeData}
       onClose={() => console.log("Modal closed")}
+      onUpload={() => console.log("Modal Upload")}
     />
   );
 }
