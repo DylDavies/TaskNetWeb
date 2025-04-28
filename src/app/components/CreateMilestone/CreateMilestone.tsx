@@ -27,7 +27,7 @@ const CreateMilestone = ({refetch}: Props) => {
     const [deadline, setDeadline] = useState<Date>(new Date());
     const [payment, setPayment] = useState("");
     const [modalIsOpen, setIsOpen] = useState(false);
-    const[reportURL, setReport] = useState("");
+    //const[reportURL, setReport] = useState("");
 
     //const { user } = useContext(AuthContext) as AuthContextType;
 
@@ -101,13 +101,13 @@ const CreateMilestone = ({refetch}: Props) => {
             return;
         }
 
-        const reportURL = "";
+        //reportURL = "";
         const milestone = {
         title,
         description,
         payment: pay,
         deadline: formattedDeadline,
-        reportURL: reportURL,
+        //reportURL: reportURL,
         status
     
         };
@@ -139,7 +139,7 @@ const CreateMilestone = ({refetch}: Props) => {
             setDescription("");
             setDeadline(new Date());
             setPayment("");
-            setReport("");
+            //setReport("");
         } catch (err) {
             toast.error("Something went wrong when trying to create the milestone");
             console.error(err);
