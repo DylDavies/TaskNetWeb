@@ -14,7 +14,10 @@ async function getMilestones(jobID: string): Promise<MilestoneData[]> {
   
       const milestones: MilestoneData[] = [];
       milestoneSnapshot.forEach((doc) => {
-        milestones.push(doc.data() as MilestoneData);
+        milestones.push({
+          id: doc.id,
+          ...(doc.data() as Omit<MilestoneData, "id">)
+        });
       });
   
       return milestones;

@@ -10,9 +10,10 @@ import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
 interface Props {
   
   onMilestoneClick?: (milestone: MilestoneData) => void;
+  refresh: boolean;
 }
 
-const MilestonesTable = ({ onMilestoneClick}: Props) => {
+const MilestonesTable = ({ onMilestoneClick, refresh}: Props) => {
   //const router = useRouter();
 
   const { jobID } = useContext(JobContext) as JobContextType;
@@ -33,7 +34,7 @@ const MilestonesTable = ({ onMilestoneClick}: Props) => {
     }
   
     fetchMilestones();
-  }, [jobID]);
+  }, [jobID, refresh]);
 
   function MilestoneStatusToString(value: MilestoneStatus| undefined): string {
     if (value === undefined) return 'Unknown';

@@ -6,11 +6,13 @@ import Button from "../button/Button";
 import { AuthContext, AuthContextType } from "../../AuthContext";
 import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
 import Modal from "react-modal";
+import { updateMilestoneStatus } from "@/app/server/services/MilestoneService";
 
 type JobData = {
     jobId: string;
     clientUID: string;
     milestone: { 
+        id: string;
         title: string;
         description: string;
         status: MilestoneStatus;
@@ -25,33 +27,44 @@ type JobData = {
       onClose: () => void; 
       onUpload: () => void;
       modalIsOpen : boolean;
+      refetchMilestones: () => void;
   }
 
-const ViewMilestones: React.FC<Props> = ({data, onClose, onUpload, modalIsOpen}) => {
+const ViewMilestones: React.FC<Props> = ({data, onClose, onUpload, modalIsOpen, refetchMilestones}) => {
     const { user } = useContext(AuthContext) as AuthContextType;
     const [status, setStatus] = useState<MilestoneStatus>(data.milestone.status);
     const [role, setRole] = useState("client");
 
     useEffect(() =>{
         if(user?.authUser?.uid == data.clientUID){
-            setRole("client");
+            setRole("freelancer");
         }
         else{
             setRole("freelancer");
         }
     }, [user, data.clientUID]);
 
-    const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedStatus = e.target.value;
+    useEffect(() => {
+        setStatus(data.milestone.status);
+      }, [data.milestone]);
+
+    const handleStatusChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedStatus = e.target.value as keyof typeof MilestoneStatus;
         const confirmed = window.confirm(
             `Are you sure you want to change status to ${e.target.id}`
           );
           if (!confirmed) {
             return;
           }
-          const enumValue = MilestoneStatus[selectedStatus as keyof typeof MilestoneStatus];
+          const enumValue = MilestoneStatus[selectedStatus];
           if(enumValue === undefined) return;
-          setStatus(enumValue);
+          try{
+            await updateMilestoneStatus(data.jobId, data.milestone.id, enumValue);
+            setStatus(enumValue);
+            refetchMilestones();
+          } catch(err){
+            console.log("Error updating milestone:", err);
+          }
     }
     return(
         <Modal
@@ -93,15 +106,15 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, onUpload, modalIsOpen})
                         <fieldset>
                             <legend>Select Status</legend>
                             <section>
-                                <input type ="radio" id="pending" name="status" value={MilestoneStatus.OnHalt} onChange={handleStatusChange} checked={status === MilestoneStatus.OnHalt}/>
-                                <label htmlFor="pending"> Pending</label>
+                                <input type ="radio" id="Pending" name="status" value="OnHalt" onChange={handleStatusChange} checked={status === MilestoneStatus.OnHalt}/>
+                                <label htmlFor="Pending"> Pending</label>
                             </section>
                             <section>
-                                <input type ="radio" id="In Progress" name="status" value={MilestoneStatus.InProgress} onChange={handleStatusChange} checked={status === MilestoneStatus.InProgress}/>
-                                <label htmlFor="In Progress"> In Progress</label>
+                                <input type ="radio" id="In Progress" name="status" value="InProgress" onChange={handleStatusChange} checked={status === MilestoneStatus.InProgress}/>
+                                <label htmlFor="InProgress"> In Progress</label>
                             </section>
                             <section>
-                                <input type ="radio" id="Completed" name="status" value={MilestoneStatus.Completed} onChange={handleStatusChange}/>
+                                <input type ="radio" id="Completed" name="status" value="Completed" onChange={handleStatusChange}/>
                                 <label htmlFor="Completed"> Completed</label>
                             </section>
                         </fieldset>
