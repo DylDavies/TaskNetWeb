@@ -37,7 +37,7 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, onUpload, modalIsOpen, 
 
     useEffect(() =>{
         if(user?.authUser?.uid == data.clientUID){
-            setRole("freelancer");
+            setRole("client");
         }
         else{
             setRole("freelancer");
