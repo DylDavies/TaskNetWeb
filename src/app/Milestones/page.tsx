@@ -17,6 +17,8 @@ import { JobContext, JobContextType } from "../JobContext";
 import UserType from "../enums/UserType.enum";
 import MilestonesTable from "../components/MilestonesTable.tsx/MilestonesTable";
 import CreateMilestone from "../components/CreateMilestone/CreateMilestone";
+import MilestoneData from "../interfaces/Milestones.interface";
+import ViewMilestones from "../components/viewMilestoneFreelancer/viewMilestoneFreelancer";
 
 
 const linksClient = [
@@ -35,6 +37,13 @@ const linksAdmin = [
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
   const { jobID } = useContext(JobContext) as JobContextType;
+  const [selectedMilestone, setSelectedMilestone] = useState<MilestoneData | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [refreshFlag, setRefreshFlag] = useState(false);
+
+  const refetchMilestones = () => {
+    setRefreshFlag(prev => !prev);
+  };
 
   const fakeRefetch = () => {
     console.log("Refetch called (fake)");
@@ -62,6 +71,7 @@ export default function Page() {
   }
 
   const [jobTitle, setJobTitle] = useState<string>("");
+  const [clientUID, setClientUID] = useState<string>("")
 
   //To set the job title of the page
   useEffect(() => {
@@ -69,7 +79,8 @@ export default function Page() {
       try {
         const job = await getJob(jobID as string);
         if (job) {
-          setJobTitle(job.title); // assumes title exists
+          setJobTitle(job.title);
+          setClientUID(job.clientUId) // assumes title exists
         }
       } catch (err) {
         console.error("Failed to fetch job:", err);
@@ -79,8 +90,9 @@ export default function Page() {
     fetchJobTitle();
   }, []);
 
-  function handleMilestoneClick() {
-    alert("This hasn't been implemented yet.");
+  function handleMilestoneClick(milestone : MilestoneData) {
+    setModalOpen(true);
+    setSelectedMilestone(milestone);
   }
 
   return (
@@ -114,8 +126,17 @@ export default function Page() {
 
               {/* FATable moved down */}
               <section className="w-full max-w-8xl mt-36">
-                <MilestonesTable onMilestoneClick={handleMilestoneClick} />
+                <MilestonesTable onMilestoneClick={handleMilestoneClick} refresh={refreshFlag}/>
               </section>
+              {selectedMilestone && modalOpen && jobID && (
+                <ViewMilestones
+                data = {{jobId: jobID, clientUID: clientUID, milestone: selectedMilestone}}
+                onClose={() => setSelectedMilestone(null)}
+                onUpload={() => {console.log("upload")}}
+                modalIsOpen={modalOpen}
+                refetchMilestones={refetchMilestones}>
+                </ViewMilestones>
+              )}
             </section>
           </section>
         </main>

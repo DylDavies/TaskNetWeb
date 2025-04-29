@@ -40,6 +40,7 @@ const sanitizeMilestoneData = (MilestoneData: Partial<MilestoneData>): Milestone
 
 
   return {
+    id: MilestoneData.id!,
     title: MilestoneData.title!,
     description: MilestoneData.description!,
     deadline: MilestoneData.deadline!,
