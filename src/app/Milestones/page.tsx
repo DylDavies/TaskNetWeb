@@ -19,7 +19,6 @@ import MilestonesTable from "../components/MilestonesTable.tsx/MilestonesTable";
 import CreateMilestone from "../components/CreateMilestone/CreateMilestone";
 import MilestoneData from "../interfaces/Milestones.interface";
 import ViewMilestones from "../components/viewMilestoneFreelancer/viewMilestoneFreelancer";
-import { getMilestones } from "../server/services/MilestoneService";
 
 const linksClient = [
   { name: "back", href: "/client" }];
@@ -117,7 +116,17 @@ export default function Page() {
                 <h1 className="text-2xl font-semibold text-gray-300">
                     Milestones for <strong className="">{jobTitle || "..."}</strong>
                 </h1>
-            </section>
+              </section>
+              <section>
+                <h2 className="text-xl font-semibold text-gray-300">
+                    {user?.userData.type === UserType.Client
+                    ? "Click on a milestone to see more information and review progress"
+                    : user?.userData.type === UserType.Freelancer
+                    ? "Click on a milestone to see more information and edit progress"
+                    : ""}
+              </h2>
+              </section>
+
             <section className="w-full max-w-8xl flex justify-start mb-4 ">
                 {(user?.userData.type === UserType.Client || user?.userData.type === UserType.Admin) && (
                 <CreateMilestone refetch={refetch} />
