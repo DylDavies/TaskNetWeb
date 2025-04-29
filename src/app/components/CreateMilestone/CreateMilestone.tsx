@@ -14,7 +14,8 @@ import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
 import {  sanitizeMilestoneData } from "@/app/server/formatters/MilestoneDataSanitization";
 import { addMilestone, getMilestones } from "@/app/server/services/MilestoneService";
 import { JobContext, JobContextType } from "@/app/JobContext";
-import MilestoneData from "@/app/interfaces/Milestones.interface";
+import { getJob } from "@/app/server/services/JobDatabaseService";
+
 
  interface Props {
      refetch: () => void
@@ -28,24 +29,49 @@ const CreateMilestone = ({refetch}: Props) => {
     const [deadline, setDeadline] = useState<Date>(new Date());
     const [payment, setPayment] = useState("");
     const [modalIsOpen, setIsOpen] = useState(false);
-    const [existingMilestones, setExistingMilestones] = useState<MilestoneData[]>([]);
+    const [jobDeadline, setJobDeadline] = useState<number>();
+    const [prevMilestoneDeadline, setPrevMilestoneDeadline] = useState<number>();
 
     useEffect(() => {
         Modal.setAppElement("#root");
-    }, []);
+
+        // Fetch job data when jobID changes
+        const fetchJobDeadline = async () => {
+            if (!jobID) return;
+            
+            try {
+                const jobData = await getJob(jobID); // Use getJob directly
+                if (jobData) {
+                    // Convert the numeric deadline to Date object
+                    setJobDeadline(jobData.deadline);
+                }
+            } catch (error) {
+                console.error("Failed to fetch job deadline:", error);
+                toast.error("Failed to load job information");
+            }
+        };
+        
+        fetchJobDeadline();
+    }, [jobID]);
+
 
     async function openModal() {
         if (!jobID) {
-            toast.error("Job ID is missing");
+            toast.error("No job selected");
             return;
         }
+        
         try {
-            // Fetch existing milestones when modal opens
+            // Fetch existing milestones
             const milestones = await getMilestones(jobID);
-            setExistingMilestones(milestones);
+            if (milestones.length > 0) {
+                // Find the latest milestone deadline
+                const latestDeadline = Math.max(...milestones.map(m => m.deadline));
+                setPrevMilestoneDeadline(latestDeadline);
+            }
             setIsOpen(true);
         } catch (error) {
-            console.error("Error fetching milestones:", error);
+            console.error("Error loading milestones:", error);
             toast.error("Failed to load existing milestones");
         }
     }
@@ -64,20 +90,27 @@ const CreateMilestone = ({refetch}: Props) => {
         
         // Parse the date
         const newDate = new Date(inputValue);
+
+
         
         // Check if date is valid
         if (isNaN(newDate.getTime())) {
             toast.error("Invalid date format");
             return;
         }
-        //  Check against existing milestones (if any)
-        if (existingMilestones.length > 0) {
-            const latestMilestoneDate = new Date(Math.max(...existingMilestones.map(m => m.deadline)));
-            if (newDate < latestMilestoneDate) {
-                toast.error("New milestone deadline cannot be earlier than existing milestones");
-                return;
-            }
+
+        const dateAsNumber = formatDateAsNumber(newDate);
+        
+        // Check against job deadline if available
+        if (jobDeadline && dateAsNumber >= jobDeadline) {
+            toast.error(`Milestone deadline must be before job deadline`);
+            return;
         }
+        // Check against previous milestones (if any exist)
+        if (prevMilestoneDeadline && dateAsNumber <= prevMilestoneDeadline) {
+            toast.error(`Milestone deadline must be after existing milestones`);
+        return;
+    }
 
         //  Check if deadline is in the future
         if (newDate <= new Date()) {
