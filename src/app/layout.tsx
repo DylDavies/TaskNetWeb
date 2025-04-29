@@ -36,7 +36,7 @@ export default function RootLayout({
         <AuthProvider>
           <NotificationProvider>
             <JobProvider>
-              {children}
+                {children}
             </JobProvider>
           </NotificationProvider>
         </AuthProvider>

@@ -19,7 +19,7 @@ import MilestonesTable from "../components/MilestonesTable.tsx/MilestonesTable";
 import CreateMilestone from "../components/CreateMilestone/CreateMilestone";
 import MilestoneData from "../interfaces/Milestones.interface";
 import ViewMilestones from "../components/viewMilestoneFreelancer/viewMilestoneFreelancer";
-
+import { getMilestones } from "../server/services/MilestoneService";
 
 const linksClient = [
   { name: "back", href: "/client" }];
@@ -44,10 +44,11 @@ export default function Page() {
   const refetchMilestones = () => {
     setRefreshFlag(prev => !prev);
   };
+  
+  function refetch() {
+    refetchMilestones();
+  }
 
-  const fakeRefetch = () => {
-    console.log("Refetch called (fake)");
-  };
   
   //This function converts the usetype to a string to be displayed in the header
   function userTypeToString(value: UserType| undefined): string {
@@ -119,12 +120,11 @@ export default function Page() {
             </section>
             <section className="w-full max-w-8xl flex justify-start mb-4 ">
                 {(user?.userData.type === UserType.Client || user?.userData.type === UserType.Admin) && (
-                <CreateMilestone refetch={fakeRefetch} />
+                <CreateMilestone refetch={refetch} />
                 )}
             </section>
                
 
-              {/* FATable moved down */}
               <section className="w-full max-w-8xl mt-36">
                 <MilestonesTable onMilestoneClick={handleMilestoneClick} refresh={refreshFlag}/>
               </section>
