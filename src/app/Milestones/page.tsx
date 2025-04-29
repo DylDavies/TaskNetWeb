@@ -20,7 +20,6 @@ import CreateMilestone from "../components/CreateMilestone/CreateMilestone";
 import MilestoneData from "../interfaces/Milestones.interface";
 import ViewMilestones from "../components/viewMilestoneFreelancer/viewMilestoneFreelancer";
 
-
 const linksClient = [
   { name: "back", href: "/client" }];
 
@@ -44,10 +43,11 @@ export default function Page() {
   const refetchMilestones = () => {
     setRefreshFlag(prev => !prev);
   };
+  
+  function refetch() {
+    refetchMilestones();
+  }
 
-  const fakeRefetch = () => {
-    console.log("Refetch called (fake)");
-  };
   
   //This function converts the usetype to a string to be displayed in the header
   function userTypeToString(value: UserType| undefined): string {
@@ -116,15 +116,24 @@ export default function Page() {
                 <h1 className="text-2xl font-semibold text-gray-300">
                     Milestones for <strong className="">{jobTitle || "..."}</strong>
                 </h1>
-            </section>
+              </section>
+              <section>
+                <h2 className="text-xl font-semibold text-gray-300">
+                    {user?.userData.type === UserType.Client
+                    ? "Click on a milestone to see more information and review progress"
+                    : user?.userData.type === UserType.Freelancer
+                    ? "Click on a milestone to see more information and edit progress"
+                    : ""}
+              </h2>
+              </section>
+
             <section className="w-full max-w-8xl flex justify-start mb-4 ">
                 {(user?.userData.type === UserType.Client || user?.userData.type === UserType.Admin) && (
-                <CreateMilestone refetch={fakeRefetch} />
+                <CreateMilestone refetch={refetch} />
                 )}
             </section>
                
 
-              {/* FATable moved down */}
               <section className="w-full max-w-8xl mt-36">
                 <MilestonesTable onMilestoneClick={handleMilestoneClick} refresh={refreshFlag}/>
               </section>

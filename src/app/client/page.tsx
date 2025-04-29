@@ -117,7 +117,9 @@ export default function Page() {
             />
             <section className="w-full px-6">
               <h2 className="text-2xl font-bold text-gray-300 flex justify-center">My job postings: </h2>
-              <h3 className="text-2xl italic text-gray-300 flex justify-center">Click to see applicants: </h3>
+              <h3 className="text-2xl italic text-gray-300 flex justify-center">
+                  {`Click job postings that say "Open to applicants" to view potential applicants and click job postings that say "Hired" to view and create milestones for that job:`}
+              </h3>
               <section className ="border-2 border-gray-600 rounded-lg p-4 flex flex-wrap justify-center gap-6">
               {jobCards.length > 0 ? (
                 jobCards.map((job, index) => (
