@@ -1,18 +1,19 @@
 "use client";
 
 //import { updateMilestoneStatus } from "@/app/server/services/MilestoneService";
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import Button from "../button/Button";
-//import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
+import { AuthContext, AuthContextType } from "../../AuthContext";
+import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
+import Modal from "react-modal";
 
 type JobData = {
     jobId: string;
     clientUID: string;
-    HiredUID: string;
     milestone: { 
         title: string;
         description: string;
-        status: string;
+        status: MilestoneStatus;
         deadline: number;
         payment: number;
         reportURL?: string;
@@ -23,24 +24,42 @@ type JobData = {
       data : JobData,
       onClose: () => void; 
       onUpload: () => void;
+      modalIsOpen : boolean;
   }
 
-const ViewMilestones: React.FC<Props> = ({data, onClose, onUpload}) => {
-    const [status, setStatus] = useState(data.milestone.status);
+const ViewMilestones: React.FC<Props> = ({data, onClose, onUpload, modalIsOpen}) => {
+    const { user } = useContext(AuthContext) as AuthContextType;
+    const [status, setStatus] = useState<MilestoneStatus>(data.milestone.status);
     const [role, setRole] = useState("client");
+
+    useEffect(() =>{
+        if(user?.authUser?.uid == data.clientUID){
+            setRole("freelancer");
+        }
+        else{
+            setRole("freelancer");
+        }
+    }, [user, data.clientUID]);
 
     const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedStatus = e.target.value;
         const confirmed = window.confirm(
-            `Are you sure you want to change status to ${selectedStatus}`
+            `Are you sure you want to change status to ${e.target.id}`
           );
           if (!confirmed) {
             return;
           }
-          setStatus(selectedStatus);
+          const enumValue = MilestoneStatus[selectedStatus as keyof typeof MilestoneStatus];
+          if(enumValue === undefined) return;
+          setStatus(enumValue);
     }
     return(
-        <>
+        <Modal
+        isOpen = {modalIsOpen}
+        onRequestClose={onClose}
+        className="bg-neutral-800 rounded-2xl p-6 w-full max-w-lg shadow-lg text-white max-h-[90vh] overflow-y-auto z-60"
+        overlayClassName="fixed inset-0 bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center"
+        ariaHideApp={false}>
             <section className="fixed inset-0 flex items-center justify-center z-50">
                 <article className="bg-neutral-800 rounded-2xl p-6 w-full max-w-lg shadow-lg text-white max-h-[90vh] overflow-y-auto">
                 <section className="flex justify-between items-center mb-4">
@@ -69,35 +88,35 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, onUpload}) => {
                 {data.milestone.reportURL ? (
                     <text>{data.milestone.reportURL}</text>
                 ): null}
-                {role === "freelancer" && status !== "Completed" && (
+                {role === "freelancer" && status !== MilestoneStatus.Completed && (
                     <section>
                         <fieldset>
                             <legend>Select Status</legend>
                             <section>
-                                <input type ="radio" id="pending" name="status" value="pending" onChange={handleStatusChange} checked={status === "pending"}/>
+                                <input type ="radio" id="pending" name="status" value={MilestoneStatus.OnHalt} onChange={handleStatusChange} checked={status === MilestoneStatus.OnHalt}/>
                                 <label htmlFor="pending"> Pending</label>
                             </section>
                             <section>
-                                <input type ="radio" id="In Progress" name="status" value="In Progress" onChange={handleStatusChange} checked={status === "In Progress"}/>
+                                <input type ="radio" id="In Progress" name="status" value={MilestoneStatus.InProgress} onChange={handleStatusChange} checked={status === MilestoneStatus.InProgress}/>
                                 <label htmlFor="In Progress"> In Progress</label>
                             </section>
                             <section>
-                                <input type ="radio" id="Completed" name="status" value="Completed" onChange={handleStatusChange} checked={status === "Completed"}/>
+                                <input type ="radio" id="Completed" name="status" value={MilestoneStatus.Completed} onChange={handleStatusChange}/>
                                 <label htmlFor="Completed"> Completed</label>
                             </section>
                         </fieldset>
                     </section>)
                 }
-                {role === "freelancer" && status === "Completed" && !data.milestone.reportURL && (
+                {role === "freelancer" && status === MilestoneStatus.Completed && !data.milestone.reportURL && (
                     <Button caption="Upload Report" onClick={onUpload}/>
                 )}
-                {role === "client" && status === "Completed" && (
+                {role === "client" && status === MilestoneStatus.Completed && (
                     <Button caption="Approve"/>
                 )}
                 </section>
                 </article>
             </section>
-        </>
+        </Modal>
     );
 }
 

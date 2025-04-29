@@ -148,7 +148,7 @@ const FATable = ({jobName}: Props) => {
                 <ClientModal
                  data={selectedApplicant}
                 isOpen={modalOpen}
-                onClose={closeModal} 
+                onClose={closeModal}
           /> 
             )}
               <button
