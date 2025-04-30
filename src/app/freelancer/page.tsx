@@ -34,8 +34,8 @@ export default function Page() {
   const router = useRouter();
   const [jobCards, setJobCards] = useState<ActiveJob[]>([]);
   const [username, setUsername] = useState<string>("");
-  const FreelancerUId = user?.authUser.uid ;
-  const { setJobID } = useContext(JobContext) as JobContextType; 
+  const FreelancerUId = user?.authUser.uid;
+  const { setJobID } = useContext(JobContext) as JobContextType;
 
   //signs the user out of google
   function signoutClick() {
@@ -48,17 +48,17 @@ export default function Page() {
       console.warn("Client ID is undefined");
       return;
     }
-      try {
-        const jobs = await getJobsByFreelancerID(FreelancerUId); 
-        setJobCards(jobs);
-      } catch (error) {
-        console.error("Error occurred when trying to fetch Jobs: ", error);
-      } 
+    try {
+      const jobs = await getJobsByFreelancerID(FreelancerUId);
+      setJobCards(jobs);
+    } catch (error) {
+      console.error("Error occurred when trying to fetch Jobs: ", error);
+    }
   }
   useEffect(() => {
     fetchUserJobs();
   }, [FreelancerUId]);
-  
+
   useEffect(() => {
     async function fetchUsername() {
       if (FreelancerUId) {
@@ -70,13 +70,11 @@ export default function Page() {
   }, [FreelancerUId]);
 
   function handleCardClick(job: ActiveJob): void {
-
-    const currentJobStatus = job.jobData.status
+    const currentJobStatus = job.jobData.status;
     if (currentJobStatus == JobStatus.Deleted) return;
 
     setJobID(job.jobId);
     router.push("/Milestones");
-    
   }
 
   return (
@@ -106,16 +104,23 @@ export default function Page() {
             type="freelancer"
           />
           <section className="w-full px-6">
-              <h2 className="text-2xl font-bold text-gray-300 flex justify-center">My jobs: </h2>
-              <h3 className="text-2xl italic text-gray-300 flex justify-center">Click to see more information: </h3>
-              <section className ="border-2 border-gray-600 rounded-lg p-4 flex flex-wrap justify-center gap-6">
+            <h2 className="text-2xl font-bold text-gray-300 flex justify-center">
+              My jobs:{" "}
+            </h2>
+            <h3 className="text-2xl italic text-gray-300 flex justify-center">
+              Click to see more information:{" "}
+            </h3>
+            <section className="border-2 border-gray-600 rounded-lg p-4 flex flex-wrap justify-center gap-6">
               {jobCards.length > 0 ? (
                 jobCards.map((job, index) => (
                   <JobCard
                     key={index}
                     company={username}
                     jobTitle={job.jobData.title}
-                    budget={formatBudget(job.jobData.budgetMin, job.jobData.budgetMax)}
+                    budget={formatBudget(
+                      job.jobData.budgetMin,
+                      job.jobData.budgetMax
+                    )}
                     deadline={formatDateAsString(job.jobData.deadline)}
                     skills={Object.values(job.jobData.skills).flat()}
                     onClick={() => handleCardClick(job)}
@@ -125,13 +130,11 @@ export default function Page() {
               ) : (
                 <p className="text-gray-300 text-lg">No job postings yet.</p>
               )}
-              </section>
-        </section>
-
+            </section>
+          </section>
         </section>
       </main>
 
-      
       {/* Footer */}
       <footer className="py-4 flex justify-end bg-gray-900 box-footer">
         <Button caption={"Log out"} onClick={() => signoutClick()} />

@@ -16,6 +16,8 @@ import ApplicationData from "@/app/interfaces/ApplicationData.interface";
 import JobStatus from "@/app/enums/JobStatus.enum";
 import { useRouter } from "next/navigation";
 import { JobContext, JobContextType } from "@/app/JobContext";
+import { createChat } from "@/app/server/services/MessageDatabaseServices";
+import { AuthContext, AuthContextType } from "@/app/AuthContext";
 
 interface Props {
   jobName: string;
@@ -25,6 +27,7 @@ const FATable = ({ jobName }: Props) => {
   const router = useRouter();
 
   const { jobID } = useContext(JobContext) as JobContextType;
+  const { user } = useContext(AuthContext) as AuthContextType;
 
   const [pendingApplicants, setPendingApplicants] = useState<ApplicationData[]>(
     []
@@ -59,6 +62,7 @@ const FATable = ({ jobName }: Props) => {
       await acceptApplicant(aid);
       await updateHiredUId(jid, uid);
       await updateJobStatus(jid, JobStatus.Employed);
+      await createChat(jid, jobName); // Create a chat for this job
 
       for await (const applicant of pendingApplicants) {
         if (applicant.ApplicantID == aid) continue;
@@ -73,6 +77,20 @@ const FATable = ({ jobName }: Props) => {
 
       await createNotification({
         message: `${jobName} - Your application has been accepted`,
+        seen: false,
+        uidFor: uid,
+      });
+
+      // Notify client of chat creation
+      await createNotification({
+        message: `Chat created for ${jobName}`,
+        seen: false,
+        uidFor: user!.authUser.uid,
+      });
+
+      // Notify freelancer of chat creation
+      await createNotification({
+        message: `Chat created for ${jobName}`,
         seen: false,
         uidFor: uid,
       });

@@ -1,3 +1,5 @@
+import MessageStatus from "@/app/enums/MessageStatus.enum";
+import MessageType from "@/app/enums/MessageType.enum";
 import { db } from "@/app/firebase";
 import ActiveMessage from "@/app/interfaces/ActiveMessage.interface";
 import MessageData from "@/app/interfaces/MessageData.interface";
@@ -41,6 +43,29 @@ async function sendMessage(jobID: string, message: Omit<MessageData, 'DateTimeSe
     } catch (error) {
       console.error("Error sending message:", error);
     }
-  }
+}
 
-export { getAllMessages, sendMessage }
+async function createChat(jobID: string, jobName: string){
+  try{
+    const messagesRef = collection(db, "Jobs", jobID, "messages");
+
+    const systemMessage: Omit<MessageData, 'DateTimeSent'> = {
+      senderUId: "System",
+      type: MessageType.System,
+      status: MessageStatus.Delivered,
+      message: `Chat created for ${jobName}! Ready to start chatting?`,
+    };
+
+    await addDoc(messagesRef, {
+      ...systemMessage,
+      DateTimeSent: serverTimestamp(),
+    });
+
+    console.log("System message created to initialize chat.");
+  }
+  catch (error){
+    console.error("Error creating chat:", error);
+  }
+}
+
+export { getAllMessages, sendMessage, createChat }
