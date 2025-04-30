@@ -20,7 +20,7 @@ export default function Page() {
         </section>
   */
   return (
-    <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans body">
+    <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans body outer-background">
       <section className="container">
         <UserList />
         <Chat />

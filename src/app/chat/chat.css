@@ -21,3 +21,7 @@
     border: 1px solid rgba(255, 255, 0, 0.125);
     display: flex;
 }
+
+.outer-background{
+    background-color: rgba(30, 30, 30, 0.1);
+}

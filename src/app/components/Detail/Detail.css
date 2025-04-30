@@ -1,5 +1,6 @@
 .detail{
     flex: 1;
+    background-color: #111827;
 
     .user{
         padding: 30px 20px;
@@ -29,6 +30,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
+                font-size: large;
 
                 img{
                     width: 30px;
@@ -38,6 +40,14 @@
                     border-radius: 50%;
                     cursor: pointer;
                 }
+            }
+
+            .items{
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+                padding: 10px;
+                font-size: small;
             }
 
             .photos{

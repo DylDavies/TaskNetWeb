@@ -16,6 +16,7 @@ const ChatList = () => {
     fetchJobsWithUsers,
     isLoadingJobs,
     setActiveConversation,
+    chatPreviews,
   } = useChatStore();
 
   useEffect(() => {
@@ -30,40 +31,65 @@ const ChatList = () => {
     return <section>Loading Chats...</section>;
   }
 
+  console.log("chatPreviews:", chatPreviews);
+  console.log(
+    "jobsWithUsers:",
+    jobsWithUsers.map((j) => j.job.jobId)
+  );
+
   return (
     <section className="chatList scrollable">
       <section className="search">
         <InputBar
           type="text"
-          placeholder="Type a message..."
+          placeholder="Search Chats..."
           className="input-class searchbar"
           value={text}
           onChange={(e) => setText(e.target.value)}
-        />{" "}
-        {/*add all the props*/}
+        />
       </section>
 
-      {/* items from the user list */}
-      {jobsWithUsers.map((item, index) => (
-        <section
-          className="item"
-          key={index}
-          onClick={() => setActiveConversation(item)}
-        >
-          <Image
-            src="/avatar.png" // you can later update this to dynamic user avatars
-            alt="User avatar"
-            width={50}
-            height={50}
-            className="avatar"
-          />
-          <section className="texts">
-            <em>{item.userData?.username}</em>{" "}
-            {/* replace with the correct field from job */}
-            <p>{item.job.jobData.description || "No messages yet"}</p>{" "}
+      {/* Iterate over the jobsWithUsers array */}
+      {jobsWithUsers.map((item, index) => {
+        // Get the chat preview for this jobId
+        const preview = chatPreviews[item.job.jobId] || {
+          latestMessage: "No messages yet",
+          unreadCount: 0,
+          latestTime: null,
+        };
+
+        return (
+          <section
+            className="item"
+            key={index}
+            onClick={() => setActiveConversation(item)}
+          >
+            <Image
+              src="/avatar.png" // You can later update this to dynamic user avatars
+              alt="User avatar"
+              width={50}
+              height={50}
+              className="avatar"
+            />
+            <section className="texts">
+              <em>{item.userData?.username}</em>
+              {/* Display the latest message from the preview */}
+              {preview.senderUId === user?.authUser.uid ? (
+                <>
+                  <p>{"You: " + preview.latestMessage}</p>
+                </>
+              ) : (
+                <p>{preview.latestMessage}</p>
+              )}
+
+              {/* Optionally, display unread count */}
+              {preview.unreadCount > 0 && (
+                <em className="unreadCount">{preview.unreadCount}</em>
+              )}
+            </section>
           </section>
-        </section>
-      ))}
+        );
+      })}
     </section>
   );
 };

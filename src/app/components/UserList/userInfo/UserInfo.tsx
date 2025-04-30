@@ -1,19 +1,6 @@
 import { AuthContext, AuthContextType } from "@/app/AuthContext";
 import "./userInfo.css";
-import Image from "next/image";
 import { useContext } from "react";
-
-/*
-replaced images:
-        <img src="./more.png" alt="" />
-        <img src="./video.png" alt="" />
-        <img src="./edit.png" alt="" />
-
-        with:
-                <Image src="/more.png" alt="More" width={24} height={24} />
-        <Image src="/video.png" alt="Video" width={24} height={24} />
-        <Image src="/edit.png" alt="Edit" width={24} height={24} />
- */
 
 const UserInfo = () => {
   const { user } = useContext(AuthContext) as AuthContextType;
@@ -29,13 +16,6 @@ const UserInfo = () => {
         </section>
         {/* <img src="./avatar.png" alt=""/> */}
         <h2>{user?.userData.username}</h2>
-      </section>
-      <section className="icons">
-        {/*20 min in vid*/}
-        <Image src="/more.png" alt="More" width={24} height={24} />{" "}
-        {/*actually add these things*/}
-        <Image src="/video.png" alt="Video" width={24} height={24} />
-        <Image src="/edit.png" alt="Edit" width={24} height={24} />
       </section>
     </section>
   );

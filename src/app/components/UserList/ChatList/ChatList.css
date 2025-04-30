@@ -1,6 +1,7 @@
 .chatList{
     flex: 1;
     overflow-y: scroll;
+    background-color: #111827;
 
     /* scrollbar customization*/
     &::-webkit-scrollbar {
@@ -71,4 +72,14 @@
     .item:hover {
         background-color: rgba(0, 0, 0, 0.3); /* Darker background on hover */
     }
+
+    .unreadCount {
+        background-color: #ff5f5f; /* Red or any color you prefer */
+        color: white;
+        border-radius: 50%;
+        padding: 5px 10px;
+        font-size: 12px;
+        margin-left: 8px;
+      }
+      
 }

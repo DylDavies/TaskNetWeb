@@ -10,6 +10,7 @@ import { useChatStore } from "@/app/stores/chatStore";
 import { sendMessage } from "@/app/server/services/MessageDatabaseServices";
 import MessageStatus from "@/app/enums/MessageStatus.enum";
 import MessageType from "@/app/enums/MessageType.enum";
+import { usePathname } from "next/navigation";
 
 const Chat = () => {
   const { user } = useContext(AuthContext) as AuthContextType;
@@ -69,11 +70,23 @@ const Chat = () => {
     setText(""); // Clear input after sending
   }
 
+  const pathname = usePathname();
+
+  useEffect(() => {
+    return () => {
+      // Clear active conversation when navigating away
+      setActiveConversation(null);
+    };
+  }, [pathname]);
+
   return (
     <section className="chat">
       <section className="top">
         <section className="user">
-          <img src="avatar.png" alt="" />
+          {/*<img src="avatar.png" alt="" />*/}
+          <section className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-semibold text-sm sm:text-base">
+            {user?.userData.username?.charAt(0)}
+          </section>
           <section className="texts">
             {activeConversation ? (
               <>

@@ -1,6 +1,6 @@
 "use client";
 import AuthService from "./services/AuthService";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import "./components/sidebar/sidebar.css";
 import "./components/button/Button.css";
 import { useRouter } from "next/navigation";
@@ -18,9 +18,8 @@ export default function Home() {
   const router = useRouter();
 
   async function signinClick() {
-
     setLoading(true);
-    
+
     await AuthService.signin();
 
     LoginRedirect(router);
