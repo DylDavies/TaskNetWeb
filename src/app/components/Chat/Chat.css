@@ -190,5 +190,68 @@
                 left: 0j;
             }
         }
+
+        /* Message Type Pills */
+.message-type-pills {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  
+  .message-type-pills h4 {
+    margin: 0;
+    font-size: 12px;
+    color: #9ca3af; /* Tailwind gray-400 */
+    font-weight: 500;
+  }
+  
+  .pills {
+    display: flex;
+    gap: 6px;
+  }
+  
+  .pill {
+    padding: 4px 4px;
+    border-radius: 9999px; /* Full pill shape */
+    font-size: 9px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  /* Feedback (Red) */
+  .pill.feedback {
+    background: #ef4444; /* Tailwind red-500 */
+    color: white;
+  }
+  
+  .pill.feedback:hover {
+    background: #dc2626; /* Tailwind red-600 */
+    transform: translateY(-1px);
+  }
+  
+  /* Concern (Yellow) */
+  .pill.concern {
+    background: #f59e0b; /* Tailwind yellow-500 */
+    color: white;
+  }
+  
+  .pill.concern:hover {
+    background: #d97706; /* Tailwind yellow-600 */
+    transform: translateY(-1px);
+  }
+  
+  /* Standard (Green) */
+  .pill.standard {
+    background: #10b981; /* Tailwind green-500 */
+    color: white;
+  }
+  
+  .pill.standard:hover {
+    background: #059669; /* Tailwind green-600 */
+    transform: translateY(-1px);
+  }
     }
 }

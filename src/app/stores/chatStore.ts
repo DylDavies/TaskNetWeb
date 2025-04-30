@@ -15,6 +15,7 @@ export const useChatStore = create<ChatStore>((set) =>({
     isLoadingJobs: false,
     isLoadingMessages: false,
     chatPreviews: {},
+    unsubscribe: null, // Add this line
 
 
     fetchJobsWithUsers: async (uid: string, userType: UserType) => {
@@ -69,45 +70,50 @@ export const useChatStore = create<ChatStore>((set) =>({
       }
       ,
 
-    setActiveConversation: (jobWithUser: JobWithUser | null) => {
+      setActiveConversation: (jobWithUser: JobWithUser | null) => {
+        // First, unsubscribe from any existing listener
+        const currentUnsubscribe = useChatStore.getState().unsubscribe;
+        if (currentUnsubscribe) {
+            currentUnsubscribe();
+        }
+    
         if (!jobWithUser) {
-            set({ activeConversation: null, messages: [] });
+            set({ activeConversation: null, messages: [], unsubscribe: null });
             return;
-          }
-
+        }
+    
         set({ activeConversation: jobWithUser, messages: [], isLoadingMessages: true });
     
         const messagesRef = collection(
-          db,
-          "Jobs",
-          jobWithUser.job.jobId,
-          "messages"
+            db,
+            "Jobs",
+            jobWithUser.job.jobId,
+            "messages"
         );
         const q = query(messagesRef, orderBy("DateTimeSent"));
     
         const unsubscribe = onSnapshot(q, (snapshot) => {
-          const msgs = snapshot.docs.map((doc) => ({
-            MessageID: doc.id,
-            messageData: doc.data() as MessageData,
-          }));
+            const msgs = snapshot.docs.map((doc) => ({
+              MessageID: doc.id,
+              messageData: doc.data() as MessageData,
+            }));
+          
+            set({ messages: msgs, isLoadingMessages: false });
+          
+            const lastMsg = msgs[msgs.length - 1];
+            if (lastMsg) {
+              useChatStore.getState().setChatPreview(
+                jobWithUser.job.jobId,
+                lastMsg.messageData
+              );
+            }
+          
+            useChatStore.getState().clearUnreadCount(jobWithUser.job.jobId);
+          });
     
-          set({ messages: msgs, isLoadingMessages: false });
-
-          // set last message for preview
-          const lastMsg = msgs[msgs.length - 1];
-          if (lastMsg) {
-            useChatStore.getState().setChatPreview(
-              jobWithUser.job.jobId,
-              lastMsg.messageData
-            );
-          }
-
-          // clear unread stuff when you open chat
-          useChatStore.getState().clearUnreadCount(jobWithUser.job.jobId);
-        });
-    
-        // Optional: save unsubscribe if you want to stop listening later
-      },
+        // Store the unsubscribe function in the store
+        set({ unsubscribe });
+    },
 
       clearMessages: () => set({ messages: [] }),
 

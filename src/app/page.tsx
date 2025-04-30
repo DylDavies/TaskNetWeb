@@ -1,6 +1,6 @@
 "use client";
 import AuthService from "./services/AuthService";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import "./components/sidebar/sidebar.css";
 import "./components/button/Button.css";
 import { useRouter } from "next/navigation";

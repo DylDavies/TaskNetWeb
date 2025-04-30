@@ -137,9 +137,32 @@ const Chat = () => {
 
       <section className="bottom">
         <section className="icons">
-          <img src="./image.png" alt="" />
-          <img src="./camera.png" alt="" />
-          <img src="./microphone.png" alt="" />
+          <section className="message-type-pills">
+            <h4>Message Type</h4>
+            <section className="pills">
+              <button
+                className="pill feedback"
+                title="Feedback (Critical)"
+                onClick={() => console.log("Feedback selected")}
+              >
+                Feedback
+              </button>
+              <button
+                className="pill concern"
+                title="Concern (Warning)"
+                onClick={() => console.log("Concern selected")}
+              >
+                Concern
+              </button>
+              <button
+                className="pill standard"
+                title="Standard Message"
+                onClick={() => console.log("Standard selected")}
+              >
+                Standard
+              </button>
+            </section>
+          </section>
         </section>
 
         <InputBar

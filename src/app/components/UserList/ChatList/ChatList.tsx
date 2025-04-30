@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import InputBar from "../../inputbar/InputBar";
 import "./ChatList.css";
-import Image from "next/image";
 import { AuthContext, AuthContextType } from "@/app/AuthContext";
 import { useChatStore } from "@/app/stores/chatStore";
 
