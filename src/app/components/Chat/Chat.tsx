@@ -98,11 +98,7 @@ const Chat = () => {
             )}
           </section>
         </section>
-        <section className="icons">
-          <img src="./phone.png" alt="" />
-          <img src="./video.png" alt="" />
-          <img src="./info.png" alt="" />
-        </section>
+        <section className="icons"></section>
       </section>
       <section className="center">
         {/* Render messages conditionally */}
@@ -127,8 +123,7 @@ const Chat = () => {
                 className={`message ${isOwnMessage ? "own" : ""}`}
                 key={index}
               >
-                {!isOwnMessage && <img src="./avatar.png" alt="" />}{" "}
-                {/* Display avatar for other user's messages */}
+                {/* Render message depending on sender*/}
                 <section className="text">
                   <p>{message.messageData.message}</p>
                   <em>{formattedDate}</em>

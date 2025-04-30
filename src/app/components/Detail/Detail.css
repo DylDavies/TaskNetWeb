@@ -25,6 +25,7 @@
         gap: 20px;
 
         .option{
+            border-bottom: 1px solid #dddddd35;
 
             .title{
                 display: flex;

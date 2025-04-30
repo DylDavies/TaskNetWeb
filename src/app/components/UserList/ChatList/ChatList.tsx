@@ -64,13 +64,16 @@ const ChatList = () => {
             key={index}
             onClick={() => setActiveConversation(item)}
           >
-            <Image
-              src="/avatar.png" // You can later update this to dynamic user avatars
+            {/*<Image
+              src="/avatar.png" 
               alt="User avatar"
               width={50}
               height={50}
               className="avatar"
-            />
+            />*/}
+            <section className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-semibold text-sm sm:text-base">
+              {item.userData?.username.charAt(0)}
+            </section>
             <section className="texts">
               <em>{item.userData?.username}</em>
               {/* Display the latest message from the preview */}
@@ -83,9 +86,9 @@ const ChatList = () => {
               )}
 
               {/* Optionally, display unread count */}
-              {preview.unreadCount > 0 && (
+              {/*{preview.unreadCount > 0 && (
                 <em className="unreadCount">{preview.unreadCount}</em>
-              )}
+              )}*/}
             </section>
           </section>
         );
