@@ -33,7 +33,7 @@ type JobData = {
   type Props = {
       data : JobData,
       onClose: () => void; 
-      //onUpload: () => void;
+      onUpload: () => void;
       modalIsOpen : boolean;
       refetchMilestones: () => void;
   }
