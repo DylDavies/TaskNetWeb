@@ -31,7 +31,6 @@ const links = [
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
   const { setJobID } = useContext(JobContext) as JobContextType;
-
   const [jobCards, setJobCards] = useState<ActiveJob[]>([]);
   const router = useRouter();
 

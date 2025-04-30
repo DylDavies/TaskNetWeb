@@ -2,8 +2,8 @@
 
 import { doc, setDoc, getDocs,addDoc,collection,updateDoc } from 'firebase/firestore';
 import { db } from '@/app/firebase';
-//import MilestoneStatus from '@/app/enums/MilestoneStatus.enum';
 import MilestoneData from '@/app/interfaces/Milestones.interface';
+
 
 
   // Get all milestones for a specific job
@@ -14,7 +14,10 @@ async function getMilestones(jobID: string): Promise<MilestoneData[]> {
   
       const milestones: MilestoneData[] = [];
       milestoneSnapshot.forEach((doc) => {
-        milestones.push(doc.data() as MilestoneData);
+        milestones.push({
+          id: doc.id,
+          ...(doc.data() as Omit<MilestoneData, "id">)
+        });
       });
   
       return milestones;
@@ -63,5 +66,6 @@ async function getMilestones(jobID: string): Promise<MilestoneData[]> {
     }
   }
   
-  export { getMilestones, addMilestone, updateMilestoneStatus, setMilestone };
+  
+  export { getMilestones, addMilestone, updateMilestoneStatus, setMilestone};
 

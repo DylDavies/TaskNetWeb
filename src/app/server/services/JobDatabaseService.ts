@@ -241,4 +241,31 @@ async function getContracted(userID: string, userType:UserType): Promise<ActiveJ
   }
 }
 
-export { getJob, createJob, getAllJobs, searchByTitle, updateHiredUId, updateJobStatus, searchJobsBySkills, getJobsByClientID, getJobByClientIdAndHiredId, getContracted };
+async function getJobsByFreelancerID(FreelancerID: string): Promise<ActiveJob[]> {
+  try {
+    const Query = query(
+      collection(db, "Jobs"),
+      where("hiredUId", "==", FreelancerID)
+    );
+    const jobDocs = await getDocs(Query);
+
+    const jobs: ActiveJob[] = [];
+
+    jobDocs.forEach((doc) => {
+      const jobData = doc.data() as JobData;
+      const activeJob: ActiveJob = {
+        jobId: doc.id,
+        jobData,
+      };
+      jobs.push(activeJob);
+    });
+
+    return jobs;
+    
+  } catch (error) {
+    console.error("Error getting jobs by freelancer ID:", error);
+    throw error;
+  }
+}
+
+export { getJob, createJob, getAllJobs, searchByTitle, updateHiredUId, updateJobStatus, searchJobsBySkills, getJobsByClientID, getJobByClientIdAndHiredId, getContracted, getJobsByFreelancerID };

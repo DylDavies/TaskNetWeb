@@ -10,9 +10,10 @@ import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
 interface Props {
   
   onMilestoneClick?: (milestone: MilestoneData) => void;
+  refresh: boolean;
 }
 
-const MilestonesTable = ({ onMilestoneClick}: Props) => {
+const MilestonesTable = ({ onMilestoneClick, refresh}: Props) => {
   //const router = useRouter();
 
   const { jobID } = useContext(JobContext) as JobContextType;
@@ -21,17 +22,19 @@ const MilestonesTable = ({ onMilestoneClick}: Props) => {
 
   useEffect(() => {
     async function fetchMilestones() {
-      if (!jobID) return; // Safety check
+      if (!jobID) return;
       try {
-        const data = await getMilestones(jobID); 
-        setMilestones(data);
+        const data = await getMilestones(jobID);
+        // Sort milestones by deadline (closest first)
+        const sortedData = [...data].sort((a, b) => a.deadline - b.deadline);
+        setMilestones(sortedData);
       } catch (error) {
         console.error("Error fetching milestones:", error);
       }
     }
   
     fetchMilestones();
-  }, [jobID]);
+  }, [jobID, refresh]);
 
   function MilestoneStatusToString(value: MilestoneStatus| undefined): string {
     if (value === undefined) return 'Unknown';
@@ -41,7 +44,7 @@ const MilestonesTable = ({ onMilestoneClick}: Props) => {
   return (
     <>
       <h4 className="mb-4 text-lg font-semibold text-gray-300">
-  Click on a milestone to see more information
+  
 </h4>
 <section className="w-full mb-8 overflow-hidden rounded-lg shadow-xs box">
   <section className="w-full overflow-x-auto">
@@ -82,10 +85,12 @@ const MilestonesTable = ({ onMilestoneClick}: Props) => {
                 <strong
                     className={`px-2 py-1 font-semibold leading-tight rounded-full text-white 
                     ${item.status === MilestoneStatus.OnHalt 
-                        ? 'bg-red-500' // Yellow if InProgress
+                        ? 'bg-red-500' // Red if on halt
                         : item.status === MilestoneStatus.Completed
-                        ? 'bg-green-600' // Green if Completed
-                        : 'bg-orange-600' // Default: Orange if Pending
+                        ? 'bg-yellow-600' // Green if Completed
+                        : item.status ===MilestoneStatus.InProgress
+                        ? 'bg-orange-600' // Default: Orange if in progress
+                        :'bg-green-600'
                     }`}
                     >
                     {MilestoneStatusToString(item.status)}

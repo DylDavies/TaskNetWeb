@@ -122,7 +122,7 @@ const JobForm: React.FC<Props> = ({data, onClose}) => {
         onClose();
     } catch (error) {
       toast.error("Submission failed, please try again");
-      console.error("Application sibmission error:", error);
+      console.error("Application submission error:", error);
     }
     }
 

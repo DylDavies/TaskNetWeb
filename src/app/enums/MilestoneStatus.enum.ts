@@ -2,9 +2,10 @@ enum MilestoneStatus{
 
     OnHalt,
     InProgress,
-    Completed    
+    Completed,
+    Approved   
 }
-// 0 -> 2
+// 0 -> 3
 
 
 
