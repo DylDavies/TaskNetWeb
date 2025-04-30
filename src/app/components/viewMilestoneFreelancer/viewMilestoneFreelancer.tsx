@@ -7,6 +7,8 @@ import { AuthContext, AuthContextType } from "../../AuthContext";
 import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
 import Modal from "react-modal";
 import { updateMilestoneStatus } from "@/app/server/services/MilestoneService";
+import { formatDateAsString } from "@/app/server/formatters/FormatDates";
+import toast from "react-hot-toast";
 
 type JobData = {
     jobId: string;
@@ -34,6 +36,7 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, onUpload, modalIsOpen, 
     const { user } = useContext(AuthContext) as AuthContextType;
     const [status, setStatus] = useState<MilestoneStatus>(data.milestone.status);
     const [role, setRole] = useState("client");
+    const [isApproving, setIsApproving] = useState(false);
 
     useEffect(() =>{
         if(user?.authUser?.uid == data.clientUID){
@@ -66,6 +69,10 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, onUpload, modalIsOpen, 
             console.log("Error updating milestone:", err);
           }
     }
+    function MilestoneStatusToString(value: MilestoneStatus| undefined): string {
+        if (value === undefined) return 'Unknown';
+        return MilestoneStatus[value] || '...';
+      }
     return(
         <Modal
         isOpen = {modalIsOpen}
@@ -91,13 +98,14 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, onUpload, modalIsOpen, 
                     </section>
                     <section>
                         <h4 className="font-semibold text-sm mb-1">Deadline</h4>
-                        <p className="text-sm text-gray-300">{data.milestone.deadline}</p>
+                        <p className="text-sm text-gray-300">{formatDateAsString(data.milestone.deadline)}</p>
                     </section>
-                    {}
-                    {/*<section>
+                    
+                    <section>
                         <h4 className="font-semibold text-sm mb-1">Payment</h4>
-                        <p className="text-sm text-gray-300">{data.milestone.payment}</p>
-                    </section>*/}
+                        <p className="text-sm text-gray-300">$ {data.milestone.payment}</p>
+                    </section>
+
                 {data.milestone.reportURL ? (
                     <text>{data.milestone.reportURL}</text>
                 ): null}
@@ -124,8 +132,85 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, onUpload, modalIsOpen, 
                     <Button caption="Upload Report" onClick={onUpload}/>
                 )}
                 {role === "client" && status === MilestoneStatus.Completed && (
-                    <Button caption="Approve"/>
+                    <section>
+                        <h4 className="font-semibold text-sm mb-1">Freelancer progress report/review</h4>
+            
+                        <nav className="mt-2 text-sm">
+                            {data.milestone.reportURL ? (
+                                <a
+                                    href={data.milestone.reportURL}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-400 underline"
+                                >
+                                    Download the freelancers progress report
+                                </a>
+                            ) : (
+                                <output className="text-gray-500 italic">
+                                    No report was uploaded for this milestone
+                                </output>
+                                )}
+                        </nav>
+                        <Button 
+                            caption={isApproving ? "Approving..." : "Approve"}
+                            onClick={async () => {
+                                setIsApproving(true);
+                                try {
+                                    await updateMilestoneStatus(data.jobId, data.milestone.id, 3);
+                                    refetchMilestones();
+                                    toast.success("Milestone approved successfully");
+                                    onClose(); 
+                                } catch (error) {
+                                    console.error("Error approving milestone:", error);
+                                    toast.error("Failed to approve milestone");
+                                } finally {
+                                    setIsApproving(false);
+                                }
+                            }}
+    
+                        />
+                        
+                    </section>
+                    
                 )}
+                {((role === "client" && status === MilestoneStatus.OnHalt)||(role === "client" && status === MilestoneStatus.InProgress)) && (
+                    <section>
+                        <h4 className="font-semibold text-sm mb-1">Freelancer progress report/review</h4>
+                        <p className="text-sm text-gray-300">This milestone is currently {MilestoneStatusToString(status)} so there is no progress report to review yet</p>
+                    </section>   
+                )}
+                {(role === "client" && status === MilestoneStatus.Approved) && (
+                    <section>
+                        <h4 className="font-semibold text-sm mb-1">Freelancer progress report/review</h4>
+                        <p className="text-sm text-gray-300">You have already approved this milestone but can still view the progress report here: </p>
+                        <nav className="mt-2 text-sm">
+                            {data.milestone.reportURL ? (
+                                <a
+                                    href={data.milestone.reportURL}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-400 underline"
+                                >
+                                    Download the freelancers progress report
+                                </a>
+                            ) : (
+                                <output className="text-gray-500 italic">
+                                    No report was uploaded for this milestone
+                                </output>
+                                )}
+                        </nav>
+                    </section>
+                    
+                )}
+                {/* Incase we want to display a preview, here is how we will do it
+                <iframe
+                  src={data.milestone.reportURL}
+                  title="Freelancer progress report"
+                  width="100%"
+                  height="500px"
+                  className="rounded border border-gray-700 mt-2"
+                ></iframe>*/}
+              
                 </section>
                 </article>
             </section>
