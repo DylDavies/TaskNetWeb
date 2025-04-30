@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import InputBar from "../../inputbar/InputBar";
 import "./ChatList.css";
+
 import { AuthContext, AuthContextType } from "@/app/AuthContext";
 import { useChatStore } from "@/app/stores/chatStore";
 
@@ -19,10 +20,21 @@ const ChatList = () => {
   } = useChatStore();
 
   useEffect(() => {
-    if (user) {
-      //console.log("USE EFFECT USERID: ", user.authUser.uid);
-      fetchJobsWithUsers(user.authUser.uid, user.userData.type); // Fetch jobs for logged in user
-    }
+    if (!user) return;
+
+    let unsubscribe = () => {};
+
+    const setup = async () => {
+      await fetchJobsWithUsers(user.authUser.uid, user.userData.type);
+      // message preview
+      useChatStore.getState().setupGlobalMessageListener(user.authUser.uid);
+    };
+
+    setup();
+
+    return () => {
+      unsubscribe();
+    };
   }, [user, fetchJobsWithUsers]);
 
   // Change this
@@ -61,7 +73,7 @@ const ChatList = () => {
           <section
             className="item"
             key={index}
-            onClick={() => setActiveConversation(item)}
+            onClick={() => setActiveConversation(item, user!.authUser.uid)}
           >
             {/*<Image
               src="/avatar.png" 
@@ -84,10 +96,10 @@ const ChatList = () => {
                 <p>{preview.latestMessage}</p>
               )}
 
-              {/* Optionally, display unread count */}
-              {/*{preview.unreadCount > 0 && (
-                <em className="unreadCount">{preview.unreadCount}</em>
-              )}*/}
+              {/* Show unread pill if count > 0 */}
+              {preview.unreadCount > 0 && (
+                <em className="unread-pill">{preview.unreadCount}</em>
+              )}
             </section>
           </section>
         );

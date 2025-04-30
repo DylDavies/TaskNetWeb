@@ -2,11 +2,13 @@ import { create } from 'zustand'
 import ChatStore from '../interfaces/ChatStore.interface'
 import JobWithUser from '../interfaces/JobWithOtherUser.interface';
 // import { getAllMessages } from '../server/services/MessageDatabaseServices';
-import { collection, collectionGroup, getDocs, limit, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { collection, collectionGroup, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { db } from '../firebase';
 import MessageData from '../interfaces/MessageData.interface';
 import UserType from '../enums/UserType.enum';
 import UserStatus from '../enums/UserStatus.enum';
+import { createNotification } from '../server/services/NotificationService';
+import JobData from '../interfaces/JobData.interface';
 
 export const useChatStore = create<ChatStore>((set) =>({
     jobsWithUsers: [],
@@ -15,7 +17,9 @@ export const useChatStore = create<ChatStore>((set) =>({
     isLoadingJobs: false,
     isLoadingMessages: false,
     chatPreviews: {},
-    unsubscribe: null, // Add this line
+    unsubscribe: null, 
+    globalUnsubscribe: null, 
+    jobMap: {}, // { [jobId: string]: JobData }
 
 
     fetchJobsWithUsers: async (uid: string, userType: UserType) => {
@@ -26,6 +30,11 @@ export const useChatStore = create<ChatStore>((set) =>({
           const { getUser } = await import("@/app/server/services/DatabaseService");
       
           const jobs = await getContracted(uid, userType);
+
+          const jobMap: { [jobId: string]: JobData } = {};
+          jobs.forEach((job) => {
+            jobMap[job.jobId] = job.jobData;
+          });
       
           const jobsWithUsers = await Promise.all(
             jobs.map(async (job) => {
@@ -38,7 +47,7 @@ export const useChatStore = create<ChatStore>((set) =>({
                 userData = await getUser(job.jobData.clientUId);
               }
       
-              // 🧠 Fetch latest message for chat preview
+              //  Fetch latest message for chat preview
               const messagesRef = collection(db, "Jobs", job.jobId, "messages");
               const q = query(messagesRef, orderBy("DateTimeSent", "desc"), limit(1));
               const snapshot = await getDocs(q);
@@ -47,7 +56,7 @@ export const useChatStore = create<ChatStore>((set) =>({
                 const doc = snapshot.docs[0];
                 const latestMessage = doc.data() as MessageData;
       
-                useChatStore.getState().setChatPreview(job.jobId, latestMessage);
+                useChatStore.getState().setChatPreview(job.jobId, latestMessage, uid);
               }
       
               return {
@@ -67,11 +76,10 @@ export const useChatStore = create<ChatStore>((set) =>({
           console.error("Failed to fetch jobs: ", error);
           set({ isLoadingJobs: false });
         }
-      }
-      ,
+      },
 
-      setActiveConversation: (jobWithUser: JobWithUser | null) => {
-        // First, unsubscribe from any existing listener
+      setActiveConversation: (jobWithUser: JobWithUser | null, currentUserUId: string) => {
+        // First, unsubscribe from any existing listener - prevent listening to other conversations when you navigate to a new one
         const currentUnsubscribe = useChatStore.getState().unsubscribe;
         if (currentUnsubscribe) {
             currentUnsubscribe();
@@ -104,7 +112,9 @@ export const useChatStore = create<ChatStore>((set) =>({
             if (lastMsg) {
               useChatStore.getState().setChatPreview(
                 jobWithUser.job.jobId,
-                lastMsg.messageData
+                lastMsg.messageData,
+                currentUserUId,
+
               );
             }
           
@@ -117,8 +127,11 @@ export const useChatStore = create<ChatStore>((set) =>({
 
       clearMessages: () => set({ messages: [] }),
 
-      setChatPreview: (jobId: string, message: MessageData) =>
+      setChatPreview: (jobId: string, message: MessageData, currentUserUId: string) =>
+
         set((state) => {
+            const isCurrentChat = state.activeConversation?.job.jobId === jobId;
+            const isFromCurrentUser = message.senderUId === currentUserUId;
             const existing = state.chatPreviews[jobId] || {
                 unreadCount: 0,
                 latestMessage: "",
@@ -130,16 +143,16 @@ export const useChatStore = create<ChatStore>((set) =>({
                 chatPreviews: {
                     ...state.chatPreviews,
                     [jobId]: {
-                        unreadCount: existing.unreadCount + 1,
+                        unreadCount: isCurrentChat || isFromCurrentUser ? 0 : existing.unreadCount + 1,
                         latestMessage: message.message,
-                        latestTime: message.DateTimeSent || null,
+                        latestTime: message.DateTimeSent || existing.latestTime,
                         senderUId: message.senderUId,
                     },
                 },
             };
         }),
 
-    clearUnreadCount: (jobId) =>
+    clearUnreadCount: (jobId: string) =>
         set((state) => ({
             chatPreviews: {
                 ...state.chatPreviews,
@@ -151,29 +164,48 @@ export const useChatStore = create<ChatStore>((set) =>({
         })),
 
         setupGlobalMessageListener: (uid: string) => {
-            const q = query(collectionGroup(db, "messages"), orderBy("DateTimeSent"));
+        // Clean up previous listener
+        const { globalUnsubscribe } = useChatStore.getState();
+        if (globalUnsubscribe) {
+            globalUnsubscribe();
+        }
+
+            const q = query(collectionGroup(db, "messages"), orderBy("DateTimeSent", "desc"));
           
-            onSnapshot(q, (snapshot) => {
-              snapshot.docChanges().forEach((change) => {
-                if (change.type === "added") {
-                  const message = change.doc.data() as MessageData;
-                  const jobId = change.doc.ref.parent.parent?.id;
+            const unsubscribe = onSnapshot(q, async (snapshot) => {
+              const state = useChatStore.getState();
           
-                  if (!jobId) return;
+              snapshot.docChanges().forEach(async (change) => {
+                if (change.type !== "added") return;
           
-                  const state = useChatStore.getState();
+                const message = change.doc.data() as MessageData;
+                const JobId = change.doc.ref.parent.parent?.id;
+                if (!JobId) return;
           
-                  // Ignore messages from the current active chat
-                  if (state.activeConversation?.job.jobId === jobId) return;
+                const jobData = state.jobMap?.[JobId];
+                if (!jobData) return; // Job data not available (probably not contracted to this user)
           
-                  // Ignore messages sent by the current user (optional)
-                  if (message.senderUId === uid) return;
+                const isCurrentChat = state.activeConversation?.job.jobId === JobId;
+                const isFromCurrentUser = message.senderUId === uid;
           
-                  // Update the preview
-                  state.setChatPreview(jobId, message);
-                }
+                if (isCurrentChat || isFromCurrentUser) return;
+          
+                // Update chat preview
+                state.setChatPreview(JobId, message, uid);
+          
+                //  Trigger notification
+                const otherUserUId = uid === jobData.clientUId ? jobData.hiredUId : jobData.clientUId;
+          
+                await createNotification({
+                  message: `New message in chat for job: ${jobData.title}`,
+                  seen: false,
+                  uidFor: uid, 
+                });
               });
             });
-          },
-
+          
+            set({ globalUnsubscribe: unsubscribe });
+          }
+          ,
+          
 }));

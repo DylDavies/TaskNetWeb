@@ -73,13 +73,13 @@
         background-color: rgba(0, 0, 0, 0.3); /* Darker background on hover */
     }
 
-    .unreadCount {
-        background-color: #ff5f5f; /* Red or any color you prefer */
+    .unread-pill {
+        background: #ff3b30; /* Red dot (like iMessage) */
         color: white;
-        border-radius: 50%;
-        padding: 5px 10px;
+        border-radius: 999px;
+        padding: 2px 6px;
         font-size: 12px;
         margin-left: 8px;
-      }
-      
+    }
+    
 }
