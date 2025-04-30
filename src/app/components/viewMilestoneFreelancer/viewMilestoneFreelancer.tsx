@@ -7,8 +7,14 @@ import { AuthContext, AuthContextType } from "../../AuthContext";
 import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
 import Modal from "react-modal";
 import { updateMilestoneStatus } from "@/app/server/services/MilestoneService";
+import {addReportURL} from "@/app/server/services/MilestoneService";
 import { formatDateAsString } from "@/app/server/formatters/FormatDates";
 import toast from "react-hot-toast";
+import UploadComponent from "../FileUpload/FileUpload";
+import { uploadFile } from "@/app/server/services/DatabaseService";
+import { FileText, X } from "lucide-react";
+import { createNotification } from "@/app/server/services/NotificationService";
+
 
 type JobData = {
     jobId: string;
@@ -27,16 +33,19 @@ type JobData = {
   type Props = {
       data : JobData,
       onClose: () => void; 
-      onUpload: () => void;
+      //onUpload: () => void;
       modalIsOpen : boolean;
       refetchMilestones: () => void;
   }
 
-const ViewMilestones: React.FC<Props> = ({data, onClose, onUpload, modalIsOpen, refetchMilestones}) => {
+const ViewMilestones: React.FC<Props> = ({data, onClose, modalIsOpen, refetchMilestones}) => {
     const { user } = useContext(AuthContext) as AuthContextType;
     const [status, setStatus] = useState<MilestoneStatus>(data.milestone.status);
     const [role, setRole] = useState("client");
+    const [reportURL, setreportURL] = useState("");
     const [isApproving, setIsApproving] = useState(false);
+    const [fileName, setFileName] = useState("")
+    const [showPdfPreview, setShowPdfPreview] = useState(false);
 
     useEffect(() =>{
         if(user?.authUser?.uid == data.clientUID){
@@ -49,7 +58,7 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, onUpload, modalIsOpen, 
 
     useEffect(() => {
         setStatus(data.milestone.status);
-      }, [data.milestone]);
+    }, [data.milestone]);
 
     const handleStatusChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedStatus = e.target.value as keyof typeof MilestoneStatus;
@@ -73,6 +82,50 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, onUpload, modalIsOpen, 
         if (value === undefined) return 'Unknown';
         return MilestoneStatus[value] || '...';
       }
+
+      const handleUploadComplete = (url: string, file: File) => {
+        setreportURL(url);
+        setFileName(file.name);
+        // You can do more with the URL here, like save it to your database
+      };
+      const togglePdfPreview = () => {
+        setShowPdfPreview(!showPdfPreview);
+      };
+      const handleRemoveFile = () => {
+        setreportURL("");
+        setFileName("");
+      };
+
+      const handleReportSubmit = async () => {
+        try {
+            if (!reportURL) {
+                toast.error("Please upload your CV first");
+                return;
+                }
+
+          await addReportURL(
+            data.jobId,
+            data.milestone.id,
+            reportURL,
+          );
+      
+          // Create a notification for the client
+          await createNotification({
+            message: `Milestone report submitted for "${data.milestone.title}"`,
+            seen: false,
+            uidFor: data.clientUID,
+          });
+      
+          toast.success("Report submitted successfully!");
+          refetchMilestones(); // Refresh milestone data
+          onClose(); // Close modal
+      
+        } catch (error) {
+          console.error("Error submitting report:", error);
+          toast.error("Submission failed. Please try again.");
+        }
+      };
+
     return(
         <Modal
         isOpen = {modalIsOpen}
@@ -105,10 +158,6 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, onUpload, modalIsOpen, 
                         <h4 className="font-semibold text-sm mb-1">Payment</h4>
                         <p className="text-sm text-gray-300">$ {data.milestone.payment}</p>
                     </section>
-
-                {data.milestone.reportURL ? (
-                    <text>{data.milestone.reportURL}</text>
-                ): null}
                 {role === "freelancer" && status !== MilestoneStatus.Completed && (
                     <section>
                         <fieldset>
@@ -128,9 +177,40 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, onUpload, modalIsOpen, 
                         </fieldset>
                     </section>)
                 }
+                
                 {role === "freelancer" && status === MilestoneStatus.Completed && !data.milestone.reportURL && (
-                    <Button caption="Upload Report" onClick={onUpload}/>
+                    <>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Upload files to show the client your work.</label>
+                    <section className="flex items-center">
+                    {!reportURL ? (
+                        <UploadComponent
+                            uploadFunction={uploadFile}
+                            path="MilestoneReport"
+                            name={data.milestone.id}
+                            onUploadComplete={handleUploadComplete}
+                        />
+                    ) : (
+                    <section className="flex items-center justify-between p-3 bg-neutral-700 rounded-lg border border-neutral-600">
+                    <section 
+                    className="flex items-center gap-3 cursor-pointer hover:bg-neutral-600 p-2 rounded transition-colors"
+                        onClick={togglePdfPreview}
+                    >
+                    <FileText className="text-blue-400" />
+                    <section className="text-sm text-gray-200 inline">{fileName}</section>
+                    </section>
+                    <button 
+                    onClick={handleRemoveFile}
+                    className="text-gray-400 hover:text-red-400 transition-colors"
+                    >
+                    <X size={18} />
+                </button>
+                </section>
                 )}
+            </section>
+            <Button caption="Upload Report" onClick={handleReportSubmit}/>
+            </>
+        )}
+
                 {role === "client" && status === MilestoneStatus.Completed && (
                     <section>
                         <h4 className="font-semibold text-sm mb-1">Freelancer progress report/review</h4>
@@ -138,7 +218,7 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, onUpload, modalIsOpen, 
                         <nav className="mt-2 text-sm">
                             {data.milestone.reportURL ? (
                                 <a
-                                    href={data.milestone.reportURL}
+                                    href={data.milestone.reportURL} 
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-blue-400 underline"
