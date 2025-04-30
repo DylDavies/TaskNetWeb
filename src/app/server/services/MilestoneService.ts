@@ -4,8 +4,6 @@ import { doc, setDoc, getDocs,addDoc,collection,updateDoc } from 'firebase/fires
 import { db } from '@/app/firebase';
 import MilestoneData from '@/app/interfaces/Milestones.interface';
 
-
-
   // Get all milestones for a specific job
 async function getMilestones(jobID: string): Promise<MilestoneData[]> {
     try {
@@ -65,7 +63,22 @@ async function getMilestones(jobID: string): Promise<MilestoneData[]> {
       throw error;
     }
   }
+
+  //Freelancer can upload work for milestone that client can view
+  async function addReportURL( jobID:string ,milestoneID: string , reportURL :string){
+    try {
+      const milestoneDocRef = doc(db, "Jobs", jobID, "milestones", milestoneID);
+      await updateDoc(milestoneDocRef, {
+        reportURL:reportURL,
+      });
+  
+    } catch (error) {
+      console.error("Error adding milestone report url:", error);
+      throw error;
+    }
+  }
+
   
   
-  export { getMilestones, addMilestone, updateMilestoneStatus, setMilestone};
+  export { getMilestones, addMilestone, updateMilestoneStatus, setMilestone,addReportURL};
 
