@@ -38,7 +38,15 @@ const Chat = () => {
   // Fetch active conversation
   useEffect(() => {
     const fetchActiveConversation = async () => {
-      if (!user?.authUser?.uid) {
+      if (!user?.authUser?.uid || activeConversation) {
+        setLoading(false);
+        return;
+      }
+
+      // Timer to let chat link redirect you to the chat
+      await new Promise((resolve) => setTimeout(resolve, 100)); // wait 100ms
+
+      if (useChatStore.getState().activeConversation) {
         setLoading(false);
         return;
       }
@@ -56,10 +64,8 @@ const Chat = () => {
       }
     };
 
-    if (!activeConversation) {
-      fetchActiveConversation();
-    }
-  }, [user, setActiveConversation, activeConversation]);
+    fetchActiveConversation();
+  }, [user, activeConversation]);
 
   // Cleanup effect
   useEffect(() => {
@@ -156,19 +162,19 @@ const Chat = () => {
             <section className="pills">
               <button
                 className="pill feedback"
-                onClick={() => console.log("Feedback selected")}
+                onClick={() => alert("Feedback selected")}
               >
                 Feedback
               </button>
               <button
                 className="pill concern"
-                onClick={() => console.log("Concern selected")}
+                onClick={() => alert("concern selected")}
               >
                 Concern
               </button>
               <button
                 className="pill standard"
-                onClick={() => console.log("Standard selected")}
+                onClick={() => alert("standard selected")}
               >
                 Standard
               </button>

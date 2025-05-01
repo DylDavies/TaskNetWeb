@@ -8,7 +8,7 @@ const UserInfo = () => {
   const { user } = useContext(AuthContext) as AuthContextType;
 
   if (!user || !user.userData) {
-    return null; // or <LoadingSpinner /> or a placeholder
+    return null; // put a loader here
   }
 
   const userType = user.userData.type;

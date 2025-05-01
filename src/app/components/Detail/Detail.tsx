@@ -2,14 +2,10 @@ import Button from "../button/Button";
 import "./Detail.css";
 import { useRouter } from "next/navigation";
 import AuthService from "@/app/services/AuthService";
-//import { useContext} from "react";
-// import { AuthContext, AuthContextType } from "@/app/AuthContext";
 import { useChatStore } from "@/app/stores/chatStore";
 import { formatDateAsDate } from "@/app/server/formatters/FormatDates";
 
 const Detail = () => {
-  //const { user } = useContext(AuthContext) as AuthContextType;
-
   const router = useRouter();
 
   const { activeConversation } = useChatStore();
