@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   PayPalButtons,
   PayPalButtonsComponentProps,
@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 type Props = {
   amount: string;        // e.g. "250.00"
   milestoneId: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSuccess: (details: any) => void;
 };
 
@@ -19,7 +20,7 @@ export default function PayPalCheckout({
 
   const buttonProps: PayPalButtonsComponentProps = {
     style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay' },
-    createOrder: async (_data, actions) => {
+    createOrder: async () => {
       // 1) call our API to create PayPal order
       const res = await fetch('/api/paypal/create-order', {
         method: 'POST',

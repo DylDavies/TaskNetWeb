@@ -7,6 +7,7 @@ import PayPalCheckout from './components/PayPalCheckout/PayPalCheckout';
 interface PayPalWrapperProps {
   amount: string;
   milestoneId: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSuccess: (details: any) => void;
 }
 

@@ -7,7 +7,8 @@ export async function POST(req: NextRequest) {
   const request = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderID);
   request.prefer('return=representation');
   // Cast through any to skip the TypeScript body requirement:
-  ;(request as any).requestBody({});
+  // @ts-expect-error request body should be allowed to be empty
+  request.requestBody({});
   const capture = await paypalClient().execute(request);
   return NextResponse.json({ capture: capture.result });
 }

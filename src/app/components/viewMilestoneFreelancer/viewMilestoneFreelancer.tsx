@@ -73,6 +73,7 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, onUpload, modalIsOpen, 
         return MilestoneStatus[value] || '...';
       }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function handleSuccessfulPayment(details: any) {
         console.log(details);
         if (details.status == "COMPLETED") {
