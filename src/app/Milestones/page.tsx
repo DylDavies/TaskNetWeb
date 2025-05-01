@@ -101,7 +101,7 @@ export default function Page() {
   }
   
   // Calculate progress
-  const completedCount = milestones.filter(m => m.status === 3).length;
+  const completedCount = milestones.filter(m => m.status === 3 || m.status === 2).length;
   const progress = milestones.length > 0 ? Math.round((completedCount / milestones.length) * 100) : 0;
 
   return (
