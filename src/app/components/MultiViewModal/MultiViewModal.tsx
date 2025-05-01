@@ -1,9 +1,13 @@
-import {useState, useEffect} from "react";
+import {useState, useEffect, useContext} from "react";
 import Modal from "react-modal";
 import ViewJobModal from "../ViewJobModal/ViewJobModal";
 import JobForm from "../JobFormModal/JobFormModal";
 import ActiveJob from "@/app/interfaces/ActiveJob.interface";
 import { formatDateAsString } from "@/app/server/formatters/FormatDates";
+import { hasApplied, makeApplicationID } from "@/app/server/services/ApplicationService";
+import { AuthContext, AuthContextType } from "@/app/AuthContext";
+import toast from "react-hot-toast";
+import { rejectApplicant } from "@/app/server/services/ApplicationDatabaseServices";
 
 type Props = {
     job : ActiveJob; 
@@ -16,12 +20,20 @@ const MultiViewModal: React.FC<Props> = ({job, modalIsOpen, onClose}) => {
     const [formData, setFormData] = useState<JobFormData>();
     const [viewData, setViewData] = useState<JobViewData>();
 
+    const [applied, setApplied] = useState(false);
+
+    const { user } = useContext(AuthContext) as AuthContextType;
+
     useEffect(() => {
       if(modalIsOpen){
         setFormData({company: job.jobData.clientUId, jobTitle: job.jobData.title, jobId: job.jobId});
         setViewData({title: job.jobData.title, company: job.jobData.title, description: job.jobData.description, minBudget: job.jobData.budgetMin, maxBudget: job.jobData.budgetMax, deadline: formatDateAsString(job.jobData.deadline), skills: Object.values(job.jobData.skills).flat()});
       }
-    }, [modalIsOpen, job]); 
+
+      (async () => {
+        setApplied(await hasApplied(user?.authUser.uid || "", job.jobId));
+      })();
+    }, [modalIsOpen, job, user]); 
 
     type JobFormData = {
         company: string;
@@ -45,7 +57,8 @@ const MultiViewModal: React.FC<Props> = ({job, modalIsOpen, onClose}) => {
             <ViewJobModal
             job = {viewData}
             onApply={openApplyModal}
-            onClose={onClose}/>
+            onClose={onClose}
+            applied={applied}/>
         );}
     };
 
@@ -58,7 +71,11 @@ const MultiViewModal: React.FC<Props> = ({job, modalIsOpen, onClose}) => {
         );}
     };
 
-    const openApplyModal = () =>{
+    const openApplyModal = async () => {
+        if (applied) {
+            rejectApplicant(makeApplicationID(job.jobId, user?.authUser.uid || ""));
+        }
+
         setView("viewB");
     }
 
