@@ -7,7 +7,11 @@ import "./userInfo.css";
 const UserInfo = () => {
   const { user } = useContext(AuthContext) as AuthContextType;
 
-  const userType = user!.userData!.type;
+  if (!user || !user.userData) {
+    return null; // or <LoadingSpinner /> or a placeholder
+  }
+
+  const userType = user.userData.type;
   const redirectPath =
     userType === UserType.Freelancer
       ? "/freelancer"
@@ -25,9 +29,9 @@ const UserInfo = () => {
           Back
         </a>
         <section className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-semibold text-sm sm:text-base">
-          {user?.userData.username?.charAt(0)}
+          {user.userData.username?.charAt(0)}
         </section>
-        <h2>{user?.userData.username}</h2>
+        <h2>{user.userData.username}</h2>
       </section>
     </section>
   );

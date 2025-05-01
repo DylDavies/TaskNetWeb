@@ -2,8 +2,7 @@ import UserType from "../enums/UserType.enum";
 import ActiveMessage from "./ActiveMessage.interface";
 import JobWithUser from "./JobWithOtherUser.interface";
 import MessageData from "./MessageData.interface";
-import ChatPreview from "./ChatPreview.interface";
-import { Unsubscribe } from "firebase/firestore"; 
+import { Timestamp, Unsubscribe } from "firebase/firestore"; 
 import JobData from "./JobData.interface";
 
 interface ChatStore {
@@ -22,8 +21,15 @@ interface ChatStore {
     setActiveConversation: (jobWithUser: JobWithUser | null, currentUserUId: string) => void;
     clearMessages: () => void;
 
-    chatPreviews: Record<string, ChatPreview>; // JobID is the key for string
-    setChatPreview: (jobId: string, message: MessageData, currentUserUId: string) => void;
+    chatPreviews: {
+        [jobId: string]: {
+          latestMessage: string;
+          latestTime: Timestamp; 
+          senderUId: string;
+          unreadCount: number;
+        };
+      };
+      setChatPreview: (jobId: string, message: MessageData, currentUserUId: string, unreadCountOverride?: number) => void;
     clearUnreadCount: (jobId: string) => void;
     setupGlobalMessageListener: (uid: string) => void; // listen for new messages in background
 }
