@@ -19,6 +19,7 @@ import MilestonesTable from "../components/MilestonesTable.tsx/MilestonesTable";
 import CreateMilestone from "../components/CreateMilestone/CreateMilestone";
 import MilestoneData from "../interfaces/Milestones.interface";
 import ViewMilestones from "../components/viewMilestoneFreelancer/viewMilestoneFreelancer";
+import MilestoneProgressBar from "../components/MilestoneProgressBar/MilestoneProgressBar";
 
 const linksClient = [
   { name: "back", href: "/client" }];
@@ -39,6 +40,7 @@ export default function Page() {
   const [selectedMilestone, setSelectedMilestone] = useState<MilestoneData | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(false);
+  const [milestones, setMilestones] = useState<MilestoneData[]>([]);
 
   const refetchMilestones = () => {
     setRefreshFlag(prev => !prev);
@@ -94,6 +96,10 @@ export default function Page() {
     setModalOpen(true);
     setSelectedMilestone(milestone);
   }
+  
+  // Calculate progress
+  const completedCount = milestones.filter(m => m.status === 2).length;
+  const progress = milestones.length > 0 ? Math.round((completedCount / milestones.length) * 100) : 0;
 
   return (
     <>
@@ -117,6 +123,12 @@ export default function Page() {
                     Milestones for <strong className="">{jobTitle || "..."}</strong>
                 </h1>
               </section>
+              <section className="mt-4 w-full flex flex-col items-center ">
+                  <p className="text-gray-300 mb-2 max-w-4xl flex justify-center ">
+                  Progress: {progress}% ({completedCount}/{milestones.length} milestones)
+                  </p>
+                    <MilestoneProgressBar progress={progress} />
+                </section>
               <section>
                 <h2 className="text-xl font-semibold text-gray-300">
                     {user?.userData.type === UserType.Client
@@ -134,8 +146,8 @@ export default function Page() {
             </section>
                
 
-              <section className="w-full max-w-8xl mt-36">
-                <MilestonesTable onMilestoneClick={handleMilestoneClick} refresh={refreshFlag}/>
+              <section className="w-full max-w-6xl mt-36">
+                <MilestonesTable onMilestoneClick={handleMilestoneClick} refresh={refreshFlag} milestones={milestones} setMilestones={setMilestones} />
               </section>
               {selectedMilestone && modalOpen && jobID && (
                 <ViewMilestones

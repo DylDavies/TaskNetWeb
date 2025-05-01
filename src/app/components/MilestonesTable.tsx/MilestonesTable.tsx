@@ -11,14 +11,15 @@ interface Props {
   
   onMilestoneClick?: (milestone: MilestoneData) => void;
   refresh: boolean;
+  milestones: MilestoneData[];
+  setMilestones: React.Dispatch<React.SetStateAction<MilestoneData[]>>;
+  
 }
 
-const MilestonesTable = ({ onMilestoneClick, refresh}: Props) => {
+const MilestonesTable = ({ onMilestoneClick, refresh, milestones,setMilestones}: Props) => {
   //const router = useRouter();
 
   const { jobID } = useContext(JobContext) as JobContextType;
-
-  const [milestones, setMilestones] = useState<MilestoneData[]>([]);
 
   useEffect(() => {
     async function fetchMilestones() {
@@ -34,12 +35,12 @@ const MilestonesTable = ({ onMilestoneClick, refresh}: Props) => {
     }
   
     fetchMilestones();
-  }, [jobID, refresh]);
+  }, [jobID, refresh,setMilestones]);
 
   function MilestoneStatusToString(value: MilestoneStatus| undefined): string {
     if (value === undefined) return 'Unknown';
     return MilestoneStatus[value] || '...';
-    }
+  }
     
   return (
     <>
