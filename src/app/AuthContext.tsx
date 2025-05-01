@@ -4,7 +4,7 @@ import { createContext, FC, ReactNode, useEffect, useState } from "react";
 import ActiveUser from "./interfaces/ActiveUser.interface";
 import { getAuth, onAuthStateChanged, Unsubscribe } from "firebase/auth";
 import { app, db } from "./firebase";
-import { getUser } from "./server/services/DatabaseService";
+import { getUser, setAvatar } from "./server/services/DatabaseService";
 import { doc, onSnapshot } from "firebase/firestore";
 import UserData from "./interfaces/UserData.interface";
 import { usePathname, useRouter } from "next/navigation";
@@ -51,6 +51,10 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         if (!dbUser) {
           setUser(null);
           return;
+        }
+
+        if (!dbUser.avatar && currentUser.photoURL) {
+          setAvatar(currentUser.uid, currentUser.photoURL);
         }
 
         setUser({ authUser: currentUser, userData: dbUser });

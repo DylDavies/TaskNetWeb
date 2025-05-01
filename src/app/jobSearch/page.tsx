@@ -10,7 +10,7 @@ import MultiSelect from "../components/MultiSelectBar/MultiSelectBar";
 import { getAllSkills } from "../server/services/SkillsService";
 import JobCard from "../components/JobOverview/JobOverview";
 import { getAllJobs } from "../server/services/JobDatabaseService";
-import { formatDateAsString } from "../server/formatters/FormatDates";
+import { formatDateAsDate, formatDateAsString } from "../server/formatters/FormatDates";
 import { formatBudget } from "../server/formatters/Budget";
 import ActiveJob from "../interfaces/ActiveJob.interface";
 import SearchBar from "../components/searchbar/SearchBar";
@@ -38,6 +38,9 @@ export default function Page() {
   const [clientUsernames, setClientUsernames] = useState<
     Record<string, string>
   >({});
+  const [clientAvatars, setClientAvatars] = useState<
+  Record<string, string | undefined>
+>({});
 
   //signs the user out of google
   function signoutClick() {
@@ -68,6 +71,7 @@ export default function Page() {
   useEffect(() => {
     const fetchUsernames = async () => {
       const newUsernames: Record<string, string> = {};
+      const newAvatars: Record<string, string | undefined> = {};
       const uniqueClientUIds = Array.from(
         new Set(jobCards.map((job) => job.jobData.clientUId))
       );
@@ -77,15 +81,21 @@ export default function Page() {
           try {
             const userData = await getUser(uid);
             newUsernames[uid] = userData?.username || "Unknown";
+            newAvatars[uid] = userData?.avatar || undefined;
           } catch (error) {
-            console.error(`Failed to fetch username for UID ${uid}:`, error);
+            console.error(`Failed to fetch user data for UID ${uid}:`, error);
             newUsernames[uid] = "Unknown";
+            newAvatars[uid] = undefined;
           }
         }
       }
 
       if (Object.keys(newUsernames).length > 0) {
         setClientUsernames((prev) => ({ ...prev, ...newUsernames }));
+      }
+
+      if (Object.keys(newAvatars).length > 0) {
+        setClientAvatars((prev) => ({ ...prev, ...newAvatars }));
       }
     };
 
@@ -122,7 +132,8 @@ export default function Page() {
         const activeJobs = await getAllJobs();
   
         const filtered = activeJobs.filter((job) => {
-          if (job.jobData.status !== JobStatus.Posted) return;
+          if (job.jobData.status !== JobStatus.Posted) return false;
+          if (formatDateAsDate(job.jobData.deadline) < new Date()) return false;
           const flattenedSkills = Object.values(job.jobData.skills).flat(); // Get all skills from all skill areas
           
           const jobTitle = job.jobData.title.toLowerCase();
@@ -205,6 +216,7 @@ export default function Page() {
                 deadline={formatDateAsString(job.jobData.deadline)}
                 skills={Object.values(job.jobData.skills).flat()}
                 onClick={() => handleCardClick(job)}
+                avatar={clientAvatars[job.jobData.clientUId] || undefined}
               />
             ))}
             {openModal && data && (
