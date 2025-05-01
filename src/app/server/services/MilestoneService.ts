@@ -62,6 +62,7 @@ async function getMilestones(jobID: string): Promise<MilestoneData[]> {
       throw error;
     }
   }
+
   
   export { getMilestones, addMilestone, updateMilestoneStatus, setMilestone };
 

@@ -1,0 +1,53 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import AdminTable from "../AdminTable/AdminTable";
+import SearchBar from "../searchbar/SearchBar";
+import { getPendingUsers } from "@/app/server/services/DatabaseService";
+
+interface User {
+  uid: string;
+  username: string;
+  status: number;
+  type: number;
+  date: number;
+}
+
+
+
+  export default function DashboardContent() {
+
+    const [pendingUsers, setPendingUsers] = useState<User[]>([]);
+    const [SearchQuery, setSearchQuery] = useState<string>("");
+
+  // To update the admin table after the Admin approves or denies user
+    useEffect(() => {
+    async function fetchPendingUsers() {
+      const pendingUsers = await getPendingUsers();
+      //console.log("Pending users: ", pendingUsers);
+      setPendingUsers(pendingUsers);
+    }
+
+    fetchPendingUsers();
+  }, []);
+
+    return (
+      <section className="flex flex-col items-center space-y-4">
+        {/* SearchBar */}
+        <section className="w-full max-w-4xl mt-10 mb-6">
+          <section className="w-full h-14">
+            <SearchBar
+              value={SearchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search users..."
+              className="w-full h-14 searchbar"
+            />
+          </section>
+        </section>
+  
+        {/* AdminTable */}
+        <section className="w-full max-w-8xl mt-16">
+          <AdminTable data={pendingUsers} />
+        </section>
+      </section>
+    );
+  }
