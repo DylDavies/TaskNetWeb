@@ -208,7 +208,7 @@ const JobForm: React.FC<Props> = ({data, onClose}) => {
                       onClick={togglePdfPreview}
                     >
                       <FileText className="text-blue-400" />
-                      <span className="text-sm text-gray-200">{fileName}</span>
+                      <section className="text-sm text-gray-200 inline">{fileName}</section>
                     </section>
                     <button 
                       onClick={handleRemoveFile}

@@ -5,8 +5,6 @@ import { db } from '@/app/firebase';
 import MilestoneData from '@/app/interfaces/Milestones.interface';
 import PaymentStatus from '@/app/enums/PaymentStatus.enum';
 
-
-
   // Get all milestones for a specific job
 async function getMilestones(jobID: string): Promise<MilestoneData[]> {
     try {
@@ -67,6 +65,22 @@ async function getMilestones(jobID: string): Promise<MilestoneData[]> {
     }
   }
 
+  //Freelancer can upload work for milestone that client can view
+  async function addReportURL( jobID:string ,milestoneID: string , reportURL :string){
+    try {
+      const milestoneDocRef = doc(db, "Jobs", jobID, "milestones", milestoneID);
+      await updateDoc(milestoneDocRef, {
+        reportURL:reportURL,
+      });
+  
+    } catch (error) {
+      console.error("Error adding milestone report url:", error);
+      throw error;
+    }
+  }
+
+  
+
   async function updateMilestonePaymentStatus(jobID: string, milestoneID: string, status: PaymentStatus) {
     try {
       const milestoneDocRef = doc(db, "Jobs", jobID, "milestones", milestoneID);
@@ -80,5 +94,5 @@ async function getMilestones(jobID: string): Promise<MilestoneData[]> {
     }
   }
   
-  export { getMilestones, addMilestone, updateMilestoneStatus, setMilestone, updateMilestonePaymentStatus };
+  export { getMilestones, addMilestone, updateMilestoneStatus, setMilestone, updateMilestonePaymentStatus ,addReportURL};
 
