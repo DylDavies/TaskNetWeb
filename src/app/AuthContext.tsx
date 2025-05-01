@@ -53,7 +53,7 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
           return;
         }
 
-        if (!dbUser.avatar && currentUser.photoURL) {
+        if ((!dbUser.avatar && currentUser.photoURL) || (dbUser.avatar !== currentUser.photoURL)) {
           setAvatar(currentUser.uid, currentUser.photoURL);
         }
 
