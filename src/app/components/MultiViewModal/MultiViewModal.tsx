@@ -6,7 +6,6 @@ import ActiveJob from "@/app/interfaces/ActiveJob.interface";
 import { formatDateAsString } from "@/app/server/formatters/FormatDates";
 import { hasApplied, makeApplicationID } from "@/app/server/services/ApplicationService";
 import { AuthContext, AuthContextType } from "@/app/AuthContext";
-import toast from "react-hot-toast";
 import { rejectApplicant } from "@/app/server/services/ApplicationDatabaseServices";
 
 type Props = {
