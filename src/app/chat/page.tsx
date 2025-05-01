@@ -4,28 +4,24 @@ import "./chat.css";
 import Detail from "../components/Detail/Detail";
 import Chat from "../components/Chat/Chat";
 import UserList from "../components/UserList/UserList";
-
-//constant for links to other pages
-// const links = [
-//   { name: "Home", href: "/" },
-//   { name: "back", href: "/freelancer" },
-// ];
+import { useChatStore } from "../stores/chatStore";
+import Loader from "../components/Loader/Loader";
 
 export default function Page() {
   //const router = useRouter();
+  const { isLoadingJobs, isLoadingMessages } = useChatStore();
+  const loading = isLoadingJobs || isLoadingMessages;
 
-  /*
-          <section className="w-64">
-          <SideBar items={links} />
-        </section>
-  */
   return (
-    <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans body outer-background">
-      <section className="container">
-        <UserList />
-        <Chat />
-        <Detail />
+    <>
+      <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans body outer-background">
+        <Loader loading={loading} />
+        <section className="container">
+          <UserList />
+          <Chat />
+          <Detail />
+        </section>
       </section>
-    </section>
+    </>
   );
 }

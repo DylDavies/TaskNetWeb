@@ -4,12 +4,11 @@ import "./ChatList.css";
 
 import { AuthContext, AuthContextType } from "@/app/AuthContext";
 import { useChatStore } from "@/app/stores/chatStore";
+import { truncateText } from "@/app/server/formatters/MessagePreview";
 
 const ChatList = () => {
   const [text, setText] = useState("");
-
   const { user } = useContext(AuthContext) as AuthContextType;
-  //console.log("ACTIVE USER UID: ", user?.authUser.uid); // sanity check
 
   const {
     jobsWithUsers,
@@ -22,31 +21,17 @@ const ChatList = () => {
   useEffect(() => {
     if (!user) return;
 
-    let unsubscribe = () => {};
-
     const setup = async () => {
       await fetchJobsWithUsers(user.authUser.uid, user.userData.type);
-      // message preview
-      useChatStore.getState().setupGlobalMessageListener(user.authUser.uid);
     };
 
     setup();
-
-    return () => {
-      unsubscribe();
-    };
   }, [user, fetchJobsWithUsers]);
 
   // Change this
   if (isLoadingJobs) {
     return <section>Loading Chats...</section>;
   }
-
-  console.log("chatPreviews:", chatPreviews);
-  console.log(
-    "jobsWithUsers:",
-    jobsWithUsers.map((j) => j.job.jobId)
-  );
 
   return (
     <section className="chatList scrollable">
@@ -75,25 +60,20 @@ const ChatList = () => {
             key={index}
             onClick={() => setActiveConversation(item, user!.authUser.uid)}
           >
-            {/*<Image
-              src="/avatar.png" 
-              alt="User avatar"
-              width={50}
-              height={50}
-              className="avatar"
-            />*/}
             <section className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-semibold text-sm sm:text-base">
               {item.userData?.username.charAt(0)}
             </section>
             <section className="texts">
               <em>{item.userData?.username}</em>
-              {/* Display the latest message from the preview */}
+              {/* Display the truncated latest message from the preview */}
               {preview.senderUId === user?.authUser.uid ? (
-                <>
-                  <p>{"You: " + preview.latestMessage}</p>
-                </>
+                <p title={preview.latestMessage}>
+                  {`You: ${truncateText(preview.latestMessage)}`}
+                </p>
               ) : (
-                <p>{preview.latestMessage}</p>
+                <p title={preview.latestMessage}>
+                  {truncateText(preview.latestMessage)}
+                </p>
               )}
 
               {/* Show unread pill if count > 0 */}

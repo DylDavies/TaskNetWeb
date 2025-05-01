@@ -42,7 +42,6 @@ const Detail = () => {
           <section className="option">
             <section className="title">
               <em>Job Information</em>
-              <img src="./arrowUp.png" alt="" />
             </section>
             <section className="items">
               <p>{"Title: " + activeConversation.job.jobData.title}</p>
@@ -61,7 +60,6 @@ const Detail = () => {
         <section className="option">
           <section className="title">
             <em>Feedback</em>
-            <img src="./arrowUp.png" alt="" />
           </section>
         </section>
         <Button caption="Block user" />

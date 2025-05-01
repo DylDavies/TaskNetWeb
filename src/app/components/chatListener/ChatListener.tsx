@@ -8,11 +8,17 @@ export default function ChatListenerInitializer() {
   const { user } = useContext(AuthContext) as AuthContextType;
 
   useEffect(() => {
-    console.log(user?.userData.username);
-    if (user?.authUser.uid) {
-      useChatStore.getState().setupGlobalMessageListener(user?.authUser.uid);
-    }
-  }, [user?.authUser.uid]);
+    if (!user) return;
+
+    const setup = async () => {
+      await useChatStore
+        .getState()
+        .fetchJobsWithUsers(user.authUser.uid, user.userData.type);
+
+      useChatStore.getState().setupGlobalMessageListener(user.authUser.uid); // global listener for latest messages
+    };
+    setup();
+  }, [user]);
 
   return null; // no UI returned, this is just to listen for messages sent on different pages
 }

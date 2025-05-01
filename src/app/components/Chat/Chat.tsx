@@ -13,7 +13,6 @@ import MessageType from "@/app/enums/MessageType.enum";
 import { usePathname } from "next/navigation";
 
 const Chat = () => {
-  // 1. All hooks declared unconditionally at the top
   const { user } = useContext(AuthContext) as AuthContextType;
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -26,6 +25,7 @@ const Chat = () => {
     messages,
     isLoadingMessages,
     setActiveConversation,
+    jobsWithUsers,
   } = useChatStore();
 
   // 2. All effects after state declarations
@@ -71,7 +71,6 @@ const Chat = () => {
     };
   }, [pathname, user, setActiveConversation]);
 
-  // 3. Early return only after all hooks
   if (loading || !user) {
     return <section>Loading chat...</section>;
   }
@@ -102,7 +101,6 @@ const Chat = () => {
     }
   }
 
-  // Component render
   return (
     <section className="chat">
       <section className="top">
@@ -195,8 +193,8 @@ const Chat = () => {
 
         <section className="emoji">
           <img
-            src="./emoji.png"
-            alt=""
+            src="/images/emoji.png"
+            alt="emoji"
             onClick={() => setOpen((prev) => !prev)}
           />
           <section className="picker">
