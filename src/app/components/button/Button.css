@@ -12,6 +12,8 @@ flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-w
    color: white;            
    border-radius: 20px;
    cursor: pointer;
+   flex-shrink: 0;
+   transition: none 
  }
 
  .btn-grad:hover {
@@ -20,3 +22,5 @@ flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-w
    color: #fff;
    text-decoration: none;
  }
+
+ 

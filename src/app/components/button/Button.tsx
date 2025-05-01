@@ -53,6 +53,7 @@ const Button = ({ caption, onClick, style, size = Sizes.Normal }: Props) => {
       onClick={onClick}
       className={`btn-grad rounded-full  ${sizeClass}`}
       style={style}
+      type="button"
     >
       {caption}
     </button>

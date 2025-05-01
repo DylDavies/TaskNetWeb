@@ -2,7 +2,7 @@
   import ChatStore from '../interfaces/ChatStore.interface'
   import JobWithUser from '../interfaces/JobWithOtherUser.interface';
   // import { getAllMessages } from '../server/services/MessageDatabaseServices';
-  import { collection, collectionGroup, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query, where, writeBatch } from 'firebase/firestore';
+  import { collection, getDocs, limit, onSnapshot, orderBy, query, writeBatch } from 'firebase/firestore';
   import { db } from '../firebase';
   import MessageData from '../interfaces/MessageData.interface';
   import UserType from '../enums/UserType.enum';
@@ -21,10 +21,10 @@ import MessageStatus from '../enums/MessageStatus.enum';
       unsubscribe: null, 
       globalUnsubscribe: null, 
       jobMap: {}, // { [jobId: string]: JobData }
+      listenerInitialized: false, // only listen once per session
 
 
       fetchJobsWithUsers: async (uid: string, userType: UserType) => {
-        console.log("📡 Fetching jobs for UID:", uid, "User Type:", userType); // Log here to verify it's being triggered
           set({ isLoadingJobs: true });
         
           try {
@@ -186,18 +186,19 @@ import MessageStatus from '../enums/MessageStatus.enum';
 
 
           setupGlobalMessageListener: (uid: string) => {
-            const { jobMap, globalUnsubscribe } = useChatStore.getState();
-            
-            // Clean up previous listeners
+            const state = useChatStore.getState();
+            const { jobMap, globalUnsubscribe, listenerInitialized } = state;
+          
+            if (listenerInitialized) {
+              return; // Don't set up again
+            }
+          
             if (globalUnsubscribe) {
               globalUnsubscribe();
             }
-        
           
-            // Create an object to store all unsubscribe functions
             const unsubscribeFunctions: { [jobId: string]: () => void } = {};
           
-            // Listen for the last updated message for a chat
             Object.keys(jobMap).forEach(jobId => {
               const messagesRef = collection(db, "Jobs", jobId, "messages");
               const q = query(messagesRef, orderBy("DateTimeSent", "desc"), limit(1));
@@ -205,33 +206,32 @@ import MessageStatus from '../enums/MessageStatus.enum';
               unsubscribeFunctions[jobId] = onSnapshot(q, (snapshot) => {
                 if (!snapshot.empty) {
                   const newMessage = snapshot.docs[0].data() as MessageData;
-                  console.log(`New message in job ${jobId}:`, newMessage);
-                  
-                  // Update chat preview
                   useChatStore.getState().setChatPreview(jobId, newMessage, uid);
-                  
-                  // Send notifications for messages received in other chats
+          
                   const isCurrentChat = useChatStore.getState().activeConversation?.job.jobId === jobId;
                   if (!isCurrentChat) {
                     const jobData = jobMap[jobId];
-                    const notificationRecipient = newMessage.senderUId === jobData.hiredUId ? jobData.clientUId : jobData.hiredUId;  
-
+                    const notificationRecipient =
+                      newMessage.senderUId === jobData.hiredUId ? jobData.clientUId : jobData.hiredUId;
+          
                     createNotification({
                       message: `New message for job "${jobData.title}": ${newMessage.message}`,
                       seen: false,
-                      uidFor: notificationRecipient
+                      uidFor: notificationRecipient,
                     });
                   }
                 }
               });
             });
           
-            // Store all unsubscribe functions in the store
-            set({ 
+            set({
               globalUnsubscribe: () => {
                 Object.values(unsubscribeFunctions).forEach(unsub => unsub());
-              }
+                set({ listenerInitialized: false });
+              },
+              listenerInitialized: true,
             });
           },
+          
               
   }));

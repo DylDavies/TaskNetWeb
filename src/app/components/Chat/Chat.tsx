@@ -25,7 +25,6 @@ const Chat = () => {
     messages,
     isLoadingMessages,
     setActiveConversation,
-    jobsWithUsers,
   } = useChatStore();
 
   // 2. All effects after state declarations

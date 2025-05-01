@@ -1,5 +1,4 @@
 import ActiveJob from "./ActiveJob.interface";
-import ActiveUser from "./ActiveUser.interface";
 import UserData from "./UserData.interface";
 
 // stores the Active JobData and the userData of the other user that is not the ActiveUser

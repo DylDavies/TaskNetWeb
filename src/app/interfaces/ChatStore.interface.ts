@@ -15,6 +15,7 @@ interface ChatStore {
     unsubscribe: Unsubscribe | null; 
     globalUnsubscribe: Unsubscribe | null;
     jobMap: { [jobId: string]: JobData };
+    listenerInitialized: boolean;  
 
   
     fetchJobsWithUsers: (uid: string, userType:UserType) => void;

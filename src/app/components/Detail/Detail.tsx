@@ -62,7 +62,6 @@ const Detail = () => {
             <em>Feedback</em>
           </section>
         </section>
-        <Button caption="Block user" />
         <Button caption="Logout" onClick={() => signoutClick()} />
       </section>
     </section>

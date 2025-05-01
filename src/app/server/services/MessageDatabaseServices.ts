@@ -39,12 +39,12 @@ async function sendMessage(jobID: string, message: Omit<MessageData, 'DateTimeSe
         DateTimeSent: serverTimestamp(), // Firebase will generate the timestamp
       });
   
-      console.log("Message sent successfully!");
     } catch (error) {
       console.error("Error sending message:", error);
     }
 }
 
+// Create a chat between 2 users 
 async function createChat(jobID: string, jobName: string){
   try{
     const messagesRef = collection(db, "Jobs", jobID, "messages");
@@ -56,12 +56,12 @@ async function createChat(jobID: string, jobName: string){
       message: `Chat created for ${jobName}! Ready to start chatting?`,
     };
 
+    // message sender is from system
     await addDoc(messagesRef, {
       ...systemMessage,
       DateTimeSent: serverTimestamp(),
     });
 
-    console.log("System message created to initialize chat.");
   }
   catch (error){
     console.error("Error creating chat:", error);
