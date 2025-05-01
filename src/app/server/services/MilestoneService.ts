@@ -3,6 +3,7 @@
 import { doc, setDoc, getDocs,addDoc,collection,updateDoc } from 'firebase/firestore';
 import { db } from '@/app/firebase';
 import MilestoneData from '@/app/interfaces/Milestones.interface';
+import PaymentStatus from '@/app/enums/PaymentStatus.enum';
 
 
 
@@ -65,7 +66,19 @@ async function getMilestones(jobID: string): Promise<MilestoneData[]> {
       throw error;
     }
   }
+
+  async function updateMilestonePaymentStatus(jobID: string, milestoneID: string, status: PaymentStatus) {
+    try {
+      const milestoneDocRef = doc(db, "Jobs", jobID, "milestones", milestoneID);
+      await updateDoc(milestoneDocRef, {
+        paymentStatus: status
+      })
   
+    } catch (error) {
+      console.error("Error setting milestone:", error);
+      throw error;
+    }
+  }
   
-  export { getMilestones, addMilestone, updateMilestoneStatus, setMilestone};
+  export { getMilestones, addMilestone, updateMilestoneStatus, setMilestone, updateMilestonePaymentStatus };
 

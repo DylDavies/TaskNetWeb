@@ -36,6 +36,7 @@ interface Props {
   onClick?: () => void;
   style?: React.CSSProperties;
   size?: Sizes;
+  disabled?: boolean
 }
 
 const sizeClasses = {
@@ -44,7 +45,7 @@ const sizeClasses = {
   [Sizes.Bigger]: "text-lg py-4 px-8",
 };
 
-const Button = ({ caption, onClick, style, size = Sizes.Normal }: Props) => {
+const Button = ({ caption, onClick, style, size = Sizes.Normal, disabled = false }: Props) => {
   const sizeClass = sizeClasses[size];
 
   return (
@@ -53,6 +54,7 @@ const Button = ({ caption, onClick, style, size = Sizes.Normal }: Props) => {
       onClick={onClick}
       className={`btn-grad rounded-full  ${sizeClass}`}
       style={style}
+      disabled={disabled}
     >
       {caption}
     </button>

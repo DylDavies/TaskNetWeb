@@ -6,6 +6,7 @@ import { JobContext, JobContextType } from "@/app/JobContext";
 import MilestoneData from "@/app/interfaces/Milestones.interface";
 import { getMilestones } from "@/app/server/services/MilestoneService";
 import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
+import PaymentStatus from "@/app/enums/PaymentStatus.enum";
 
 interface Props {
   
@@ -40,6 +41,11 @@ const MilestonesTable = ({ onMilestoneClick, refresh}: Props) => {
     if (value === undefined) return 'Unknown';
     return MilestoneStatus[value] || '...';
     }
+
+  function PaymentStatusToString(value: PaymentStatus | undefined): string {
+    if (value == undefined) return "Unpaid";
+    return PaymentStatus[value] || "...";
+  }
     
   return (
     <>
@@ -53,10 +59,11 @@ const MilestonesTable = ({ onMilestoneClick, refresh}: Props) => {
         <tr className="text-xs font-semibold tracking-wide text-left uppercase border-b border-gray-700 bg-gray-800 text-gray-400">
           <th className="px-4 py-3">Milestone</th>
           <th className="px-4 py-3">Status</th>
+          <th className="px-4 py-3">Payment Status</th>
         </tr>
       </thead>
       <tbody className="divide-y divide-gray-700 bg-gray-800">
-        {milestones.map((item, index) => (
+        {milestones.filter(v => v !== undefined && v !== null).map((item, index) => (
           <tr 
             key={index} 
             onClick={() => onMilestoneClick?.(item)}
@@ -72,7 +79,7 @@ const MilestonesTable = ({ onMilestoneClick, refresh}: Props) => {
                 </section>
                 <section>
                   <p className="font-semibold">{item.title}</p>
-                  <p className="font-semibold">Payment: R{item.payment}</p>
+                  <p className="font-semibold">Payment: ${item.payment}</p>
                   <p className="text-xs text-gray-400">Deadline:  {formatDateAsString(item.deadline)}
                   </p>
                 </section>
@@ -95,6 +102,20 @@ const MilestonesTable = ({ onMilestoneClick, refresh}: Props) => {
                     >
                     {MilestoneStatusToString(item.status)}
                 </strong>
+            </td>
+
+            <td className="px-4 py-3 text-xs space-x-2">
+              <strong
+                  className={`px-2 py-1 font-semibold leading-tight rounded-full text-white 
+                  ${item.paymentStatus == PaymentStatus.Unpaid || item.paymentStatus == undefined
+                      ? 'bg-red-500'
+                      : item.paymentStatus == PaymentStatus.Escrow
+                      ? 'bg-orange-600'
+                      : 'bg-green-600'
+                  }`}
+                  >
+                  {PaymentStatusToString(item.paymentStatus)}
+              </strong>
             </td>
           </tr>
         ))}

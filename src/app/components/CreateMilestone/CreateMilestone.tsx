@@ -82,39 +82,12 @@ const CreateMilestone = ({refetch}: Props) => {
     const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
         const inputValue = e.target.value;
         
-        // Basic check if input is empty
-        if (!inputValue) {
-            toast.error("Please select a date");
-            return;
-        }
-        
         // Parse the date
         const newDate = new Date(inputValue);
 
-
-        
         // Check if date is valid
         if (isNaN(newDate.getTime())) {
             toast.error("Invalid date format");
-            return;
-        }
-
-        const dateAsNumber = formatDateAsNumber(newDate);
-        
-        // Check against job deadline if available
-        if (jobDeadline && dateAsNumber >= jobDeadline) {
-            toast.error(`Milestone deadline must be before job deadline`);
-            return;
-        }
-        // Check against previous milestones (if any exist)
-        if (prevMilestoneDeadline && dateAsNumber <= prevMilestoneDeadline) {
-            toast.error(`Milestone deadline must be after existing milestones`);
-        return;
-    }
-
-        //  Check if deadline is in the future
-        if (newDate <= new Date()) {
-            toast.error("Please ensure the deadline is in the future");
             return;
         }
         
@@ -137,6 +110,12 @@ const CreateMilestone = ({refetch}: Props) => {
             return;
         }
 
+        // Basic check if input is empty
+        if (!deadline) {
+            toast.error("Please select a date");
+            return;
+        }
+
         let pay= 0 
         try {
             pay= parseInt(payment);
@@ -152,10 +131,22 @@ const CreateMilestone = ({refetch}: Props) => {
             console.error("Error parsing budgets:", error);
         }
 
-        const formattedDeadline = formatDateAsNumber(deadline);
+        const dateAsNumber = formatDateAsNumber(deadline);
+        
+        // Check against job deadline if available
+        if (jobDeadline && dateAsNumber >= jobDeadline) {
+            toast.error(`Milestone deadline must be before job deadline`);
+            return;
+        }
+        // Check against previous milestones (if any exist)
+        if (prevMilestoneDeadline && dateAsNumber <= prevMilestoneDeadline) {
+            toast.error(`Milestone deadline must be after existing milestones`);
+            return;
+        }
 
-        if (formattedDeadline <= formatDateAsNumber(new Date())) {
-            toast.error("Please ensure that the deadline is in the future");
+        //  Check if deadline is in the future
+        if (deadline <= new Date()) {
+            toast.error("Please ensure the deadline is in the future");
             return;
         }
 
@@ -164,7 +155,7 @@ const CreateMilestone = ({refetch}: Props) => {
         title,
         description,
         payment: pay,
-        deadline: formattedDeadline,
+        deadline: dateAsNumber,
         reportURL:"",
         status
     

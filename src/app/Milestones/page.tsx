@@ -39,16 +39,11 @@ export default function Page() {
   const [selectedMilestone, setSelectedMilestone] = useState<MilestoneData | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(false);
-
-  const refetchMilestones = () => {
-    setRefreshFlag(prev => !prev);
-  };
   
   function refetch() {
-    refetchMilestones();
+    setRefreshFlag(prev => !prev);
   }
 
-  
   //This function converts the usetype to a string to be displayed in the header
   function userTypeToString(value: UserType| undefined): string {
     if (value === undefined) return 'Unknown';
@@ -143,7 +138,7 @@ export default function Page() {
                 onClose={() => setSelectedMilestone(null)}
                 onUpload={() => {console.log("upload")}}
                 modalIsOpen={modalOpen}
-                refetchMilestones={refetchMilestones}>
+                refetch={refetch}>
                 </ViewMilestones>
               )}
             </section>
