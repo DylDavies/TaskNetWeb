@@ -12,7 +12,7 @@ import React, { useContext, useEffect, useState } from "react";
 import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
-import { getJob } from "../server/services/JobDatabaseService";
+import { getJob, updateJobStatus } from "../server/services/JobDatabaseService";
 import { JobContext, JobContextType } from "../JobContext";
 import UserType from "../enums/UserType.enum";
 import MilestonesTable from "../components/MilestonesTable.tsx/MilestonesTable";
@@ -21,6 +21,8 @@ import MilestoneData from "../interfaces/Milestones.interface";
 import ViewMilestones from "../components/viewMilestoneFreelancer/viewMilestoneFreelancer";
 import MilestoneProgressBar from "../components/MilestoneProgressBar/MilestoneProgressBar";
 import JobData from "../interfaces/JobData.interface";
+import JobStatus from "../enums/JobStatus.enum";
+import { createNotification } from "../server/services/NotificationService";
 
 const linksClient = [
   { name: "back", href: "/client" }];
@@ -43,6 +45,7 @@ export default function Page() {
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [milestones, setMilestones] = useState<MilestoneData[]>([]);
   const [job, setJob] = useState<JobData>();
+  const [hasNotifiedCompletion, setHasNotifiedCompletion] = useState(false);
 
   const refetchMilestones = () => {
     setRefreshFlag(prev => !prev);
@@ -77,6 +80,8 @@ export default function Page() {
   const [jobTitle, setJobTitle] = useState<string>("");
   const [clientUID, setClientUID] = useState<string>("")
 
+  
+
   //To set the job title of the page
   useEffect(() => {
     async function fetchJobTitle() {
@@ -103,6 +108,37 @@ export default function Page() {
   // Calculate progress
   const completedCount = milestones.filter(m => m.status === 3 || m.status === 2).length;
   const progress = milestones.length > 0 ? Math.round((completedCount / milestones.length) * 100) : 0;
+
+  useEffect(() => {
+    if (
+      progress === 100 &&
+      job &&
+      job.status !== JobStatus.Completed &&
+      jobID &&
+      clientUID &&
+      !hasNotifiedCompletion
+    ) {
+      const completeJob = async () => {
+        try {
+          await updateJobStatus(jobID, JobStatus.Completed);
+  
+          await createNotification({
+            message: `${job.title} - has been completed.`,
+            seen: false,
+            uidFor: clientUID
+          });
+  
+          setHasNotifiedCompletion(true);
+        } catch (error) {
+          console.error("Error completing job or sending notification:", error);
+        }
+      };
+  
+      completeJob();
+    }
+  }, [progress, job, jobID, clientUID, hasNotifiedCompletion]);
+
+  
 
   return (
     <>
