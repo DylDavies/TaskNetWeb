@@ -1,24 +1,31 @@
 "use client";
-import React, { useContext, useEffect, useState } from "react";
-import { formatDateAsString } from "@/app/server/formatters/FormatDates";
-//import { useRouter } from "next/navigation";
+import React, { useContext, useEffect } from "react";
+import formatDateAsNumber, { formatDateAsString } from "@/app/server/formatters/FormatDates";
 import { JobContext, JobContextType } from "@/app/JobContext";
 import MilestoneData from "@/app/interfaces/Milestones.interface";
 import { getMilestones } from "@/app/server/services/MilestoneService";
 import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
+import "./MilestonesTable.css";
+import { createNotification } from "@/app/server/services/NotificationService";
+
+type JobData = {
+  hiredUId:string;
+};
 
 interface Props {
-  
+  data : JobData,
   onMilestoneClick?: (milestone: MilestoneData) => void;
   refresh: boolean;
+  milestones: MilestoneData[];
+  setMilestones: React.Dispatch<React.SetStateAction<MilestoneData[]>>;
+  
 }
 
-const MilestonesTable = ({ onMilestoneClick, refresh}: Props) => {
-  //const router = useRouter();
+const MilestonesTable = ({data, onMilestoneClick, refresh, milestones,setMilestones}: Props) => {
 
   const { jobID } = useContext(JobContext) as JobContextType;
-
-  const [milestones, setMilestones] = useState<MilestoneData[]>([]);
+  const currentDate = formatDateAsNumber(new Date());
+  const hiredID = data.hiredUId
 
   useEffect(() => {
     async function fetchMilestones() {
@@ -28,25 +35,40 @@ const MilestonesTable = ({ onMilestoneClick, refresh}: Props) => {
         // Sort milestones by deadline (closest first)
         const sortedData = [...data].sort((a, b) => a.deadline - b.deadline);
         setMilestones(sortedData);
+
+        for (const milestone of sortedData) {
+        const milestoneDate = milestone.deadline;
+        const isDeadlinePassed = milestoneDate < currentDate;
+        const isIncomplete = milestone.status !== MilestoneStatus.Completed;
+
+        if (isDeadlinePassed && isIncomplete && hiredID) {
+          await createNotification({
+            message: `Deadline passed for milestone "${milestone.title}"`,
+            seen: false,
+            uidFor: hiredID,
+          });
+        }
+      }
       } catch (error) {
         console.error("Error fetching milestones:", error);
       }
     }
   
     fetchMilestones();
-  }, [jobID, refresh]);
+  }, [jobID, refresh,setMilestones]);
 
   function MilestoneStatusToString(value: MilestoneStatus| undefined): string {
     if (value === undefined) return 'Unknown';
     return MilestoneStatus[value] || '...';
-    }
+  }
+
     
   return (
     <>
       <h4 className="mb-4 text-lg font-semibold text-gray-300">
   
 </h4>
-<section className="w-full mb-8 overflow-hidden rounded-lg shadow-xs box">
+<section className="w-full mb-8 overflow-hidden rounded-lg shadow-xs box hover-effect">
   <section className="w-full overflow-x-auto">
     <table className="w-full whitespace-no-wrap">
       <thead>
@@ -73,14 +95,17 @@ const MilestonesTable = ({ onMilestoneClick, refresh}: Props) => {
                 <section>
                   <p className="font-semibold">{item.title}</p>
                   <p className="font-semibold">Payment: R{item.payment}</p>
-                  <p className="text-xs text-gray-400">Deadline:  {formatDateAsString(item.deadline)}
+                  <p className="text-xs text-gray-400">
+                    Deadline: {formatDateAsString(item.deadline)}
+                    {item.deadline < currentDate && item.status !== MilestoneStatus.Completed && (
+                    <section className="text-red-500 font-semibold"> – Deadline has passed</section>
+                    )}
                   </p>
                 </section>
               </section>
             </td>
 
             
-            {/* Any buttons needed */}
             <td className="px-4 py-3 text-xs space-x-2">
                 <strong
                     className={`px-2 py-1 font-semibold leading-tight rounded-full text-white 
