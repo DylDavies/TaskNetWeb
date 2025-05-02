@@ -28,7 +28,7 @@ const Chat = () => {
     setActiveConversation,
   } = useChatStore();
 
-  // Auto-scroll effect
+  // Auto scroll to latest message
   useEffect(() => {
     endRef.current?.scrollIntoView({
       behavior: "smooth",
@@ -43,7 +43,7 @@ const Chat = () => {
         return;
       }
 
-      // Timer to let chat link redirect you to the chat
+      // Timer to let chat link redirect you to the chat (increase if needed)
       await new Promise((resolve) => setTimeout(resolve, 100)); // wait 100ms
 
       if (useChatStore.getState().activeConversation) {
@@ -52,6 +52,7 @@ const Chat = () => {
       }
 
       try {
+        // fetch jobs active user is contracted to
         const jobs = await getContracted(user.authUser.uid, user.userData.type);
         if (jobs?.[0]) {
           const userData = await getUser(jobs[0].jobData.hiredUId);

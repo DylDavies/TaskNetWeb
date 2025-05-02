@@ -16,10 +16,12 @@ const Detail = () => {
     router.push("/");
   }
 
+  // get all feedback messages
   const feedbackMessages = messages.filter(
     (m) => m.messageData.type === MessageType.Feedback
   );
 
+  // scroll to a specific feedback message
   const scrollToMessage = (messageId: string) => {
     const el = document.getElementById(`message-${messageId}`);
     if (el) {
@@ -47,7 +49,7 @@ const Detail = () => {
         </section>
       </section>
       <section className="info">
-        {/* Option 1 */}
+        {/* Job Info */}
         {activeConversation && (
           <section className="option">
             <section className="title">
@@ -66,7 +68,6 @@ const Detail = () => {
           </section>
         )}
 
-        {/* Option 2 */}
         {/* Feedback List */}
         <section className="option">
           <section className="title">

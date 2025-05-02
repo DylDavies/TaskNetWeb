@@ -1,5 +1,4 @@
 "use client";
-//import { useRouter } from "next/navigation";
 import "./chat.css";
 import Detail from "../components/Detail/Detail";
 import Chat from "../components/Chat/Chat";
@@ -8,7 +7,6 @@ import { useChatStore } from "../stores/chatStore";
 import Loader from "../components/Loader/Loader";
 
 export default function Page() {
-  //const router = useRouter();
   const { isLoadingJobs, isLoadingMessages } = useChatStore();
   const loading = isLoadingJobs || isLoadingMessages;
 

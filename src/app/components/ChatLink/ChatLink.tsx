@@ -2,15 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useChatStore } from "@/app/stores/chatStore";
-import UserData from "@/app/interfaces/UserData.interface";
-import ActiveJob from "@/app/interfaces/ActiveJob.interface";
-
-interface ChatLinkProps {
-  job: ActiveJob;
-  userData: UserData;
-  currentUserId: string;
-  children: React.ReactNode;
-}
+import ChatLinkProps from "../../interfaces/ChatLinkProps.interface";
 
 export default function ChatLink({
   job,

@@ -8,9 +8,10 @@ const UserInfo = () => {
   const { user } = useContext(AuthContext) as AuthContextType;
 
   if (!user || !user.userData) {
-    return null; // put a loader here
+    return null;
   }
 
+  // Redirect user based on userType
   const userType = user.userData.type;
   const redirectPath =
     userType === UserType.Freelancer
