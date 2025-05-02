@@ -18,6 +18,7 @@ const Chat = () => {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
+  const [selectedType, setSelectedType] = useState(MessageType.Standard); // standard should be default
   const endRef = useRef<HTMLElement>(null);
 
   const {
@@ -27,7 +28,6 @@ const Chat = () => {
     setActiveConversation,
   } = useChatStore();
 
-  // 2. All effects after state declarations
   // Auto-scroll effect
   useEffect(() => {
     endRef.current?.scrollIntoView({
@@ -93,10 +93,12 @@ const Chat = () => {
   async function handleSendMessage() {
     if (!text.trim() || !activeConversation || !user?.authUser?.uid) return;
 
+    setSelectedType(MessageType.Standard); // Reset pill to Standard
+
     try {
       await sendMessage(activeConversation.job.jobId, {
         senderUId: user.authUser.uid,
-        type: MessageType.Standard,
+        type: selectedType,
         status: MessageStatus.Delivered,
         message: text.trim(),
       });
@@ -143,10 +145,22 @@ const Chat = () => {
               <section
                 className={`message ${isOwnMessage ? "own" : ""}`}
                 key={index}
+                id={`message-${message.MessageID}`}
               >
                 <section className="text">
                   <p>{message.messageData.message}</p>
-                  <em>{formattedDate}</em>
+                  <section className="meta">
+                    <em>{formattedDate}</em>
+                    {message.messageData.type === MessageType.Feedback && (
+                      <span
+                        className="dot feedback-dot"
+                        title="Feedback"
+                      ></span>
+                    )}
+                    {message.messageData.type === MessageType.Concern && (
+                      <span className="dot concern-dot" title="Concern"></span>
+                    )}
+                  </section>
                 </section>
               </section>
             );
@@ -161,20 +175,26 @@ const Chat = () => {
             <h4>Message Type</h4>
             <section className="pills">
               <button
-                className="pill feedback"
-                onClick={() => alert("Feedback selected")}
+                className={`pill feedback ${
+                  selectedType === MessageType.Feedback ? "active" : ""
+                }`}
+                onClick={() => setSelectedType(MessageType.Feedback)}
               >
                 Feedback
               </button>
               <button
-                className="pill concern"
-                onClick={() => alert("concern selected")}
+                className={`pill concern ${
+                  selectedType === MessageType.Concern ? "active" : ""
+                }`}
+                onClick={() => setSelectedType(MessageType.Concern)}
               >
                 Concern
               </button>
               <button
-                className="pill standard"
-                onClick={() => alert("standard selected")}
+                className={`pill standard ${
+                  selectedType === MessageType.Standard ? "active" : ""
+                }`}
+                onClick={() => setSelectedType(MessageType.Standard)}
               >
                 Standard
               </button>

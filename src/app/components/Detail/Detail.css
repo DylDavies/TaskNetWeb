@@ -95,5 +95,52 @@
 
             }
         }
+
+        .feedback-list {
+            max-height: calc(5 * 38px); /* 5 items × estimated height */
+            overflow-y: auto;
+            padding: 6px 0;
+            margin-top: 4px;
+
+            &::-webkit-scrollbar {
+                width: 8px;
+              }
+            
+              &::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 10px;
+              }
+            
+              &::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.4);
+                border-radius: 10px;
+              }
+            
+              &::-webkit-scrollbar-thumb:hover {
+                background: rgba(255, 255, 255, 0.6);
+              }
+          }
+
+        .feedback-item {
+            padding: 6px 8px;
+            font-size: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            background-color: #1f2937; /* Tailwind gray-800 */
+            margin-bottom: 4px;
+            transition: background-color 0.2s;
+            color: #f9fafb; /* Tailwind gray-50 */
+          }
+          
+          .feedback-item:hover {
+            background-color: #374151; /* Tailwind gray-700 */
+          }
+          
+          .highlighted {
+            background-color: #fde68a !important; /* Tailwind yellow-300 */
+            color: #111827; /* readable text on yellow */
+            transition: background-color 0.4s ease-in-out;
+          }
+          
     }
 }

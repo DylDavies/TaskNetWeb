@@ -4,16 +4,30 @@ import { useRouter } from "next/navigation";
 import AuthService from "@/app/services/AuthService";
 import { useChatStore } from "@/app/stores/chatStore";
 import { formatDateAsDate } from "@/app/server/formatters/FormatDates";
+import MessageType from "@/app/enums/MessageType.enum";
 
 const Detail = () => {
   const router = useRouter();
 
-  const { activeConversation } = useChatStore();
+  const { activeConversation, messages } = useChatStore();
 
   function signoutClick() {
     AuthService.googleSignout();
     router.push("/");
   }
+
+  const feedbackMessages = messages.filter(
+    (m) => m.messageData.type === MessageType.Feedback
+  );
+
+  const scrollToMessage = (messageId: string) => {
+    const el = document.getElementById(`message-${messageId}`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.classList.add("highlighted");
+      setTimeout(() => el.classList.remove("highlighted"), 2000);
+    }
+  };
 
   return (
     <section className="detail">
@@ -53,9 +67,25 @@ const Detail = () => {
         )}
 
         {/* Option 2 */}
+        {/* Feedback List */}
         <section className="option">
           <section className="title">
             <em>Feedback</em>
+          </section>
+          <section className="feedback-list">
+            {feedbackMessages.length === 0 ? (
+              <p className="muted">No feedback messages yet.</p>
+            ) : (
+              feedbackMessages.map((m, idx) => (
+                <li
+                  key={idx}
+                  onClick={() => scrollToMessage(m.MessageID)}
+                  className="feedback-item"
+                >
+                  {m.messageData.message}
+                </li>
+              ))
+            )}
           </section>
         </section>
         <Button caption="Logout" onClick={() => signoutClick()} />

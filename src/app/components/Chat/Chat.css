@@ -147,6 +147,25 @@
                 }
             }
 
+            .meta {
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+            }
+            
+            .dot {
+              width: 10px;
+              height: 10px;
+              border-radius: 50%;
+            }
+            
+            .feedback-dot {
+              background-color: #e74c3c; /* red */
+            }
+            
+            .concern-dot {
+              background-color: #f1c40f; /* yellow */
+            }
 
         }
     }
@@ -218,7 +237,7 @@
     font-weight: 500;
     border: none;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease-in-out;
   }
   
   /* Feedback (Red) */
@@ -252,6 +271,13 @@
   .pill.standard:hover {
     background: #059669; /* Tailwind green-600 */
     transform: translateY(-1px);
+  }
+
+  .pill.active {
+    background-color: #333;
+    color: white;
+    transform: translateY(-4px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   }
     }
 }
