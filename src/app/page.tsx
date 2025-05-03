@@ -18,9 +18,8 @@ export default function Home() {
   const router = useRouter();
 
   async function signinClick() {
-
     setLoading(true);
-    
+
     await AuthService.signin();
 
     LoginRedirect(router);

@@ -73,15 +73,26 @@ async function denyUser(uid:string):Promise<void>{
 
 //  This function will take in a username as a string and set update it to the current user in the database
 async function SetUserName(uid: string, username: string){
-    try {
-        const userRef = doc(db, "users", uid);
-        await updateDoc(userRef, {
-          username: username
-        });
-      } catch (error) {
-        console.error("Could not set username", error);
-      };
+  try {
+    const userRef = doc(db, "users", uid);
+    await updateDoc(userRef, {
+      username: username
+    });
+  } catch (error) {
+    console.error("Could not set username", error);
+  };
 };
+
+async function setAvatar(uid: string, avatar: string | null) {
+  try {
+    const userRef = doc(db, "users", uid);
+    await updateDoc(userRef, {
+      avatar
+    });
+  } catch (error) {
+    console.error("Could not set username", error);
+  };
+}
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.zoho.com', //  Zoho SMTP server
@@ -148,5 +159,6 @@ async function getUsername(uid: string): Promise<string>{
     }
     return "No username";
 } 
-export { getUser, getPendingUsers, approveUser, denyUser, setUserType, SetUserName, sendEmail, getUsername, uploadFile };
+
+export { getUser, getPendingUsers, approveUser, denyUser, setUserType, SetUserName, sendEmail, getUsername, uploadFile, setAvatar };
 

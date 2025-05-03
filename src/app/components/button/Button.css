@@ -2,7 +2,7 @@
 flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple*/
 
 
-.btn-grad {background-image: linear-gradient(to right, #000000 0%, #53346D  51%, #000000  100%)}
+.btn-grad {background-image: linear-gradient(to right, #000000 0%, #6b21a8  51%, #000000  100%)}
 .btn-grad {
     margin: 2px;
    padding: 10px 15px;
@@ -11,11 +11,21 @@ flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-w
    background-size: 200% auto;
    color: white;            
    border-radius: 20px;
+   cursor: pointer;
+   flex-shrink: 0;
+   transition: none 
  }
+
+ .btn-grad em {
+  margin-right: 8px; /* Space between text and icon */
+}
 
  .btn-grad:hover {
     box-shadow: 0 0 10px #eee;
    background-position: right center; /* change the direction of the change here */
    color: #fff;
    text-decoration: none;
+   cursor: pointer;
  }
+
+ 

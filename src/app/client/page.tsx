@@ -13,16 +13,17 @@ import JobCard from "../components/JobOverview/JobOverview";
 import { getJobsByClientID } from "../server/services/JobDatabaseService";
 import { formatDateAsString } from "../server/formatters/FormatDates";
 import { formatBudget } from "../server/formatters/Budget";
-import { getUsername } from "../server/services/DatabaseService";
 import ActiveJob from "../interfaces/ActiveJob.interface";
 import { JobContext, JobContextType } from "../JobContext";
 import JobStatus from "../enums/JobStatus.enum";
-
-
+//import { sanitizeJobData } from "../server/formatters/JobDataSanitization";
 
 //constant for links to other pages
 
-const links = [{ name: "Home", href: "/client", selected: true }];
+const links = [
+  { name: "Home", href: "/client", selected: true },
+  { name: "Chat", href: "/chat", selected: false }
+];
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
@@ -32,7 +33,6 @@ export default function Page() {
   const router = useRouter();
 
   const clientUId = user?.authUser.uid ;
-  const [username, setUsername] = useState<string>("");
 
   // Gets JobData data to populate cards, only will show cards created by the user (client)
   async function fetchUserJobs() {
@@ -40,32 +40,20 @@ export default function Page() {
       console.warn("Client ID is undefined");
       return;
     }
-      try {
-        const jobs = await getJobsByClientID(clientUId); 
-        setJobCards(jobs);
-      } catch (error) {
-        console.error("Error occurred when trying to fetch Jobs: ", error);
-      } 
+    try {
+      const jobs = await getJobsByClientID(clientUId);
+      setJobCards(jobs);
+    } catch (error) {
+      console.error("Error occurred when trying to fetch Jobs: ", error);
+    }
   }
   useEffect(() => {
     fetchUserJobs();
   }, [clientUId]);
-  
-  useEffect(() => {
-    async function fetchUsername() {
-      if (clientUId) {
-        const name = await getUsername(clientUId);
-        setUsername(name);
-      }
-    }
-    fetchUsername();
-  }, [clientUId]);
- 
 
   // Click handler for clicking on a job card
   function handleCardClick(job: ActiveJob): void {
-
-    const currentJobStatus = job.jobData.status
+    const currentJobStatus = job.jobData.status;
     if (currentJobStatus == JobStatus.Deleted) return;
 
     setJobID(job.jobId);
@@ -74,8 +62,6 @@ export default function Page() {
     } else {
       router.push("/Milestones");
     }
-    
-   
   }
 
   function refetch() {
@@ -92,14 +78,11 @@ export default function Page() {
           />
         </header>
 
-         {/* Generate Job cards dynamically  */}
-        
+        {/* Generate Job cards dynamically  */}
 
         <main className="flex-1 flex bg-[#cdd5f6] bg-color">
-         
-
           <section className="w-64">
-            <SideBar items={links} myfunction={CreateJobModal({refetch})}/>
+            <SideBar items={links} myfunction={CreateJobModal({ refetch })} />
           </section>
 
           <section className="flex-1 p-4 flex flex-col items-center gap-6 overflow-y-auto">
@@ -108,33 +91,35 @@ export default function Page() {
               type="client"
             />
             <section className="w-full px-6">
-              <h2 className="text-2xl font-bold text-gray-300 flex justify-center">My job postings: </h2>
+              <h2 className="text-2xl font-bold text-gray-300 flex justify-center">
+                My job postings:{" "}
+              </h2>
               <h3 className="text-2xl italic text-gray-300 flex justify-center">
-                  {`Click job postings that say "Open to applicants" to view potential applicants and click job postings that say "Hired" to view and create milestones for that job:`}
+                Click to see applicants:{" "}
               </h3>
-              <section className ="border-2 border-gray-600 rounded-lg p-4 flex flex-wrap justify-center gap-6">
-              {jobCards.length > 0 ? (
-                jobCards.map((job, index) => (
-                  <JobCard
-                    key={index}
-                    company={username}
-                    jobTitle={job.jobData.title}
-                    budget={formatBudget(job.jobData.budgetMin, job.jobData.budgetMax)}
-                    deadline={formatDateAsString(job.jobData.deadline)}
-                    skills={Object.values(job.jobData.skills).flat()}
-                    onClick={() => handleCardClick(job)}
-                    hired={job.jobData.status}
-                  />
-                ))
-              ) : (
-                <p className="text-gray-300 text-lg">No job postings yet.</p>
-              )}
+              <section className="border-2 border-gray-600 rounded-lg p-4 flex flex-wrap justify-center gap-6">
+                {jobCards.length > 0 ? (
+                  jobCards.map((job, index) => (
+                    <JobCard
+                      key={index}
+                      company={user?.userData.username || "..."}
+                      jobTitle={job.jobData.title}
+                      budget={formatBudget(
+                        job.jobData.budgetMin,
+                        job.jobData.budgetMax
+                      )}
+                      deadline={formatDateAsString(job.jobData.deadline)}
+                      skills={Object.values(job.jobData.skills).flat()}
+                      onClick={() => handleCardClick(job)}
+                      hired={job.jobData.status}
+                    />
+                  ))
+                ) : (
+                  <p className="text-gray-300 text-lg">No job postings yet.</p>
+                )}
               </section>
-              
             </section>
           </section>
-
-          
         </main>
 
         <footer className="bg-[#f75509] py-4 flex justify-center bg-gray-900 box-footer">
@@ -144,4 +129,3 @@ export default function Page() {
     </>
   );
 }
-
