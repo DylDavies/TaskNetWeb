@@ -2,35 +2,23 @@
 
 import FATable from "../components/FATable/FATable";
 import "../components/FATable/FATable.css";
-import "../components/searchbar/SearchBar.css";
 import Header from "../components/Header/header";
 import "../components/Header/Header.css";
 import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
 import "./global.css";
-import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import React, { useContext, useEffect, useState } from "react";
-import AuthService from "../services/AuthService";
-import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
 import { getJob } from "../server/services/JobDatabaseService";
 import { JobContext, JobContextType } from "../JobContext";
 
 const links = [
-  { name: "back", href: "/client" }];
+  { name: "Home", href: "/client", selected: false }];
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
   const { jobID } = useContext(JobContext) as JobContextType;
-
-  const router = useRouter();
-
-  //signs the user out of google
-  function signoutClick() {
-      AuthService.googleSignout();
-     router.push("/");
-  }
 
   //const [searchQuery, setSearchQuery] = useState("");
 
@@ -84,12 +72,7 @@ export default function Page() {
         </main>
 
         <footer className="bg-gray-900 box-footer px-6 py-4">
-
-            <section className="flex justify-end">
-              <Button caption={"Log out"} 
-              onClick={() => signoutClick() } />
-            </section>
-          
+          <p>© {new Date().getFullYear()} tasknet.tech</p>
         </footer>
       </section>
     </>

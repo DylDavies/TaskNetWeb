@@ -2,37 +2,22 @@
 
 import AdminTable from "../components/AdminTable/AdminTable";
 import "../components/AdminTable/AdminTable.css";
-//import SearchBar from "../components/searchbar/SearchBar";
-import "../components/searchbar/SearchBar.css";
 import Header from "../components/Header/header";
 import "../components/Header/Header.css";
 import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
 import "./global.css";
-import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import { getPendingUsers } from "../server/services/DatabaseService";
 import React, { useContext, useEffect, useState } from "react";
-import AuthService from "../services/AuthService";
-import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
 
 
 const links = [
-  { name: "Home", href: "/" },
-  { name: "Client", href: "/client" },
-  { name: "Freelancer", href: "/freelancer" }];
+  { name: "Home", href: "/admin", selected: false }];
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
-
-  const router = useRouter();
-
-  //signs the user out of google
-  function signoutClick() {
-      AuthService.googleSignout();
-     router.push("/");
-  }
 
   //const [searchQuery, setSearchQuery] = useState("");
 
@@ -74,20 +59,6 @@ export default function Page() {
 
           <section className="flex-1 p-4">
             <section className="flex flex-col items-center space-y-4">
-              {/* SearchBar wider and taller */}
-              {/*<section className="w-full max-w-4xl mt-10 mb-6">
-                {" "}
-                <section className="w-full h-14">
-                  <SearchBar
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search users..."
-                    className="w-full h-14 searchbar"
-                  />
-                </section>
-              </section>
-              */}
-
               {/* AdminTable moved down */}
               <section className="w-full max-w-8xl mt-36">
                 <AdminTable data={pendingUsers} />
@@ -97,12 +68,7 @@ export default function Page() {
         </main>
 
         <footer className="bg-gray-900 box-footer px-6 py-4">
-
-            <section className="flex justify-end">
-              <Button caption={"Log out"} 
-              onClick={() => signoutClick() } />
-            </section>
-          
+          <p>© {new Date().getFullYear()} tasknet.tech</p>  
         </footer>
       </section>
     </>

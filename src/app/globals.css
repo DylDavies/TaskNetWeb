@@ -79,5 +79,13 @@ h1{
   box-shadow: 6px 0px 0px hsl(0deg 0% 0% / 0.44);
 }
 
-
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
 

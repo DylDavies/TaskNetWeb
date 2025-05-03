@@ -1,16 +1,12 @@
 "use client";
 
-import "../components/searchbar/SearchBar.css";
 import Header from "../components/Header/header";
 import "../components/Header/Header.css";
 import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
 import "./global.css";
-import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import React, { useContext, useEffect, useState } from "react";
-import AuthService from "../services/AuthService";
-import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
 import { getJob, updateJobStatus } from "../server/services/JobDatabaseService";
 import { JobContext, JobContextType } from "../JobContext";
@@ -25,17 +21,12 @@ import JobStatus from "../enums/JobStatus.enum";
 import { createNotification } from "../server/services/NotificationService";
 
 const linksClient = [
-  { name: "back", href: "/client" }];
+  { name: "Home", href: "/client", selected: false }
+];
 
 const linksFreelancer = [
-    { name: "back", href: "/freelancer" }
+  { name: "Home", href: "/freelancer", selected: false }
 ]
-const linksAdmin = [
-    {name: "Admin Dashboard", href: "/admin"},
-    {name: "Admin client view", href: "/client"},
-    {name: "Admin freelancer view", href: "/freelancer"}
-]
-
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
@@ -60,17 +51,8 @@ export default function Page() {
     const userTypeString = userTypeToString(userTypeNum)
 
     const links = 
-    user?.userData.type === UserType.Admin ? linksAdmin :
     user?.userData.type === UserType.Client ? linksClient : 
      linksFreelancer;
-
-  const router = useRouter();
-
-  //signs the user out of google
-  function signoutClick() {
-      AuthService.googleSignout();
-     router.push("/");
-  }
 
   const [jobTitle, setJobTitle] = useState<string>("");
   const [clientUID, setClientUID] = useState<string>("")
@@ -201,12 +183,7 @@ export default function Page() {
         </main>
 
         <footer className="bg-gray-900 box-footer px-6 py-4">
-
-            <section className="flex justify-end">
-              <Button caption={"Log out"} 
-              onClick={() => signoutClick() } />
-            </section>
-          
+          <p>© {new Date().getFullYear()} tasknet.tech</p>
         </footer>
       </section>
     </>

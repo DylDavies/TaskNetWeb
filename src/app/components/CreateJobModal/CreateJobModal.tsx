@@ -387,7 +387,7 @@ const CreateJobModal = ({refetch}: Props) => {
                 </section>
               </section>
               <section className="flex justify-end">
-                <Button caption={"Submit"} />
+                <Button caption={"Submit"} type="submit" />
               </section>
             </form>
           </article>
