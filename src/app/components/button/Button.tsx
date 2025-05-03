@@ -38,6 +38,7 @@ interface Props {
   size?: Sizes;
   disabled?: boolean;
   icon?: React.ReactNode;
+  type?: "button" | "submit" | "reset";
 }
 
 const sizeClasses = {
@@ -53,6 +54,7 @@ const Button = ({
   size = Sizes.Normal,
   disabled = false,
   icon,
+  type = "button"
 }: Props) => {
   const sizeClass = sizeClasses[size];
 
@@ -63,7 +65,7 @@ const Button = ({
       className={`btn-grad rounded-full flex items-center justify-center ${sizeClass}`}
       style={style}
       disabled={disabled}
-      type="button"
+      type={type}
     >
       {icon && <em className={caption ? "mr-2" : ""}>{icon}</em>}
       {caption}

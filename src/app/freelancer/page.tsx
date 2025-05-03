@@ -4,29 +4,25 @@ import "../components/Header/Header.css";
 import WelcomeCard from "../components/WelcomeCard/WelcomeCard";
 import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
-import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import "./global.css";
 import { useState, useContext, useEffect } from "react";
-import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
 import JobData from "../interfaces/JobData.interface";
 import JobCard from "../components/JobOverview/JobOverview";
 import ActiveJob from "../interfaces/ActiveJob.interface";
-import { getUser } from "../server/services/DatabaseService";
 import { getJobsByFreelancerID } from "../server/services/JobDatabaseService";
 import { formatDateAsString } from "../server/formatters/FormatDates";
 import { formatBudget } from "../server/formatters/Budget";
 import JobStatus from "../enums/JobStatus.enum";
 import { JobContext, JobContextType } from "../JobContext";
-import UserData from "../interfaces/UserData.interface";
 
 //constant for links to other pages
 const links = [
-  { name: "Home", href: "/" },
-  { name: "Find Jobs", href: "/jobSearch" },
-  { name: "Chat", href: "/chat" },
+  { name: "Home", href: "/", selected: true },
+  { name: "Find Jobs", href: "/jobSearch", selected: false },
+  { name: "Chat", href: "/chat", selected: false },
 ];
 
 export default function Page() {
@@ -34,16 +30,10 @@ export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
   const router = useRouter();
   const [jobCards, setJobCards] = useState<
-    { job: ActiveJob; client: UserData | null }[]
+    ActiveJob[]
   >([]);
   const FreelancerUId = user?.authUser.uid;
   const { setJobID } = useContext(JobContext) as JobContextType;
-
-  //signs the user out of google
-  function signoutClick() {
-    AuthService.googleSignout();
-    router.push("/");
-  }
 
   async function fetchUserJobs() {
     if (!FreelancerUId) {
@@ -53,13 +43,7 @@ export default function Page() {
     try {
       const jobs = await getJobsByFreelancerID(FreelancerUId);
 
-      const arr: { job: ActiveJob; client: UserData | null }[] = [];
-
-      for await (const j of jobs) {
-        arr.push({ job: j, client: await getUser(j.jobData.clientUId) });
-      }
-
-      setJobCards(arr);
+      setJobCards(jobs);
     } catch (error) {
       console.error("Error occurred when trying to fetch Jobs: ", error);
     }
@@ -115,17 +99,16 @@ export default function Page() {
                   return (
                     <JobCard
                       key={index}
-                      company={job.client?.username || "..."}
-                      jobTitle={job.job.jobData.title}
+                      clientId={job.jobData.clientUId}
+                      jobTitle={job.jobData.title}
                       budget={formatBudget(
-                        job.job.jobData.budgetMin,
-                        job.job.jobData.budgetMax
+                        job.jobData.budgetMin,
+                        job.jobData.budgetMax
                       )}
-                      deadline={formatDateAsString(job.job.jobData.deadline)}
-                      skills={Object.values(job.job.jobData.skills).flat()}
-                      onClick={() => handleCardClick(job.job)}
-                      hired={job.job.jobData.status}
-                      avatar={job.client?.avatar}
+                      deadline={formatDateAsString(job.jobData.deadline)}
+                      skills={Object.values(job.jobData.skills).flat()}
+                      onClick={() => handleCardClick(job)}
+                      hired={job.jobData.status}
                     />
                   );
                 })
@@ -139,7 +122,7 @@ export default function Page() {
 
       {/* Footer */}
       <footer className="py-4 flex justify-end bg-gray-900 box-footer">
-        <Button caption={"Log out"} onClick={() => signoutClick()} />
+        <p>© {new Date().getFullYear()} tasknet.tech</p>
       </footer>
     </section>
   );

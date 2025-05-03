@@ -1,5 +1,5 @@
 import { NotificationContext, NotificationContextType } from "@/app/NotificationContext"
-import NotificationList from "@/app/NotificationList/NotificationList";
+import NotificationList from "@/app/components/NotificationList/NotificationList";
 import { useContext, useEffect, useRef, useState } from "react"
 
 const Notifications = () => {

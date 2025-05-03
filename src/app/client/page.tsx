@@ -4,9 +4,7 @@ import "../components/Header/Header.css";
 import WelcomeCard from "../components/WelcomeCard/WelcomeCard";
 import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
-import Button from "../components/button/Button";
 import "../components/button/Button.css";
-import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
 import CreateJobModal from "../components/CreateJobModal/CreateJobModal";
 import { AuthContextType, AuthContext } from "../AuthContext";
@@ -23,22 +21,18 @@ import JobStatus from "../enums/JobStatus.enum";
 //constant for links to other pages
 
 const links = [
-  { name: "Home", href: "/" },
-  { name: "chat", href: "/chat" },
+  { name: "Home", href: "/client", selected: true },
+  { name: "Chat", href: "/chat", selected: false }
 ];
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
-  const { setJobID } = useContext(JobContext) as JobContextType;
+  const { setJobID } = useContext(JobContext) as JobContextType; 
+  
   const [jobCards, setJobCards] = useState<ActiveJob[]>([]);
   const router = useRouter();
 
-  //signs the user out of google
-  function signoutClick() {
-    AuthService.googleSignout();
-    router.push("/");
-  }
-  const clientUId = user?.authUser.uid;
+  const clientUId = user?.authUser.uid ;
 
   // Gets JobData data to populate cards, only will show cards created by the user (client)
   async function fetchUserJobs() {
@@ -108,7 +102,7 @@ export default function Page() {
                   jobCards.map((job, index) => (
                     <JobCard
                       key={index}
-                      company={user?.userData.username || "..."}
+                      clientId={user!.authUser.uid}
                       jobTitle={job.jobData.title}
                       budget={formatBudget(
                         job.jobData.budgetMin,
@@ -128,8 +122,8 @@ export default function Page() {
           </section>
         </main>
 
-        <footer className="bg-[#f75509] py-4 flex justify-end bg-gray-900 box-footer">
-          <Button caption={"Log out"} onClick={() => signoutClick()} />
+        <footer className="bg-[#f75509] py-4 flex justify-center bg-gray-900 box-footer">
+          <p>© {new Date().getFullYear()} tasknet.tech</p>
         </footer>
       </section>
     </>
