@@ -1,5 +1,4 @@
 import "./Chat.css";
-import InputBar from "../inputbar/InputBar";
 import Button from "../button/Button";
 import EmojiPicker from "emoji-picker-react";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -12,6 +11,7 @@ import MessageStatus from "@/app/enums/MessageStatus.enum";
 import MessageType from "@/app/enums/MessageType.enum";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import MultilineInputBar from "../MultilineInput/MultilineInput";
 
 const Chat = () => {
   const { user } = useContext(AuthContext) as AuthContextType;
@@ -211,12 +211,10 @@ const Chat = () => {
           </section>
         </section>
 
-        <InputBar
-          type="text"
+        <MultilineInputBar
           placeholder="Type a message..."
-          className="input-class"
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={(value) => setText(value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
