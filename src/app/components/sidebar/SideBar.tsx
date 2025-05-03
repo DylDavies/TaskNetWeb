@@ -21,8 +21,8 @@ import "./sidebar.css";
 
 type SideBarProps = {
   items: { name: string; href: string }[];
-  myfunction?: JSX.Element ;
-}
+  myfunction?: JSX.Element;
+};
 
 /*
 
@@ -39,32 +39,33 @@ type SideBarProps = {
   "Create a functional component named SideBar that receives props shaped like Props, and we’re pulling items straight out from the props."
 
 */
-const SideBar =  ({ items ,myfunction}: SideBarProps ) => {
+const SideBar = ({ items, myfunction }: SideBarProps) => {
   return (
     <aside className="z-20 hidden w-64 overflow-y-auto bg-gray-800 md:block flex-shrink-0 sidebar box">
-  <section className="py-4 text-gray-400">
-    <a className="ml-6 text-lg font-bold text-gray-200" href="#">
-      {/* Optional: Sidebar Title */}
-    </a>
-    <ul className="mt-6 list">
-      {items.map((item, index) => (
-        <li key={index}>
-          <Link href={item.href} className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded">
-            {item.name}
-          </Link>
+      <section className="py-4 text-gray-400">
+        <a className="ml-6 text-lg font-bold text-gray-200" href="#">
+          {/* Optional: Sidebar Title */}
+        </a>
+        <ul className="mt-6 list">
+          {items.map((item, index) => (
+            <li key={index}>
+              <Link
+                href={item.href}
+                className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded"
+              >
+                {item.name}
+              </Link>
+            </li>
+          ))}
 
-        </li>
-      ))}
-          
-    {myfunction &&(
-       <li  className="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded hover-effect">
-        {myfunction}
-     </li>
-     )}
-    </ul>
-  </section>
-</aside>
-
+          {myfunction && (
+            <li className="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded hover-effect">
+              {myfunction}
+            </li>
+          )}
+        </ul>
+      </section>
+    </aside>
   );
 };
 

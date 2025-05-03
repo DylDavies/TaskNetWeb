@@ -46,10 +46,10 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, modalIsOpen, refetch}) 
 
     useEffect(() =>{
         if(user?.authUser?.uid == data.clientUID){
-            setRole("client");
+            setRole("freelancer");
         }
         else{
-            setRole("freelancer");
+            setRole("client");
         }
     }, [user, data.clientUID]);
 
@@ -298,6 +298,8 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, modalIsOpen, refetch}) 
                                 </output>
                                 )}
                         </nav>
+                        <h4 className="font-semibold text-sm mb-1 mt-3">Send the freelancer feedback with this link:</h4>
+                        {/*Pls put link to chat system here*/}
                         <article className="mt-4">
                         <Button 
                             caption={isApproving ? "Approving..." : "Approve"}
@@ -320,6 +322,7 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, modalIsOpen, refetch}) 
                         </article>
                         
                     </section>
+                    
                     
                 )}
                 {((role === "client" && status === MilestoneStatus.OnHalt)||(role === "client" && status === MilestoneStatus.InProgress)) && (
@@ -348,6 +351,7 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, modalIsOpen, refetch}) 
                                 </output>
                                 )}
                         </nav>
+
                     </section>
                 )}
 
@@ -371,14 +375,6 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, modalIsOpen, refetch}) 
                     </RequestPayout>
                     </section>
                 )}
-                {/* Incase we want to display a preview, here is how we will do it
-                <iframe
-                  src={data.milestone.reportURL}
-                  title="Freelancer progress report"
-                  width="100%"
-                  height="500px"
-                  className="rounded border border-gray-700 mt-2"
-                ></iframe>*/}
               
                 </section>
                 </article>

@@ -6,7 +6,7 @@ interface UserData {
     status: UserStatus;
     username: string;
     date: number;
-    avatar: string;
+    avatar?: string;
 }
 
 export default UserData;
