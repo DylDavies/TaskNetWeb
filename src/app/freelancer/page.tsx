@@ -12,13 +12,11 @@ import { AuthContext, AuthContextType } from "../AuthContext";
 import JobData from "../interfaces/JobData.interface";
 import JobCard from "../components/JobOverview/JobOverview";
 import ActiveJob from "../interfaces/ActiveJob.interface";
-import { getUser } from "../server/services/DatabaseService";
 import { getJobsByFreelancerID } from "../server/services/JobDatabaseService";
 import { formatDateAsString } from "../server/formatters/FormatDates";
 import { formatBudget } from "../server/formatters/Budget";
 import JobStatus from "../enums/JobStatus.enum";
 import { JobContext, JobContextType } from "../JobContext";
-import UserData from "../interfaces/UserData.interface";
 
 //constant for links to other pages
 const links = [

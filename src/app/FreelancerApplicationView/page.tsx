@@ -2,7 +2,6 @@
 
 import FATable from "../components/FATable/FATable";
 import "../components/FATable/FATable.css";
-import "../components/searchbar/SearchBar.css";
 import Header from "../components/Header/header";
 import "../components/Header/Header.css";
 import SideBar from "../components/sidebar/SideBar";

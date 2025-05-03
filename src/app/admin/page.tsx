@@ -2,8 +2,6 @@
 
 import AdminTable from "../components/AdminTable/AdminTable";
 import "../components/AdminTable/AdminTable.css";
-//import SearchBar from "../components/searchbar/SearchBar";
-import "../components/searchbar/SearchBar.css";
 import Header from "../components/Header/header";
 import "../components/Header/Header.css";
 import SideBar from "../components/sidebar/SideBar";
@@ -61,20 +59,6 @@ export default function Page() {
 
           <section className="flex-1 p-4">
             <section className="flex flex-col items-center space-y-4">
-              {/* SearchBar wider and taller */}
-              {/*<section className="w-full max-w-4xl mt-10 mb-6">
-                {" "}
-                <section className="w-full h-14">
-                  <SearchBar
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search users..."
-                    className="w-full h-14 searchbar"
-                  />
-                </section>
-              </section>
-              */}
-
               {/* AdminTable moved down */}
               <section className="w-full max-w-8xl mt-36">
                 <AdminTable data={pendingUsers} />

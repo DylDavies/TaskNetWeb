@@ -1,6 +1,5 @@
 "use client";
 
-import "../components/searchbar/SearchBar.css";
 import Header from "../components/Header/header";
 import "../components/Header/Header.css";
 import SideBar from "../components/sidebar/SideBar";

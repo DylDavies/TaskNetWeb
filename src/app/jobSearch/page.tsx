@@ -10,11 +10,9 @@ import { getAllJobs } from "../server/services/JobDatabaseService";
 import { formatDateAsDate, formatDateAsString } from "../server/formatters/FormatDates";
 import { formatBudget } from "../server/formatters/Budget";
 import ActiveJob from "../interfaces/ActiveJob.interface";
-import SearchBar from "../components/searchbar/SearchBar";
 import MultiViewModal from "../components/MultiViewModal/MultiViewModal";
-import { getUser } from "../server/services/DatabaseService";
 import JobStatus from "../enums/JobStatus.enum";
-//import { searchJobsBySkills } from "../server/services/JobDatabaseService";
+import InputBar from "../components/inputbar/InputBar";
 
 //constant for links to other pages
 const links = [
@@ -140,11 +138,11 @@ export default function Page() {
           {/* Filter Bars */}
           <section className="w-full max-w-4xl flex flex-col items-center gap-4 mb-2">
             {/* Job Title Filter */}
-            <SearchBar
+            <InputBar
               placeholder="Filter by job title..."
               value={jobNameFilter}
               onChange={(e) => setJobNameFilter(e.target.value)}
-              className="w-full max-w-md"
+              className="!w-full max-w-md"
             />
   
             {/* Skill Filter */}
@@ -152,7 +150,7 @@ export default function Page() {
           </section>
   
           {/* Job Cards */}
-          <section className="w-full flex flex-wrap justify-center gap-6 max-h-[69dvh] overflow-y-scroll no-scrollbar pt-2">
+          <section className="w-full flex flex-wrap justify-center gap-6 max-h-[67dvh] overflow-y-scroll no-scrollbar pt-2">
             {jobCards.map((job, index) => (
               <JobCard
                 key={index}
