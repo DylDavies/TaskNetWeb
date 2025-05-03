@@ -36,6 +36,7 @@ interface Props {
   onClick?: () => void;
   style?: React.CSSProperties;
   size?: Sizes;
+  disabled?: boolean
   icon?: React.ReactNode;
 }
 
@@ -50,6 +51,7 @@ const Button = ({
   onClick,
   style,
   size = Sizes.Normal,
+  disabled = false,
   icon,
 }: Props) => {
   const sizeClass = sizeClasses[size];
@@ -60,6 +62,7 @@ const Button = ({
       onClick={onClick}
       className={`btn-grad rounded-full flex items-center justify-center ${sizeClass}`}
       style={style}
+      disabled={disabled}
       type="button"
     >
       {icon && <span className={caption ? "mr-2" : ""}>{icon}</span>}

@@ -46,16 +46,11 @@ export default function Page() {
   const [milestones, setMilestones] = useState<MilestoneData[]>([]);
   const [job, setJob] = useState<JobData>();
   const [hasNotifiedCompletion, setHasNotifiedCompletion] = useState(false);
-
-  const refetchMilestones = () => {
-    setRefreshFlag(prev => !prev);
-  };
   
   function refetch() {
-    refetchMilestones();
+    setRefreshFlag(prev => !prev);
   }
 
-  
   //This function converts the usetype to a string to be displayed in the header
   function userTypeToString(value: UserType| undefined): string {
     if (value === undefined) return 'Unknown';
@@ -198,7 +193,7 @@ export default function Page() {
                 onClose={() => setSelectedMilestone(null)}
                 onUpload={() => {console.log("upload")}}
                 modalIsOpen={modalOpen}
-                refetchMilestones={refetchMilestones}>
+                refetch={refetch}>
                 </ViewMilestones>
               )}
             </section>

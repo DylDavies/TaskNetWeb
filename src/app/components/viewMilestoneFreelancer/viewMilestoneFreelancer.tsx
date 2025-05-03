@@ -6,10 +6,14 @@ import Button from "../button/Button";
 import { AuthContext, AuthContextType } from "../../AuthContext";
 import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
 import Modal from "react-modal";
-import { updateMilestoneStatus } from "@/app/server/services/MilestoneService";
+import { updateMilestonePaymentStatus, updateMilestoneStatus } from "@/app/server/services/MilestoneService";
 import {addReportURL} from "@/app/server/services/MilestoneService";
 import { formatDateAsString } from "@/app/server/formatters/FormatDates";
 import toast from "react-hot-toast";
+import MilestoneData from "@/app/interfaces/Milestones.interface";
+import PaymentStatus from "@/app/enums/PaymentStatus.enum";
+import PayPalWrapper from "@/app/PayPalWrapper";
+import RequestPayout from "../RequestPayout/RequestPayout";
 import UploadComponent from "../FileUpload/FileUpload";
 import { uploadFile } from "@/app/server/services/DatabaseService";
 import { FileText, X } from "lucide-react";
@@ -19,15 +23,7 @@ import { createNotification } from "@/app/server/services/NotificationService";
 type JobData = {
     jobId: string;
     clientUID: string;
-    milestone: { 
-        id: string;
-        title: string;
-        description: string;
-        status: MilestoneStatus;
-        deadline: number;
-        payment: number;
-        reportURL?: string;
-    },
+    milestone: MilestoneData,
   };
   
   type Props = {
@@ -35,12 +31,13 @@ type JobData = {
       onClose: () => void; 
       onUpload: () => void;
       modalIsOpen : boolean;
-      refetchMilestones: () => void;
+      refetch: () => void;
   }
 
-const ViewMilestones: React.FC<Props> = ({data, onClose, modalIsOpen, refetchMilestones}) => {
+const ViewMilestones: React.FC<Props> = ({data, onClose, modalIsOpen, refetch}) => {
     const { user } = useContext(AuthContext) as AuthContextType;
     const [status, setStatus] = useState<MilestoneStatus>(data.milestone.status);
+    const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | undefined>(data.milestone.paymentStatus);
     const [role, setRole] = useState("client");
     const [reportURL, setreportURL] = useState("");
     const [isApproving, setIsApproving] = useState(false);
@@ -58,7 +55,9 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, modalIsOpen, refetchMil
 
     useEffect(() => {
         setStatus(data.milestone.status);
-    }, [data.milestone]);
+        setPaymentStatus(data.milestone.paymentStatus);
+        refetch();
+      }, [data.milestone]);
 
     const handleStatusChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedStatus = e.target.value as keyof typeof MilestoneStatus;
@@ -73,7 +72,7 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, modalIsOpen, refetchMil
           try{
             await updateMilestoneStatus(data.jobId, data.milestone.id, enumValue);
             setStatus(enumValue);
-            refetchMilestones();
+            refetch();
           } catch(err){
             console.log("Error updating milestone:", err);
           }
@@ -82,6 +81,22 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, modalIsOpen, refetchMil
         if (value === undefined) return 'Unknown';
         return MilestoneStatus[value] || '...';
       }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function handleSuccessfulPayment(details: any) {
+        console.log(details);
+        if (details.status == "COMPLETED") {
+            updateMilestonePaymentStatus(data.jobId, data.milestone.id, PaymentStatus.Escrow);
+            setPaymentStatus(PaymentStatus.Escrow)
+            refetch();
+        }
+    }
+
+    function handleSuccessfulPayout() {
+        setPaymentStatus(PaymentStatus.Paid)
+        refetch();
+    }
+
 
       const handleUploadComplete = (url: string, file: File) => {
         setreportURL(url);
@@ -117,7 +132,7 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, modalIsOpen, refetchMil
           });
       
           toast.success("Report submitted successfully!");
-          refetchMilestones(); // Refresh milestone data
+          refetch(); // Refresh milestone data
           onClose(); // Close modal
       
         } catch (error) {
@@ -158,13 +173,13 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, modalIsOpen, refetchMil
                         <h4 className="font-semibold text-sm mb-1">Payment</h4>
                         <p className="text-sm text-gray-300">$ {data.milestone.payment}</p>
                     </section>
-                {role === "freelancer" &&  status !== MilestoneStatus.Completed && status !== MilestoneStatus.Approved && (
+                {role === "freelancer" && status !== MilestoneStatus.Completed && status !== MilestoneStatus.Approved && (
                     <section>
                         <fieldset>
                             <legend>Select Status</legend>
                             <section>
-                                <input type ="radio" id="Pending" name="status" value="OnHalt" onChange={handleStatusChange} checked={status === MilestoneStatus.OnHalt}/>
-                                <label htmlFor="Pending"> Pending</label>
+                                <input type ="radio" id="OnHalt" name="status" value="OnHalt" onChange={handleStatusChange} checked={status === MilestoneStatus.OnHalt}/>
+                                <label htmlFor="OnHalt"> On Halt</label>
                             </section>
                             <section>
                                 <input type ="radio" id="In Progress" name="status" value="InProgress" onChange={handleStatusChange} checked={status === MilestoneStatus.InProgress}/>
@@ -292,7 +307,7 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, modalIsOpen, refetchMil
                                 setIsApproving(true);
                                 try {
                                     await updateMilestoneStatus(data.jobId, data.milestone.id, 3);
-                                    refetchMilestones();
+                                    refetch();
                                     toast.success("Milestone approved successfully");
                                     onClose(); 
                                 } catch (error) {
@@ -338,7 +353,27 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, modalIsOpen, refetchMil
                         </nav>
 
                     </section>
-                    
+                )}
+
+                { role == "client" && status == MilestoneStatus.Approved && (paymentStatus == PaymentStatus.Unpaid || paymentStatus == undefined) && (
+                    <PayPalWrapper
+                    amount={data.milestone.payment.toString()}
+                    milestoneId={data.milestone.id}
+                    onSuccess={handleSuccessfulPayment}
+                    >
+                    </PayPalWrapper>
+                )}
+
+                { role == "freelancer" && status == MilestoneStatus.Approved && paymentStatus == PaymentStatus.Escrow && (
+                    <section className="flex flex-col gap-4 basis-full">
+                    <RequestPayout
+                        jobId={data.jobId}
+                        milestoneId={data.milestone.id}
+                        amount={data.milestone.payment.toString()}
+                        note={`Milestone (${data.milestone.title} payment - $${data.milestone.payment}`}
+                        onSuccess={handleSuccessfulPayout}>
+                    </RequestPayout>
+                    </section>
                 )}
               
                 </section>

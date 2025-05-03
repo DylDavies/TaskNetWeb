@@ -1,4 +1,5 @@
 import MilestoneStatus from "../enums/MilestoneStatus.enum";
+import PaymentStatus from "../enums/PaymentStatus.enum";
 
 interface MilestoneData {
     id: string;
@@ -8,6 +9,7 @@ interface MilestoneData {
     deadline: number;
     payment: number;   
     reportURL: string;
+    paymentStatus: PaymentStatus;
 }
 
 export default MilestoneData;

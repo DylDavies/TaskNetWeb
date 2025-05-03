@@ -26,7 +26,7 @@ const InputBar: React.FC<InputBarProps> = ({
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className={`border rounded px-4 py-2 input group  ${className}`}
+      className={`border rounded px-4 py-2 input group ${className}`}
       min={min}
       onKeyDown={onKeyDown}
     />
