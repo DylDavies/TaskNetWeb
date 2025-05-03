@@ -102,7 +102,7 @@ export default function Page() {
                   jobCards.map((job, index) => (
                     <JobCard
                       key={index}
-                      company={user?.userData.username || "..."}
+                      clientId={user!.authUser.uid}
                       jobTitle={job.jobData.title}
                       budget={formatBudget(
                         job.jobData.budgetMin,

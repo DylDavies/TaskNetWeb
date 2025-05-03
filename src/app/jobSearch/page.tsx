@@ -31,12 +31,6 @@ export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
   const [openModal, setModalOpen] = useState(false);
   const [data, setData] = useState<ActiveJob>();
-  const [clientUsernames, setClientUsernames] = useState<
-    Record<string, string>
-  >({});
-  const [clientAvatars, setClientAvatars] = useState<
-  Record<string, string | undefined>
->({});
 
   const closeModal = () => {
     setModalOpen(false);        
@@ -56,41 +50,6 @@ export default function Page() {
 
     fetchSkills();
   }, []);
-
-  // Fetch usernames when jobCards changes
-  useEffect(() => {
-    const fetchUsernames = async () => {
-      const newUsernames: Record<string, string> = {};
-      const newAvatars: Record<string, string | undefined> = {};
-      const uniqueClientUIds = Array.from(
-        new Set(jobCards.map((job) => job.jobData.clientUId))
-      );
-
-      for (const uid of uniqueClientUIds) {
-        if (!clientUsernames[uid]) {
-          try {
-            const userData = await getUser(uid);
-            newUsernames[uid] = userData?.username || "Unknown";
-            newAvatars[uid] = userData?.avatar || undefined;
-          } catch (error) {
-            console.error(`Failed to fetch user data for UID ${uid}:`, error);
-            newUsernames[uid] = "Unknown";
-            newAvatars[uid] = undefined;
-          }
-        }
-      }
-
-      if (Object.keys(newUsernames).length > 0) {
-        setClientUsernames((prev) => ({ ...prev, ...newUsernames }));
-      }
-
-      if (Object.keys(newAvatars).length > 0) {
-        setClientAvatars((prev) => ({ ...prev, ...newAvatars }));
-      }
-    };
-
-    if (jobCards.length > 0) fetchUsernames();
-  }, [jobCards, clientUsernames]);
 
   // Gets ActiveJob data to populate cards - can change to JobData if JobID isn't needed
   // useEffect(() => {
@@ -177,9 +136,9 @@ export default function Page() {
           <SideBar items={links} />
         </section>
   
-        <section className="flex-1 flex flex-col items-center pt-6 gap-2 h-90">
+        <section className="flex-1 flex flex-col items-center mt-6">
           {/* Filter Bars */}
-          <section className="w-full max-w-4xl flex flex-col items-center gap-4 mb-5">
+          <section className="w-full max-w-4xl flex flex-col items-center gap-4 mb-2">
             {/* Job Title Filter */}
             <SearchBar
               placeholder="Filter by job title..."
@@ -193,11 +152,11 @@ export default function Page() {
           </section>
   
           {/* Job Cards */}
-          <section className="w-full flex flex-wrap justify-center overflow-y-scroll h-1/2">
+          <section className="w-full flex flex-wrap justify-center gap-6 max-h-[69dvh] overflow-y-scroll no-scrollbar pt-2">
             {jobCards.map((job, index) => (
               <JobCard
                 key={index}
-                company= {clientUsernames[job.jobData.clientUId] || "Loading..."}         
+                clientId={job.jobData.clientUId}         
                 jobTitle={job.jobData.title}
                 budget={formatBudget(
                   job.jobData.budgetMin,
@@ -206,7 +165,6 @@ export default function Page() {
                 deadline={formatDateAsString(job.jobData.deadline)}
                 skills={Object.values(job.jobData.skills).flat()}
                 onClick={() => handleCardClick(job)}
-                avatar={clientAvatars[job.jobData.clientUId] || undefined}
               />
             ))}
             {openModal && data && (
@@ -220,9 +178,9 @@ export default function Page() {
       </main>
   
       {/* Footer */}
-      <footer className="py-4 flex justify-end bg-gray-900 box-footer">
-        <p>© {new Date().getFullYear()} tasknet.tech</p>
-      </footer>
+      <footer className="bg-[#f75509] py-4 flex justify-center bg-gray-900 box-footer">
+          <p>© {new Date().getFullYear()} tasknet.tech</p>
+        </footer>
     </section>
   );
   

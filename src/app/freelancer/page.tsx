@@ -32,7 +32,7 @@ export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
   const router = useRouter();
   const [jobCards, setJobCards] = useState<
-    { job: ActiveJob; client: UserData | null }[]
+    ActiveJob[]
   >([]);
   const FreelancerUId = user?.authUser.uid;
   const { setJobID } = useContext(JobContext) as JobContextType;
@@ -45,13 +45,7 @@ export default function Page() {
     try {
       const jobs = await getJobsByFreelancerID(FreelancerUId);
 
-      const arr: { job: ActiveJob; client: UserData | null }[] = [];
-
-      for await (const j of jobs) {
-        arr.push({ job: j, client: await getUser(j.jobData.clientUId) });
-      }
-
-      setJobCards(arr);
+      setJobCards(jobs);
     } catch (error) {
       console.error("Error occurred when trying to fetch Jobs: ", error);
     }
@@ -107,17 +101,16 @@ export default function Page() {
                   return (
                     <JobCard
                       key={index}
-                      company={job.client?.username || "..."}
-                      jobTitle={job.job.jobData.title}
+                      clientId={job.jobData.clientUId}
+                      jobTitle={job.jobData.title}
                       budget={formatBudget(
-                        job.job.jobData.budgetMin,
-                        job.job.jobData.budgetMax
+                        job.jobData.budgetMin,
+                        job.jobData.budgetMax
                       )}
-                      deadline={formatDateAsString(job.job.jobData.deadline)}
-                      skills={Object.values(job.job.jobData.skills).flat()}
-                      onClick={() => handleCardClick(job.job)}
-                      hired={job.job.jobData.status}
-                      avatar={job.client?.avatar}
+                      deadline={formatDateAsString(job.jobData.deadline)}
+                      skills={Object.values(job.jobData.skills).flat()}
+                      onClick={() => handleCardClick(job)}
+                      hired={job.jobData.status}
                     />
                   );
                 })
