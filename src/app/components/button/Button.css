@@ -11,7 +11,14 @@ flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-w
    background-size: 200% auto;
    color: white;            
    border-radius: 20px;
+   cursor: pointer;
+   flex-shrink: 0;
+   transition: none 
  }
+
+ .btn-grad em {
+  margin-right: 8px; /* Space between text and icon */
+}
 
  .btn-grad:hover {
     box-shadow: 0 0 10px #eee;
@@ -20,3 +27,5 @@ flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-w
    text-decoration: none;
    cursor: pointer;
  }
+
+ 
