@@ -16,23 +16,25 @@ import { formatBudget } from "../server/formatters/Budget";
 import ActiveJob from "../interfaces/ActiveJob.interface";
 import { JobContext, JobContextType } from "../JobContext";
 import JobStatus from "../enums/JobStatus.enum";
+import { useChatStore } from "../stores/chatStore";
 //import { sanitizeJobData } from "../server/formatters/JobDataSanitization";
 
 //constant for links to other pages
 
 const links = [
   { name: "Home", href: "/client", selected: true },
-  { name: "Chat", href: "/chat", selected: false }
+  { name: "Chat", href: "/chat", selected: false },
 ];
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
-  const { setJobID } = useContext(JobContext) as JobContextType; 
-  
+  const { setJobID } = useContext(JobContext) as JobContextType;
+
   const [jobCards, setJobCards] = useState<ActiveJob[]>([]);
+  const { fetchJobsWithUsers } = useChatStore();
   const router = useRouter();
 
-  const clientUId = user?.authUser.uid ;
+  const clientUId = user?.authUser.uid;
 
   // Gets JobData data to populate cards, only will show cards created by the user (client)
   async function fetchUserJobs() {
@@ -67,6 +69,17 @@ export default function Page() {
   function refetch() {
     fetchUserJobs();
   }
+
+  // populate JobsWithUsers in ChatStore
+  useEffect(() => {
+    if (!user) return;
+
+    const setup = async () => {
+      await fetchJobsWithUsers(user.authUser.uid, user.userData.type);
+    };
+
+    setup();
+  }, [user, fetchJobsWithUsers]);
 
   return (
     <>

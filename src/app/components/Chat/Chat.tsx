@@ -19,7 +19,7 @@ const Chat = () => {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
-  const [selectedType, setSelectedType] = useState(MessageType.Standard); // standard should be default
+  const [selectedType, setSelectedType] = useState(MessageType.Standard);
   const endRef = useRef<HTMLElement>(null);
 
   const {
@@ -31,29 +31,36 @@ const Chat = () => {
 
   // Auto scroll to latest message
   useEffect(() => {
-    endRef.current?.scrollIntoView({
-      behavior: "smooth",
-    });
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Fetch active conversation
+  // Get Active conversation from chatlink or from navigation to chat page
   useEffect(() => {
     const fetchActiveConversation = async () => {
-      if (!user?.authUser?.uid || activeConversation) {
+      const chatState = useChatStore.getState();
+
+      if (
+        !user?.authUser?.uid ||
+        chatState.activeConversation ||
+        chatState.conversationWasManuallySet
+      ) {
         setLoading(false);
         return;
       }
 
-      // Timer to let chat link redirect you to the chat (increase if needed)
-      await new Promise((resolve) => setTimeout(resolve, 100)); // wait 100ms
+      // Delay slightly in case ChatLink sets state late (can change the timer)
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
-      if (useChatStore.getState().activeConversation) {
+      const updatedState = useChatStore.getState();
+      if (
+        updatedState.activeConversation ||
+        updatedState.conversationWasManuallySet
+      ) {
         setLoading(false);
         return;
       }
 
       try {
-        // fetch jobs active user is contracted to
         const jobs = await getContracted(user.authUser.uid, user.userData.type);
         if (jobs?.[0]) {
           const userData = await getUser(jobs[0].jobData.hiredUId);
@@ -67,22 +74,21 @@ const Chat = () => {
     };
 
     fetchActiveConversation();
-  }, [user, activeConversation]);
+  }, [user, setActiveConversation]);
 
-  // Cleanup effect
+  // Cleanup only if leaving /chat route
   useEffect(() => {
     return () => {
-      if (user?.authUser?.uid) {
+      const stillOnChatPage = pathname.startsWith("/chat");
+      if (!stillOnChatPage && user?.authUser?.uid) {
         setActiveConversation(null, user.authUser.uid);
+        useChatStore.getState().setConversationWasManuallySet(false);
       }
     };
   }, [pathname, user, setActiveConversation]);
 
-  if (loading || !user) {
-    return <section>Loading chat...</section>;
-  }
+  // ----------------------
 
-  // Handler functions
   interface EmojiData {
     emoji: string;
   }
@@ -108,6 +114,10 @@ const Chat = () => {
     } catch (error) {
       console.error("Failed to send message:", error);
     }
+  }
+
+  if (loading || !user) {
+    return <section>Loading chat...</section>;
   }
 
   return (
@@ -227,6 +237,7 @@ const Chat = () => {
             <EmojiPicker open={open} onEmojiClick={handleEmoji} />
           </section>
         </section>
+
         <section className="sendButton">
           <Button
             onClick={handleSendMessage}

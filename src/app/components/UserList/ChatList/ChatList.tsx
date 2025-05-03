@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import InputBar from "../../inputbar/InputBar";
 import "./ChatList.css";
 
@@ -10,23 +10,18 @@ const ChatList = () => {
   const [text, setText] = useState("");
   const { user } = useContext(AuthContext) as AuthContextType;
 
-  const {
-    jobsWithUsers,
-    fetchJobsWithUsers,
-    isLoadingJobs,
-    setActiveConversation,
-    chatPreviews,
-  } = useChatStore();
+  const { jobsWithUsers, isLoadingJobs, setActiveConversation, chatPreviews } =
+    useChatStore();
 
-  useEffect(() => {
-    if (!user) return;
+  // useEffect(() => {
+  //   if (!user) return;
 
-    const setup = async () => {
-      await fetchJobsWithUsers(user.authUser.uid, user.userData.type);
-    };
+  //   const setup = async () => {
+  //     await fetchJobsWithUsers(user.authUser.uid, user.userData.type);
+  //   };
 
-    setup();
-  }, [user, fetchJobsWithUsers]);
+  //   setup();
+  // }, [user, fetchJobsWithUsers]);
 
   // Search Chats
   const filteredJobs = useMemo(() => {

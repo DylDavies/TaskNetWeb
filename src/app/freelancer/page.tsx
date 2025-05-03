@@ -17,6 +17,7 @@ import { formatDateAsString } from "../server/formatters/FormatDates";
 import { formatBudget } from "../server/formatters/Budget";
 import JobStatus from "../enums/JobStatus.enum";
 import { JobContext, JobContextType } from "../JobContext";
+import { useChatStore } from "../stores/chatStore";
 
 //constant for links to other pages
 const links = [
@@ -29,11 +30,10 @@ export default function Page() {
   const [jobData] = useState<JobData | null>(null);
   const { user } = useContext(AuthContext) as AuthContextType;
   const router = useRouter();
-  const [jobCards, setJobCards] = useState<
-    ActiveJob[]
-  >([]);
+  const [jobCards, setJobCards] = useState<ActiveJob[]>([]);
   const FreelancerUId = user?.authUser.uid;
   const { setJobID } = useContext(JobContext) as JobContextType;
+  const { fetchJobsWithUsers } = useChatStore();
 
   async function fetchUserJobs() {
     if (!FreelancerUId) {
@@ -59,6 +59,17 @@ export default function Page() {
     setJobID(job.jobId);
     router.push("/Milestones");
   }
+
+  // populate JobsWithUsers in ChatStore
+  useEffect(() => {
+    if (!user) return;
+
+    const setup = async () => {
+      await fetchJobsWithUsers(user.authUser.uid, user.userData.type);
+    };
+
+    setup();
+  }, [user, fetchJobsWithUsers]);
 
   return (
     <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
