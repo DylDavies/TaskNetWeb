@@ -1,10 +1,7 @@
 "use client";
 import Header from "../components/Header/header";
 import SideBar from "../components/sidebar/SideBar";
-import Button from "../components/button/Button";
 import { useState, useContext, useEffect } from "react";
-import AuthService from "../services/AuthService";
-import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
 import MultiSelect from "../components/MultiSelectBar/MultiSelectBar";
 import { getAllSkills } from "../server/services/SkillsService";
@@ -21,8 +18,8 @@ import JobStatus from "../enums/JobStatus.enum";
 
 //constant for links to other pages
 const links = [
-  { name: "Home", href: "/" },
-  { name: "freelancer", href: "/freelancer" }
+  { name: "Home", href: "/freelancer", selected: false },
+  { name: "Find Jobs", href: "/jobSearch", selected: true },
 ];
 
 
@@ -33,17 +30,10 @@ export default function Page() {
   const [jobNameFilter, setJobNameFilter] = useState("");
   const { user } = useContext(AuthContext) as AuthContextType;
   const [openModal, setModalOpen] = useState(false);
-  const router = useRouter();
   const [data, setData] = useState<ActiveJob>();
   const [clientUsernames, setClientUsernames] = useState<
     Record<string, string>
   >({});
-
-  //signs the user out of google
-  function signoutClick() {
-    AuthService.googleSignout();
-    router.push("/");
-  }
 
   const closeModal = () => {
     setModalOpen(false);        
@@ -176,9 +166,9 @@ export default function Page() {
           <SideBar items={links} />
         </section>
   
-        <section className="flex-1 flex flex-col items-center p-6 gap-6">
+        <section className="flex-1 flex flex-col items-center pt-6 gap-2 h-90">
           {/* Filter Bars */}
-          <section className="w-full max-w-4xl flex flex-col items-center gap-4 mb-10">
+          <section className="w-full max-w-4xl flex flex-col items-center gap-4 mb-5">
             {/* Job Title Filter */}
             <SearchBar
               placeholder="Filter by job title..."
@@ -192,7 +182,7 @@ export default function Page() {
           </section>
   
           {/* Job Cards */}
-          <section className="w-full flex flex-wrap justify-center gap-6">
+          <section className="w-full flex flex-wrap justify-center overflow-y-scroll h-1/2">
             {jobCards.map((job, index) => (
               <JobCard
                 key={index}
@@ -219,7 +209,7 @@ export default function Page() {
   
       {/* Footer */}
       <footer className="py-4 flex justify-end bg-gray-900 box-footer">
-        <Button caption={"Log out"} onClick={() => signoutClick()} />
+        <p>© {new Date().getFullYear()} tasknet.tech</p>
       </footer>
     </section>
   );

@@ -4,11 +4,9 @@ import "../components/Header/Header.css";
 import WelcomeCard from "../components/WelcomeCard/WelcomeCard";
 import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
-import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import "./global.css";
 import { useState, useContext, useEffect } from "react";
-import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
 import JobData from "../interfaces/JobData.interface";
@@ -23,8 +21,8 @@ import { JobContext, JobContextType } from "../JobContext";
 
 //constant for links to other pages
 const links = [
-  { name: "Home", href: "/" },
-  { name: "Find Jobs", href: "/jobSearch" },
+  { name: "Home", href: "/freelancer", selected: true },
+  { name: "Find Jobs", href: "/jobSearch", selected: false },
 ];
 
 export default function Page() {
@@ -35,12 +33,6 @@ export default function Page() {
   const [username, setUsername] = useState<string>("");
   const FreelancerUId = user?.authUser.uid ;
   const { setJobID } = useContext(JobContext) as JobContextType; 
-
-  //signs the user out of google
-  function signoutClick() {
-    AuthService.googleSignout();
-    router.push("/");
-  }
 
   async function fetchUserJobs() {
     if (!FreelancerUId) {
@@ -133,7 +125,7 @@ export default function Page() {
       
       {/* Footer */}
       <footer className="py-4 flex justify-end bg-gray-900 box-footer">
-        <Button caption={"Log out"} onClick={() => signoutClick()} />
+        <p>© {new Date().getFullYear()} tasknet.tech</p>
       </footer>
     </section>
   );

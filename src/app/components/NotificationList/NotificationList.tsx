@@ -1,7 +1,7 @@
 import { useContext } from "react";
-import { NotificationContext, NotificationContextType } from "../NotificationContext";
+import { NotificationContext, NotificationContextType } from "../../NotificationContext";
 import NotificationListItem from "./NotificationListItem";
-import { deleteNotification, markAllNotificationsAsSeenForUser, setNotificationSeen } from "../server/services/NotificationService";
+import { deleteNotification, markAllNotificationsAsSeenForUser, setNotificationSeen } from "../../server/services/NotificationService";
 
 const NotificationList = () => {
     const { notifications } = useContext(NotificationContext) as NotificationContextType;
