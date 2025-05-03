@@ -1,6 +1,6 @@
 .chatList{
     flex: 1;
-    overflow-y: scroll;
+    overflow-y: auto;
     background-color: #111827;
 
     /* scrollbar customization*/

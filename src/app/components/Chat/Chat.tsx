@@ -11,6 +11,7 @@ import { sendMessage } from "@/app/server/services/MessageDatabaseServices";
 import MessageStatus from "@/app/enums/MessageStatus.enum";
 import MessageType from "@/app/enums/MessageType.enum";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 const Chat = () => {
   const { user } = useContext(AuthContext) as AuthContextType;
@@ -215,17 +216,30 @@ const Chat = () => {
         />
 
         <section className="emoji">
-          <img
+          <Image
             src="/images/emoji.png"
             alt="emoji"
             onClick={() => setOpen((prev) => !prev)}
+            width={20}
+            height={20}
           />
           <section className="picker">
             <EmojiPicker open={open} onEmojiClick={handleEmoji} />
           </section>
         </section>
         <section className="sendButton">
-          <Button caption="Send" onClick={handleSendMessage} />
+          <Button
+            onClick={handleSendMessage}
+            icon={
+              <Image
+                src="/images/Send_button.png"
+                alt="Send"
+                width={20}
+                height={20}
+              />
+            }
+            style={{ padding: "10px 15px" }}
+          />
         </section>
       </section>
     </section>

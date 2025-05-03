@@ -5,6 +5,7 @@ import AuthService from "@/app/services/AuthService";
 import { useChatStore } from "@/app/stores/chatStore";
 import { formatDateAsString } from "@/app/server/formatters/FormatDates";
 import MessageType from "@/app/enums/MessageType.enum";
+import Image from "next/image";
 
 const Detail = () => {
   const router = useRouter();
@@ -34,7 +35,6 @@ const Detail = () => {
   return (
     <section className="detail">
       <section className="user">
-        {/*<img src="avatar.png" alt="" />*/}
         <section className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-semibold text-sm sm:text-base">
           {activeConversation?.userData?.username.charAt(0)}
         </section>
@@ -89,7 +89,18 @@ const Detail = () => {
             )}
           </section>
         </section>
-        <Button caption="Logout" onClick={() => signoutClick()} />
+        <Button
+          onClick={() => signoutClick()}
+          icon={
+            <Image
+              src="/images/logout_button.png"
+              alt="Send"
+              width={20}
+              height={20}
+            />
+          }
+          caption="Logout"
+        />
       </section>
     </section>
   );
