@@ -1,15 +1,16 @@
 "use client";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import formatDateAsNumber, { formatDateAsString } from "@/app/server/formatters/FormatDates";
 import { JobContext, JobContextType } from "@/app/JobContext";
 import MilestoneData from "@/app/interfaces/Milestones.interface";
 import { getMilestones } from "@/app/server/services/MilestoneService";
 import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
 import "./MilestonesTable.css";
-import { createNotification } from "@/app/server/services/NotificationService";
+import { createNotification, getNotificationsForUser } from "@/app/server/services/NotificationService";
 
 type JobData = {
   hiredUId:string;
+  title:string;
 };
 
 interface Props {
@@ -20,42 +21,69 @@ interface Props {
   setMilestones: React.Dispatch<React.SetStateAction<MilestoneData[]>>;
   
 }
-
 const MilestonesTable = ({data, onMilestoneClick, refresh, milestones,setMilestones}: Props) => {
 
   const { jobID } = useContext(JobContext) as JobContextType;
   const currentDate = formatDateAsNumber(new Date());
-  const hiredID = data.hiredUId
+  const hiredID = data.hiredUId;
+  const jobTitle = data.title;
+  const sentRef = useRef(false);
 
   useEffect(() => {
     async function fetchMilestones() {
-      if (!jobID) return;
+      if (!jobID || !hiredID) return;
+  
       try {
         const data = await getMilestones(jobID);
-        // Sort milestones by deadline (closest first)
         const sortedData = [...data].sort((a, b) => a.deadline - b.deadline);
         setMilestones(sortedData);
-
-        for (const milestone of sortedData) {
-        const milestoneDate = milestone.deadline;
-        const isDeadlinePassed = milestoneDate < currentDate;
-        const isIncomplete = milestone.status !== MilestoneStatus.Completed;
-
-        if (isDeadlinePassed && isIncomplete && hiredID) {
-          await createNotification({
-            message: `Deadline passed for milestone "${milestone.title}"`,
-            seen: false,
-            uidFor: hiredID,
-          });
-        }
-      }
       } catch (error) {
         console.error("Error fetching milestones:", error);
       }
     }
   
     fetchMilestones();
-  }, [jobID, refresh,setMilestones]);
+  }, [jobID, hiredID, refresh]);
+
+  useEffect(() => {
+    async function handleNotifications() {
+      if (!milestones.length || sentRef.current) return;
+  
+      try {
+        const existingNotifications = await getNotificationsForUser(hiredID);
+  
+        for (const milestone of milestones) {
+          const isDeadlinePassed = milestone.deadline < currentDate;
+          const isIncomplete =
+            milestone.status !== MilestoneStatus.Completed &&
+            milestone.status !== MilestoneStatus.Approved;
+  
+          if (isDeadlinePassed && isIncomplete) {
+            const notificationExists = existingNotifications.some((notif) => {
+              const isMatchingMessage =
+                notif.message.includes(`Deadline passed for milestone "${milestone.title}"`) &&
+                notif.message.includes(`for job "${jobTitle}"`);
+              return isMatchingMessage && notif.deleted === false;
+            });
+  
+            if (!notificationExists) {
+              await createNotification({
+                message: `Deadline passed for milestone "${milestone.title}" for job "${jobTitle}"`,
+                seen: false,
+                uidFor: hiredID,
+              });
+            }
+          }
+        }
+  
+        sentRef.current = true;
+      } catch (error) {
+        console.error("Error handling notifications:", error);
+      }
+    }
+  
+    handleNotifications();
+  }, [milestones, currentDate, hiredID, jobTitle]);
 
   function MilestoneStatusToString(value: MilestoneStatus| undefined): string {
     if (value === undefined) return 'Unknown';
@@ -97,8 +125,8 @@ const MilestonesTable = ({data, onMilestoneClick, refresh, milestones,setMilesto
                   <p className="font-semibold">Payment: R{item.payment}</p>
                   <p className="text-xs text-gray-400">
                     Deadline: {formatDateAsString(item.deadline)}
-                    {item.deadline < currentDate && item.status !== MilestoneStatus.Completed && (
-                    <section className="text-red-500 font-semibold"> – Deadline has passed</section>
+                    {item.deadline < currentDate && item.status !== MilestoneStatus.Completed && item.status !== MilestoneStatus.Approved && (
+                    <section className="text-red-500 font-semibold">Deadline has passed</section>
                     )}
                   </p>
                 </section>

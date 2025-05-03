@@ -46,7 +46,7 @@ const ChatList = () => {
       <section className="search">
         <InputBar
           type="text"
-          placeholder="Search Chats..."
+          placeholder="Search Users..."
           className="input-class searchbar"
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -74,15 +74,17 @@ const ChatList = () => {
                 {item.userData?.username.charAt(0)}
               </section>
               <section className="texts">
-                <em>{item.userData?.username}</em>
+                <section className="username-unread">
+                  <em>{item.userData?.username}</em>
+                  {preview.unreadCount > 0 && (
+                    <em className="unread-pill">{preview.unreadCount}</em>
+                  )}
+                </section>
                 <p title={preview.latestMessage}>
                   {preview.senderUId === user?.authUser.uid
                     ? `You: ${truncateText(preview.latestMessage)}`
                     : truncateText(preview.latestMessage)}
                 </p>
-                {preview.unreadCount > 0 && (
-                  <em className="unread-pill">{preview.unreadCount}</em>
-                )}
               </section>
             </section>
           );

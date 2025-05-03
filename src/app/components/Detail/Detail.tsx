@@ -3,7 +3,7 @@ import "./Detail.css";
 import { useRouter } from "next/navigation";
 import AuthService from "@/app/services/AuthService";
 import { useChatStore } from "@/app/stores/chatStore";
-import { formatDateAsDate } from "@/app/server/formatters/FormatDates";
+import { formatDateAsString } from "@/app/server/formatters/FormatDates";
 import MessageType from "@/app/enums/MessageType.enum";
 
 const Detail = () => {
@@ -62,7 +62,7 @@ const Detail = () => {
               </p>
               <p>
                 {"Deadline: " +
-                  formatDateAsDate(activeConversation.job.jobData.deadline)}
+                  formatDateAsString(activeConversation.job.jobData.deadline)}
               </p>
             </section>
           </section>

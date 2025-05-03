@@ -101,12 +101,20 @@
 
                 .text{
                     p{
+                        padding: 20px 30px;
                         background-color: #111827;
                         box-shadow: 
                         0 2px 4px rgba(0, 0, 0, 0.3), /* Stronger shadow for depth */
                         0 1px 2px rgba(0, 0, 0, 0.2);
                     }
+
+                    em{
+                      font-size: 12; /*font size of date/ when message was sent*/
+                      text-align: right;
+                  }
                 }
+
+
             }
 
             img{
@@ -134,12 +142,16 @@
                 }
 
                 p{
-                    padding: 20px;
+                    padding: 20px 30px;
                     background-color: #1f2937;/*rgba(17, 25, 40, 0.3);  if not our own message*/
                     box-shadow: 
-                    0 2px 4px rgba(0, 0, 0, 0.3), /* Stronger shadow for depth */
+                    0 2px 4px rgba(0, 0, 0, 0.3),
                     0 1px 2px rgba(0, 0, 0, 0.2);
-                    border-radius: 30px; /*for the circular style on messages*/
+                    border-radius: 30px;  /*for the circular style on messages*/
+
+                    width: fit-content;
+                    max-width: 100%;
+                    word-wrap: break-word;
                 }
 
                 em{

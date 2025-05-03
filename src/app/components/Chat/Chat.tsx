@@ -153,13 +153,10 @@ const Chat = () => {
                   <section className="meta">
                     <em>{formattedDate}</em>
                     {message.messageData.type === MessageType.Feedback && (
-                      <span
-                        className="dot feedback-dot"
-                        title="Feedback"
-                      ></span>
+                      <em className="dot feedback-dot" title="Feedback"></em>
                     )}
                     {message.messageData.type === MessageType.Concern && (
-                      <span className="dot concern-dot" title="Concern"></span>
+                      <em className="dot concern-dot" title="Concern"></em>
                     )}
                   </section>
                 </section>

@@ -65,7 +65,7 @@ const FATable = ({ jobName }: Props) => {
       await createChat(jid, jobName); // Create a chat for this job
 
       for await (const applicant of pendingApplicants) {
-        if (applicant.ApplicantID == aid) continue;
+        if (applicant.ApplicantID == uid) continue;
         await rejectApplicant(applicant.ApplicationID);
 
         await createNotification({

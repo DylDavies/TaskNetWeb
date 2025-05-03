@@ -14,12 +14,13 @@ import { AuthContext, AuthContextType } from "../AuthContext";
 import JobData from "../interfaces/JobData.interface";
 import JobCard from "../components/JobOverview/JobOverview";
 import ActiveJob from "../interfaces/ActiveJob.interface";
-import { getUsername } from "../server/services/DatabaseService";
+import { getUser } from "../server/services/DatabaseService";
 import { getJobsByFreelancerID } from "../server/services/JobDatabaseService";
 import { formatDateAsString } from "../server/formatters/FormatDates";
 import { formatBudget } from "../server/formatters/Budget";
 import JobStatus from "../enums/JobStatus.enum";
 import { JobContext, JobContextType } from "../JobContext";
+import UserData from "../interfaces/UserData.interface";
 
 //constant for links to other pages
 const links = [
@@ -32,8 +33,9 @@ export default function Page() {
   const [jobData] = useState<JobData | null>(null);
   const { user } = useContext(AuthContext) as AuthContextType;
   const router = useRouter();
-  const [jobCards, setJobCards] = useState<ActiveJob[]>([]);
-  const [username, setUsername] = useState<string>("");
+  const [jobCards, setJobCards] = useState<
+    { job: ActiveJob; client: UserData | null }[]
+  >([]);
   const FreelancerUId = user?.authUser.uid;
   const { setJobID } = useContext(JobContext) as JobContextType;
 
@@ -50,23 +52,20 @@ export default function Page() {
     }
     try {
       const jobs = await getJobsByFreelancerID(FreelancerUId);
-      setJobCards(jobs);
+
+      const arr: { job: ActiveJob; client: UserData | null }[] = [];
+
+      for await (const j of jobs) {
+        arr.push({ job: j, client: await getUser(j.jobData.clientUId) });
+      }
+
+      setJobCards(arr);
     } catch (error) {
       console.error("Error occurred when trying to fetch Jobs: ", error);
     }
   }
   useEffect(() => {
     fetchUserJobs();
-  }, [FreelancerUId]);
-
-  useEffect(() => {
-    async function fetchUsername() {
-      if (FreelancerUId) {
-        const name = await getUsername(FreelancerUId);
-        setUsername(name);
-      }
-    }
-    fetchUsername();
   }, [FreelancerUId]);
 
   function handleCardClick(job: ActiveJob): void {
@@ -112,21 +111,24 @@ export default function Page() {
             </h3>
             <section className="border-2 border-gray-600 rounded-lg p-4 flex flex-wrap justify-center gap-6">
               {jobCards.length > 0 ? (
-                jobCards.map((job, index) => (
-                  <JobCard
-                    key={index}
-                    company={username}
-                    jobTitle={job.jobData.title}
-                    budget={formatBudget(
-                      job.jobData.budgetMin,
-                      job.jobData.budgetMax
-                    )}
-                    deadline={formatDateAsString(job.jobData.deadline)}
-                    skills={Object.values(job.jobData.skills).flat()}
-                    onClick={() => handleCardClick(job)}
-                    hired={job.jobData.status}
-                  />
-                ))
+                jobCards.map((job, index) => {
+                  return (
+                    <JobCard
+                      key={index}
+                      company={job.client?.username || "..."}
+                      jobTitle={job.job.jobData.title}
+                      budget={formatBudget(
+                        job.job.jobData.budgetMin,
+                        job.job.jobData.budgetMax
+                      )}
+                      deadline={formatDateAsString(job.job.jobData.deadline)}
+                      skills={Object.values(job.job.jobData.skills).flat()}
+                      onClick={() => handleCardClick(job.job)}
+                      hired={job.job.jobData.status}
+                      avatar={job.client?.avatar}
+                    />
+                  );
+                })
               ) : (
                 <p className="text-gray-300 text-lg">No job postings yet.</p>
               )}

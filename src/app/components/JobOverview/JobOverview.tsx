@@ -1,6 +1,7 @@
 import React from "react";
 import "./JobOverview.css";
 import JobStatus from "@/app/enums/JobStatus.enum";
+import Image from "next/image";
 
 /*
 --- NOTE ON USE ---
@@ -41,6 +42,7 @@ interface JobCardProps {
   skills: string[];
   hired?: JobStatus;
   onClick?: () => void;
+  avatar?: string
 }
 
 const JobCard: React.FC<JobCardProps> = ({
@@ -51,6 +53,7 @@ const JobCard: React.FC<JobCardProps> = ({
   skills,
   hired,
   onClick,
+  avatar
 }) => {
   const displayName = company;
   const initial = displayName.charAt(0).toUpperCase();
@@ -66,9 +69,15 @@ const JobCard: React.FC<JobCardProps> = ({
         <section className="col-span-12 flex justify-between items-center mb-2">
           {/* Icon and Job Title */}
           <section className="flex items-center space-x-3">
-            <section className="w-10 h-10 rounded-full bg-purple-800 text-white flex items-center justify-center font-semibold text-base">
-              {initial}
-            </section>
+      { avatar ?
+      (
+        <Image src={avatar} alt="Avatar" className="w-10 h-10 rounded-full" width={200} height={200}></Image>
+      )
+      : (
+        <section className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-semibold text-sm sm:text-base">
+          {initial}
+        </section>
+      )}
             <h2 className="text-xl font-bold text-gray-300">{jobTitle}</h2>
           </section>
 

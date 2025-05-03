@@ -1,4 +1,4 @@
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '@/app/firebase';
 import ApplicationStatus from '@/app/enums/ApplicationStatus.enum';
 import { uploadFile } from './DatabaseService';
@@ -40,8 +40,13 @@ async function AddApplication(ApplicantID: string, BidAmount: number, CVURL: str
       });  
 }
 
+async function hasApplied(AID: string, JobID: string): Promise<boolean> {
+    const ref = await getDoc(doc(db, "applications", makeApplicationID(JobID, AID)));
+    return ref.exists();
+}
+
 function makeApplicationID(jid: string, uid: string){
     return jid+uid;
 }
 
-export {AddApplication, makeApplicationID, uploadCV};
+export {AddApplication, makeApplicationID, uploadCV, hasApplied};

@@ -15,6 +15,7 @@ import {  sanitizeMilestoneData } from "@/app/server/formatters/MilestoneDataSan
 import { addMilestone, getMilestones } from "@/app/server/services/MilestoneService";
 import { JobContext, JobContextType } from "@/app/JobContext";
 import { getJob } from "@/app/server/services/JobDatabaseService";
+import { createNotification } from "@/app/server/services/NotificationService";
 
 
  interface Props {
@@ -103,12 +104,12 @@ const CreateMilestone = ({refetch}: Props) => {
         
         // Check against job deadline if available
         if (jobDeadline && dateAsNumber >= jobDeadline) {
-            toast.error(`Milestone deadline must be before job deadline`);
+            toast.error("Milestone deadlines must be before the job deadline");
             return;
         }
         // Check against previous milestones (if any exist)
         if (prevMilestoneDeadline && dateAsNumber <= prevMilestoneDeadline) {
-            toast.error(`Milestone deadline must be after existing milestones`);
+            toast.error("Milestone deadlines must be after the deadlines of  existing milestones");
         return;
     }
 
@@ -188,6 +189,19 @@ const CreateMilestone = ({refetch}: Props) => {
         }
         try {
             await addMilestone(jobID,sanitizedMilestoneData);
+            const jobData = await getJob(jobID)
+            const hiredUID = jobData?.hiredUId;
+
+            if (!hiredUID) {
+                throw new Error("Job does not have a hiredUId assigned.");
+              }
+            
+              await createNotification({
+                message: `New milestone "${milestone.title}" for job "${jobData.title}"`,
+                seen: false,
+                uidFor: hiredUID,
+              });
+            
             toast.success("Milestone created successfully!");
             refetch();
             closeModal(); // Close the modal after successful creation
