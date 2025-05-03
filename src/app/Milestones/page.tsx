@@ -12,13 +12,17 @@ import React, { useContext, useEffect, useState } from "react";
 import AuthService from "../services/AuthService";
 import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
-import { getJob } from "../server/services/JobDatabaseService";
+import { getJob, updateJobStatus } from "../server/services/JobDatabaseService";
 import { JobContext, JobContextType } from "../JobContext";
 import UserType from "../enums/UserType.enum";
 import MilestonesTable from "../components/MilestonesTable.tsx/MilestonesTable";
 import CreateMilestone from "../components/CreateMilestone/CreateMilestone";
 import MilestoneData from "../interfaces/Milestones.interface";
 import ViewMilestones from "../components/viewMilestoneFreelancer/viewMilestoneFreelancer";
+import MilestoneProgressBar from "../components/MilestoneProgressBar/MilestoneProgressBar";
+import JobData from "../interfaces/JobData.interface";
+import JobStatus from "../enums/JobStatus.enum";
+import { createNotification } from "../server/services/NotificationService";
 
 const linksClient = [
   { name: "back", href: "/client" }];
@@ -39,6 +43,9 @@ export default function Page() {
   const [selectedMilestone, setSelectedMilestone] = useState<MilestoneData | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(false);
+  const [milestones, setMilestones] = useState<MilestoneData[]>([]);
+  const [job, setJob] = useState<JobData>();
+  const [hasNotifiedCompletion, setHasNotifiedCompletion] = useState(false);
   
   function refetch() {
     setRefreshFlag(prev => !prev);
@@ -68,6 +75,8 @@ export default function Page() {
   const [jobTitle, setJobTitle] = useState<string>("");
   const [clientUID, setClientUID] = useState<string>("")
 
+  
+
   //To set the job title of the page
   useEffect(() => {
     async function fetchJobTitle() {
@@ -76,6 +85,7 @@ export default function Page() {
         if (job) {
           setJobTitle(job.title);
           setClientUID(job.clientUId) // assumes title exists
+          setJob(job)
         }
       } catch (err) {
         console.error("Failed to fetch job:", err);
@@ -89,6 +99,41 @@ export default function Page() {
     setModalOpen(true);
     setSelectedMilestone(milestone);
   }
+  
+  // Calculate progress
+  const completedCount = milestones.filter(m => m.status === 3 || m.status === 2).length;
+  const progress = milestones.length > 0 ? Math.round((completedCount / milestones.length) * 100) : 0;
+
+  useEffect(() => {
+    if (
+      progress === 100 &&
+      job &&
+      job.status !== JobStatus.Completed &&
+      jobID &&
+      clientUID &&
+      !hasNotifiedCompletion
+    ) {
+      const completeJob = async () => {
+        try {
+          await updateJobStatus(jobID, JobStatus.Completed);
+  
+          await createNotification({
+            message: `${job.title} - has been completed.`,
+            seen: false,
+            uidFor: clientUID
+          });
+  
+          setHasNotifiedCompletion(true);
+        } catch (error) {
+          console.error("Error completing job or sending notification:", error);
+        }
+      };
+  
+      completeJob();
+    }
+  }, [progress, job, jobID, clientUID, hasNotifiedCompletion]);
+
+  
 
   return (
     <>
@@ -112,6 +157,12 @@ export default function Page() {
                     Milestones for <strong className="">{jobTitle || "..."}</strong>
                 </h1>
               </section>
+              <section className="mt-4 w-full flex flex-col items-center ">
+                  <p className="text-gray-300 mb-2 max-w-4xl flex justify-center ">
+                  Progress: {progress}% ({completedCount}/{milestones.length} milestones)
+                  </p>
+                    <MilestoneProgressBar progress={progress} />
+                </section>
               <section>
                 <h2 className="text-xl font-semibold text-gray-300">
                     {user?.userData.type === UserType.Client
@@ -122,15 +173,19 @@ export default function Page() {
               </h2>
               </section>
 
-            <section className="w-full max-w-8xl flex justify-start mb-4 ">
+            <section className="w-full max-w-8xl flex justify-start mb-4 cursor-pointer ">
                 {(user?.userData.type === UserType.Client || user?.userData.type === UserType.Admin) && (
-                <CreateMilestone refetch={refetch} />
+                <CreateMilestone refetch={refetch}  />
                 )}
             </section>
                
 
-              <section className="w-full max-w-8xl mt-36">
-                <MilestonesTable onMilestoneClick={handleMilestoneClick} refresh={refreshFlag}/>
+              <section className="w-full max-w-8xl mt-12">
+                {job && (
+                    <MilestonesTable data={job} onMilestoneClick={handleMilestoneClick} refresh={refreshFlag} milestones={milestones} setMilestones={setMilestones} />
+                )
+                }
+                
               </section>
               {selectedMilestone && modalOpen && jobID && (
                 <ViewMilestones

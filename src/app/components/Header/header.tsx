@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import Notifications from "../Notifications/Notifications";
 import "./Header.css";
+import { AuthContext, AuthContextType } from "@/app/AuthContext";
+import Image from "next/image";
 
 type Props = {
   usertype: string; // freelancer or client to determine the messag
@@ -9,6 +11,7 @@ type Props = {
 
 // Dynamic, enter a usertype and name to create
 const Header: React.FC<Props> = ({ usertype, name }) => {
+  const { user } = useContext(AuthContext) as AuthContextType;
   const initial = name.charAt(0).toUpperCase();
 
   return (
@@ -38,9 +41,16 @@ const Header: React.FC<Props> = ({ usertype, name }) => {
       <Notifications></Notifications>
 
       {/* Profile Photo */}
-      <section className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-semibold text-sm sm:text-base">
-        {initial}
-      </section>
+      { user?.userData.avatar ?
+      (
+        <Image src={user.userData.avatar} alt="Avatar" className="w-9 h-9 sm:w-10 sm:h-10 rounded-full" width={200} height={200}></Image>
+      )
+      : (
+        <section className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-semibold text-sm sm:text-base">
+          {initial}
+        </section>
+      )}
+
 
       {/* User Name */}
       <section className="text-gray-200 font-medium text-sm sm:text-base">

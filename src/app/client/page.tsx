@@ -15,7 +15,6 @@ import JobCard from "../components/JobOverview/JobOverview";
 import { getJobsByClientID } from "../server/services/JobDatabaseService";
 import { formatDateAsString } from "../server/formatters/FormatDates";
 import { formatBudget } from "../server/formatters/Budget";
-import { getUsername } from "../server/services/DatabaseService";
 import ActiveJob from "../interfaces/ActiveJob.interface";
 import { JobContext, JobContextType } from "../JobContext";
 import JobStatus from "../enums/JobStatus.enum";
@@ -40,7 +39,6 @@ export default function Page() {
     router.push("/");
   }
   const clientUId = user?.authUser.uid ;
-  const [username, setUsername] = useState<string>("");
 
   // Gets JobData data to populate cards, only will show cards created by the user (client)
   async function fetchUserJobs() {
@@ -57,16 +55,6 @@ export default function Page() {
   }
   useEffect(() => {
     fetchUserJobs();
-  }, [clientUId]);
-  
-  useEffect(() => {
-    async function fetchUsername() {
-      if (clientUId) {
-        const name = await getUsername(clientUId);
-        setUsername(name);
-      }
-    }
-    fetchUsername();
   }, [clientUId]);
  
 
@@ -125,13 +113,14 @@ export default function Page() {
                 jobCards.map((job, index) => (
                   <JobCard
                     key={index}
-                    company={username}
+                    company={user?.userData.username || "..."}
                     jobTitle={job.jobData.title}
                     budget={formatBudget(job.jobData.budgetMin, job.jobData.budgetMax)}
                     deadline={formatDateAsString(job.jobData.deadline)}
                     skills={Object.values(job.jobData.skills).flat()}
                     onClick={() => handleCardClick(job)}
                     hired={job.jobData.status}
+                    avatar={user?.userData.avatar}
                   />
                 ))
               ) : (

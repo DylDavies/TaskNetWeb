@@ -15,6 +15,7 @@ import {  sanitizeMilestoneData } from "@/app/server/formatters/MilestoneDataSan
 import { addMilestone, getMilestones } from "@/app/server/services/MilestoneService";
 import { JobContext, JobContextType } from "@/app/JobContext";
 import { getJob } from "@/app/server/services/JobDatabaseService";
+import { createNotification } from "@/app/server/services/NotificationService";
 
 
  interface Props {
@@ -88,6 +89,25 @@ const CreateMilestone = ({refetch}: Props) => {
         // Check if date is valid
         if (isNaN(newDate.getTime())) {
             toast.error("Invalid date format");
+            return;
+        }
+
+        const dateAsNumber = formatDateAsNumber(newDate);
+        
+        // Check against job deadline if available
+        if (jobDeadline && dateAsNumber >= jobDeadline) {
+            toast.error("Milestone deadlines must be before the job deadline");
+            return;
+        }
+        // Check against previous milestones (if any exist)
+        if (prevMilestoneDeadline && dateAsNumber <= prevMilestoneDeadline) {
+            toast.error("Milestone deadlines must be after the deadlines of  existing milestones");
+        return;
+    }
+
+        //  Check if deadline is in the future
+        if (newDate <= new Date()) {
+            toast.error("Please ensure the deadline is in the future");
             return;
         }
         
@@ -179,6 +199,19 @@ const CreateMilestone = ({refetch}: Props) => {
         }
         try {
             await addMilestone(jobID,sanitizedMilestoneData);
+            const jobData = await getJob(jobID)
+            const hiredUID = jobData?.hiredUId;
+
+            if (!hiredUID) {
+                throw new Error("Job does not have a hiredUId assigned.");
+              }
+            
+              await createNotification({
+                message: `New milestone "${milestone.title}" for job "${jobData.title}"`,
+                seen: false,
+                uidFor: hiredUID,
+              });
+            
             toast.success("Milestone created successfully!");
             refetch();
             closeModal(); // Close the modal after successful creation

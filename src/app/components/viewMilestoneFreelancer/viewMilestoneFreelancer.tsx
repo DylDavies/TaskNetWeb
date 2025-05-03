@@ -192,6 +192,58 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, modalIsOpen, refetch}) 
                         </fieldset>
                     </section>)
                 }
+
+                {role === "freelancer" && status === MilestoneStatus.Completed && data.milestone.reportURL && (
+                    <section>
+                    <h4 className="font-semibold text-sm mb-1">My progress report/review</h4>
+            
+                    <nav className="mt-2 text-sm">
+                        {data.milestone.reportURL ? (
+                            <a
+                                href={data.milestone.reportURL} 
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-400 underline"
+                            >
+                                Download the milestone progress report
+                            </a>
+                        ) : (
+                            <output className="text-gray-500 italic">
+                                No report was uploaded for this milestone
+                            </output>
+                            )}
+                    </nav>
+                    <p className="italic">Waiting for the client to approve this milestone.</p>
+                    </section>
+                    
+                )
+                }
+
+                {role === "freelancer" && status === MilestoneStatus.Approved && data.milestone.reportURL && (
+                    <section>
+                    <h4 className="font-semibold text-sm mb-1">My progress report/review</h4>
+            
+                    <nav className="mt-2 text-sm">
+                        {data.milestone.reportURL ? (
+                            <a
+                                href={data.milestone.reportURL} 
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-400 underline"
+                            >
+                                Download the milestone progress report
+                            </a>
+                        ) : (
+                            <output className="text-gray-500 italic">
+                                No report was uploaded for this milestone
+                            </output>
+                            )}
+                    </nav>
+                    <p className="italic">The client has approved your report.</p>
+                    </section>
+                    
+                )
+                }
                 
                 {role === "freelancer" && status === MilestoneStatus.Completed && !data.milestone.reportURL && (
                     <>
@@ -227,10 +279,10 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, modalIsOpen, refetch}) 
         )}
 
                 {role === "client" && status === MilestoneStatus.Completed && (
-                    <section>
+                    <section >
                         <h4 className="font-semibold text-sm mb-1">Freelancer progress report/review</h4>
             
-                        <nav className="mt-2 text-sm">
+                        <nav className="mt-2 text-sm ">
                             {data.milestone.reportURL ? (
                                 <a
                                     href={data.milestone.reportURL} 
@@ -246,6 +298,7 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, modalIsOpen, refetch}) 
                                 </output>
                                 )}
                         </nav>
+                        <article className="mt-4">
                         <Button 
                             caption={isApproving ? "Approving..." : "Approve"}
                             onClick={async () => {
@@ -264,6 +317,7 @@ const ViewMilestones: React.FC<Props> = ({data, onClose, modalIsOpen, refetch}) 
                             }}
     
                         />
+                        </article>
                         
                     </section>
                     

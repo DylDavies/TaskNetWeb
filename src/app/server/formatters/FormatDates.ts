@@ -16,21 +16,14 @@ const formatDateAsString = (dateNum?: number) => {
 };
 
 
-const formatDateAsDate = (dateNum?: number): string => {
-    if (dateNum == undefined) return "Not specified"; // null or undefined 
-
+const formatDateAsDate = (dateNum: number): Date => {
     const dateStr = dateNum.toString();
-    if (dateStr.length !== 8) return "Invalid date"; // Ensure YYYYMMDD format
 
     const year = dateStr.substring(0, 4);
     const month = dateStr.substring(4, 6);
     const day = dateStr.substring(6, 8);
     
-    return new Date(`${year}-${month}-${day}`).toLocaleDateString('en-GB', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    return new Date(`${year}-${month}-${day}`);
 };
 
 function formatDateAsNumber(date: Date): number {

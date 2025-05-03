@@ -16,7 +16,7 @@ interface JobData {
   skills: string[]; // Added skills array
 }
 
-const ViewJobModal = ({ job, onClose, onApply }: { job: JobData, onClose: () => void, onApply: () => void}) => {
+const ViewJobModal = ({ job, onClose, onApply, applied }: { job: JobData, onClose: () => void, onApply: () => void, applied: boolean}) => {
 
 return (
     <section className="fixed inset-0 flex items-center justify-center z-50">
@@ -79,7 +79,7 @@ return (
               ))}
             </section>
           </section>
-          <Button caption={"Apply"} onClick={onApply}/>
+          <Button caption={applied ? "Apply Again" : "Apply"} onClick={onApply}/>
         </section>
       </article>
     </section>
