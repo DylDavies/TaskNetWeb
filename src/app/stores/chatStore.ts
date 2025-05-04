@@ -6,7 +6,7 @@ import { db } from '../firebase';
 import MessageData from '../interfaces/MessageData.interface';
 import UserType from '../enums/UserType.enum';
 import UserStatus from '../enums/UserStatus.enum';
-import { createNotification } from '../server/services/NotificationService';
+// import { createNotification } from '../server/services/NotificationService';
 import JobData from '../interfaces/JobData.interface';
 import MessageStatus from '../enums/MessageStatus.enum';
 
@@ -220,15 +220,15 @@ export const useChatStore = create<ChatStore>((set) => ({
 
           const isCurrentChat = useChatStore.getState().activeConversation?.job.jobId === jobId;
           if (!isCurrentChat) {
-            const jobData = jobMap[jobId];
-            const notificationRecipient =
-              newMessage.senderUId === jobData.hiredUId ? jobData.clientUId : jobData.hiredUId;
+            // const jobData = jobMap[jobId];
+            // const notificationRecipient =
+            //   newMessage.senderUId === jobData.hiredUId ? jobData.clientUId : jobData.hiredUId;
 
-            createNotification({
-              message: `New message for job "${jobData.title}": ${newMessage.message}`,
-              seen: false,
-              uidFor: notificationRecipient,
-            });
+            // createNotification({
+            //   message: `New message for job "${jobData.title}": ${newMessage.message}`,
+            //   seen: false,
+            //   uidFor: notificationRecipient,
+            // });
           }
         }
       });
