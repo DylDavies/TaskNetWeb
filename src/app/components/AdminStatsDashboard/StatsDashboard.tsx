@@ -14,10 +14,10 @@ import { exportStatsToPDF } from '@/app/services/AnalyticsServices';
 
 function ErrorFallback({ error }: { error: Error }) {
   return (
-    <div role="alert" className="p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+    <section role="alert" className="p-4 bg-red-100 border border-red-400 text-red-700 rounded">
       <p>Something went wrong:</p>
       <pre className="mt-2 text-sm">{error.message}</pre>
-    </div>
+    </section>
   );
 }
 

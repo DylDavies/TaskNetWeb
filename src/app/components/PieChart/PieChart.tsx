@@ -43,8 +43,8 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({ data, colors, tit
               }}
               itemStyle={{ color: '#ffffff' }}
               formatter={(value, name) => [
-                <span key="value" style={{ color: 'white' }}>{value}</span>,
-                <span key="name" style={{ color: 'white' }}>{name}</span>,
+                <section key="value" style={{ color: 'white' }}>{value}</section>,
+                <section key="name" style={{ color: 'white' }}>{name}</section>,
               ]}
             />
           </PieChart>
