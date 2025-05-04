@@ -18,11 +18,15 @@ export type AuthContextType = {
   user: ActiveUser | null;
 };
 
-const routes: { [key: string]: UserType } = {
-  "/client": UserType.Client,
-  "/freelancer": UserType.Freelancer,
-  "/admin": UserType.Admin,
-  "/signup": UserType.None
+const routes: { [key: string]: UserType[] } = {
+  "/client": [UserType.Client],
+  "/freelancer": [UserType.Freelancer],
+  "/admin": [UserType.Admin],
+  "/signup": [UserType.None],
+  "/chat": [UserType.Client, UserType.Freelancer],
+  "/FreelancerApplicationView": [UserType.Client],
+  "/jobSearch": [UserType.Freelancer],
+  "/Milestones": [UserType.Client, UserType.Freelancer]
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -119,7 +123,7 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
               return;
             } else {
               if (user.userData.status == UserStatus.Approved) {
-                const allowed = routes[path] === user.userData.type || user.userData.type === UserType.Admin;
+                const allowed = routes[path].some(val => val == user.userData.type) || user.userData.type === UserType.Admin;
                 
                 if (!allowed) {
                     switch (user.userData.type) {

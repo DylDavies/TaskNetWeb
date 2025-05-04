@@ -13,12 +13,8 @@ import AnalyticsPage from "../components/AdminStatsDashboard/StatsDashboard";
 import DashboardContent from "../components/AdminDashboard/AdminDashboard";
 
 
-const links = [
-  { name: "Home", href: "/admin", selected: false }];
-
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
-
 
   function handleViewChange(){
     if (buttonName == "View Analytics"){
@@ -40,7 +36,7 @@ export default function Page() {
   const ChangeViewButton = () => {
     return(
       <section>
-      <button  onClick={() => handleViewChange()} > {buttonName}</button>
+      <button onClick={() => handleViewChange()} > {buttonName}</button>
       </section>
     );
   };
@@ -56,7 +52,7 @@ export default function Page() {
         <main className="flex flex-1 bg-[#cdd5f6] bg-color">
 
           <aside className="w-64">
-            <SideBar items={links}
+            <SideBar
               myfunction={ChangeViewButton()} />
           </aside>
           <section className="flex-1 p-4">

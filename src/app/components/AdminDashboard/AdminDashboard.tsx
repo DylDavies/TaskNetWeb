@@ -55,7 +55,7 @@ useEffect(() => {
               value={SearchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search users..."
-              className="w-full h-14 searchbar"
+              className="!w-full h-14 searchbar"
             />
           </section>
         </section>
