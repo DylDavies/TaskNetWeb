@@ -200,6 +200,7 @@ const JobForm: React.FC<Props> = ({data, onClose}) => {
                     path="CV"
                     name={applicationID}
                     onUploadComplete={handleUploadComplete}
+                    fileType="application/pdf"
                   />
                 ) : (
                   <section className="flex items-center justify-between p-3 bg-neutral-700 rounded-lg border border-neutral-600">
