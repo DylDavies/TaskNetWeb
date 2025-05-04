@@ -19,8 +19,8 @@ export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
 
   const [inputText, setInputText] = useState("");
-  const[type, setType] = useState(UserType.Client.toString());
-  const [ loading, setLoading ] = useState(false);
+  const [type, setType] = useState(UserType.Client.toString());
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +30,7 @@ export default function Page() {
   const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setType(e.target.value);
   };
-  
+
   const handleSignupClick = async () => {
     try {
       if (user) {
@@ -78,23 +78,22 @@ export default function Page() {
     }
   };
 
-
-  async function LoginClick(usertype: number, username: string){    
+  async function LoginClick(usertype: number, username: string) {
     setLoading(true);
-    
-      //if there is a user, will call set username and type
-      if (user) {
-          const uid = user.authUser.uid;
-          await setUserType(uid,usertype);
-          await SetUserName(uid,username);
-      }
 
-      await handleSignupClick();
-      LoginRedirect(router);
+    //if there is a user, will call set username and type
+    if (user) {
+      const uid = user.authUser.uid;
+      await setUserType(uid, usertype);
+      await SetUserName(uid, username);
+    }
 
-      setLoading(false);
-  };
-          
+    await handleSignupClick();
+    LoginRedirect(router);
+
+    setLoading(false);
+  }
+
   return (
     <main className="flex items-center justify-center h-screen bg-neutral-900">
       <Loader loading={loading}></Loader>
@@ -107,7 +106,6 @@ export default function Page() {
             alt="Sign Up"
           />
         </section>
-
 
         {/* Right side (Form section) */}
         <section className="w-1/2 bg-neutral-800 flex flex-col justify-center items-center p-10 text-white">
@@ -132,23 +130,40 @@ export default function Page() {
               </section>
             </section>
 
-                        {/* Role Selection */}
-                        <section className="flex items-center gap-4">
-                            <section className="w-1/3 text-right text-lg opacity-80">Select Role</section>
-                            <section className="w-2/3">
-                                <select className="w-full p-2 rounded text-white" 
-                                    value={type} 
-                                    onChange={handleTypeChange}
-                                    >
-                                    <option className="bg-neutral-800 text-white" value={UserType.Client}>Client</option>
-                                    <option className="bg-neutral-800 text-white" value={UserType.Freelancer}>Freelancer</option>
-                                </select>
-                            </section> 
-                        </section>
-                        <Button caption={"SIGN UP"} onClick = {()=> LoginClick(Number(type), inputText)}/>
-                    </article>
-                </section>
+            {/* Role Selection */}
+            <section className="flex items-center gap-4">
+              <section className="w-1/3 text-right text-lg opacity-80">
+                Select Role
+              </section>
+              <section className="w-2/3">
+                <select
+                  className="w-full p-2 rounded text-white"
+                  value={type}
+                  onChange={handleTypeChange}
+                >
+                  <option
+                    className="bg-neutral-800 text-white"
+                    value={UserType.Client}
+                  >
+                    Client
+                  </option>
+                  <option
+                    className="bg-neutral-800 text-white"
+                    value={UserType.Freelancer}
+                  >
+                    Freelancer
+                  </option>
+                </select>
+              </section>
             </section>
+            <Button
+              caption={"SIGN UP"}
+              onClick={() => LoginClick(Number(type), inputText)}
+              type="submit"
+            />
+          </article>
+        </section>
+      </section>
     </main>
   );
 }
