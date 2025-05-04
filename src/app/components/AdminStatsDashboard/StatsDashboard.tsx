@@ -10,6 +10,7 @@ import CompletionInfo from '../CompletionRateInfo/CompletionRateInfo';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { isValidDateString } from '@/app/server/formatters/FormatDates';
+import { exportStatsToPDF } from '@/app/services/AnalyticsServices';
 
 function ErrorFallback({ error }: { error: Error }) {
   return (
@@ -102,7 +103,7 @@ export default function AnalyticsPage() {
     <section className="p-6">
     <section className="mb-6 flex flex-wrap sm:flex-nowrap gap-4 items-end">
       {/* Start Date */}
-      <div className="flex flex-col w-full sm:w-64">
+      <section className="flex flex-col w-full sm:w-64">
         <label className="block text-sm font-medium text-gray-300 mb-1">Start Date</label>
         <input
           type="date"
@@ -111,10 +112,10 @@ export default function AnalyticsPage() {
           onChange={(e) => setStartInput(e.target.value)}
           className="p-2 bg-gray-800 text-white border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
-      </div>
+      </section>
   
       {/* End Date */}
-      <div className="flex flex-col w-full sm:w-64">
+      <section className="flex flex-col w-full sm:w-64">
         <label className="block text-sm font-medium text-gray-300 mb-1">End Date</label>
         <input
           type="date"
@@ -123,28 +124,28 @@ export default function AnalyticsPage() {
           onChange={(e) => setEndInput(e.target.value)}
           className="p-2 bg-gray-800 text-white border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
-      </div>
+      </section>
   
       {/* Button aligned right */}
-      <div className="ml-auto flex gap-4">
+      <section className="ml-auto flex gap-4">
         <button
           onClick={handleChangeFilters}
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-violet-900 hover:bg-violet-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-violet-900 hover:bg-violet-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer"
         >
           Apply Filters
         </button>
 
         <button
-          onClick={handleChangeFilters}
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-violet-900 hover:bg-violet-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          onClick={() => exportStatsToPDF(stats, startDate, endDate)}
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-violet-900 hover:bg-violet-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer"
         >
           Download Report
         </button>
-      </div>
+      </section>
     </section>
-  
+
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <CompletionInfo stats={stats} startDate={startDate} endDate={endDate} />
+        <CompletionInfo stats={stats} startDate={startDate} endDate={endDate} />
     </ErrorBoundary>
   </section>
   );

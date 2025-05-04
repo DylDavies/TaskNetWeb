@@ -18,6 +18,7 @@ interface User {
 
     const [pendingUsers, setPendingUsers] = useState<User[]>([]);
     const [SearchQuery, setSearchQuery] = useState<string>("");
+    const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
 
   // To update the admin table after the Admin approves or denies user
     useEffect(() => {
@@ -29,6 +30,21 @@ interface User {
 
     fetchPendingUsers();
   }, []);
+
+useEffect(() => {
+  let filtered = pendingUsers;
+  const query = SearchQuery.toLowerCase();
+  if (SearchQuery){
+    filtered = pendingUsers.filter(user => {
+      const email = user?.uid?.toLowerCase() || '';
+      const username = user?.username?.toLowerCase() || '';
+      
+      return email.includes(query) || 
+             username.includes(query);
+  });
+  }
+  setFilteredUsers(filtered);
+}, [pendingUsers, SearchQuery]);
 
     return (
       <section className="flex flex-col items-center space-y-4">
@@ -46,7 +62,7 @@ interface User {
   
         {/* AdminTable */}
         <section className="w-full max-w-8xl mt-16">
-          <AdminTable data={pendingUsers} />
+          <AdminTable data={filteredUsers} />
         </section>
       </section>
     );
