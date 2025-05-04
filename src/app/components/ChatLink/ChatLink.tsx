@@ -14,12 +14,16 @@ export default function ChatLink({
   const { setActiveConversation } = useChatStore();
 
   const handleClick = () => {
+    useChatStore.getState().setConversationWasManuallySet(true); // Active conversation set manually by the link
     setActiveConversation({ job, userData }, currentUserId);
     router.push("/chat");
   };
 
   return (
-    <button onClick={handleClick} className="text-blue-500 underline">
+    <button
+      onClick={handleClick}
+      className="text-blue-500 underline  cursor-pointer"
+    >
       {children}
     </button>
   );

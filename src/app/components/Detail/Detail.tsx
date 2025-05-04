@@ -36,15 +36,13 @@ const Detail = () => {
     <section className="detail">
       <section className="user">
         <section className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-semibold text-sm sm:text-base">
-          {activeConversation?.userData?.username.charAt(0)}
+          {activeConversation?.userData?.username?.charAt(0) || "?"}
         </section>
         <section className="texts">
-          {activeConversation ? (
-            <>
-              <em>{activeConversation.userData?.username}</em>
-            </>
+          {activeConversation?.userData?.username ? (
+            <em>{activeConversation.userData.username}</em>
           ) : (
-            <em>Loading...</em>
+            <em>No user</em>
           )}
         </section>
       </section>

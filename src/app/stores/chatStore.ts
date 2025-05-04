@@ -21,6 +21,7 @@ export const useChatStore = create<ChatStore>((set) => ({
   globalUnsubscribe: null,
   jobMap: {},
   listenerInitialized: false,
+  conversationWasManuallySet: false,
 
   fetchJobsWithUsers: async (uid: string, userType: UserType) => {
     set({ isLoadingJobs: true });
@@ -241,4 +242,6 @@ export const useChatStore = create<ChatStore>((set) => ({
       listenerInitialized: true,
     });
   },
+
+  setConversationWasManuallySet: (value: boolean) => set({ conversationWasManuallySet: value }),
 }));

@@ -1,6 +1,8 @@
 .detail{
     flex: 1;
     background-color: #111827;
+    border-top-right-radius: 0.80rem; 
+    border-bottom-right-radius: 0.80rem;
 
     .user{
         padding: 30px 20px;

@@ -36,7 +36,7 @@ interface Props {
   onClick?: () => void;
   style?: React.CSSProperties;
   size?: Sizes;
-  disabled?: boolean
+  disabled?: boolean;
   icon?: React.ReactNode;
   type?: "button" | "submit" | "reset";
 }
@@ -67,7 +67,7 @@ const Button = ({
       disabled={disabled}
       type={type}
     >
-      {icon && <span className={caption ? "mr-2" : ""}>{icon}</span>}
+      {icon && <em className={caption ? "mr-2" : ""}>{icon}</em>}
       {caption}
     </button>
   );
