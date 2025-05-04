@@ -1,6 +1,5 @@
 "use client";
 
-import AdminTable from "../components/AdminTable/AdminTable";
 import "../components/AdminTable/AdminTable.css";
 import Header from "../components/Header/header";
 import "../components/Header/Header.css";
@@ -8,9 +7,10 @@ import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
 import "./global.css";
 import "../components/button/Button.css";
-import { getPendingUsers } from "../server/services/DatabaseService";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { AuthContext, AuthContextType } from "../AuthContext";
+import AnalyticsPage from "../components/AdminStatsDashboard/StatsDashboard";
+import DashboardContent from "../components/AdminDashboard/AdminDashboard";
 
 
 const links = [
@@ -19,31 +19,32 @@ const links = [
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
 
-  //const [searchQuery, setSearchQuery] = useState("");
 
-  /* Testing fetching pending users (START)*/
-  interface User {
-    uid: string;
-    username: string;
-    status: number;
-    type: number; // Do we not need role like freelancer and client?
-    date: number;
-  }
+  function handleViewChange(){
+    if (buttonName == "View Analytics"){
+      setbuttonName("View Pending Users");
+      setCurrentView('analytics');
+    }
+    else{
+      setbuttonName("View Analytics");
+      setCurrentView('dashboard');
 
-  const [pendingUsers, setPendingUsers] = useState<User[]>([]);
-
-  // To update the admin table after the Admin approves or denies user
-  useEffect(() => {
-    async function fetchPendingUsers() {
-      const pendingUsers = await getPendingUsers();
-      //console.log("Pending users: ", pendingUsers);
-      setPendingUsers(pendingUsers);
     }
 
-    fetchPendingUsers();
-  }, []);
+  }
+   
+  const [buttonName, setbuttonName] = useState<"View Analytics" | "View Pending Users">("View Analytics");
+  const [currentView, setCurrentView] = useState<'dashboard' | 'analytics'>('dashboard');
 
-  /* Testing fetching pending users (END) */
+  //This will allow the admin to change between pending users and analytics
+  const ChangeViewButton = () => {
+    return(
+      <section>
+      <button  onClick={() => handleViewChange()} > {buttonName}</button>
+      </section>
+    );
+  };
+
 
   return (
     <>
@@ -53,17 +54,19 @@ export default function Page() {
         </header>
 
         <main className="flex flex-1 bg-[#cdd5f6] bg-color">
-          <aside className="w-64">
-            <SideBar items={links} />
-          </aside>
 
+          <aside className="w-64">
+            <SideBar items={links}
+              myfunction={ChangeViewButton()} />
+          </aside>
           <section className="flex-1 p-4">
-            <section className="flex flex-col items-center space-y-4">
-              {/* AdminTable moved down */}
-              <section className="w-full max-w-8xl mt-36">
-                <AdminTable data={pendingUsers} />
-              </section>
-            </section>
+          {currentView === 'dashboard' ? (
+            <DashboardContent
+          />
+          ):(
+            <AnalyticsPage />
+          )}
+         
           </section>
         </main>
 

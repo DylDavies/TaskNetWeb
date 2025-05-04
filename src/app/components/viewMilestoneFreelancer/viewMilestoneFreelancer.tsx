@@ -156,7 +156,7 @@ const ViewMilestones: React.FC<Props> = ({
   useEffect(() => {
     // Since jobId is fixed, we find the jobWithUser when the component mounts or when jobsWithUsers changes
     const foundJobWithUser = jobsWithUsers.find(
-      (job) => job.job.jobId === data.jobId
+      (job: { job: { jobId: string; }; }) => job.job.jobId === data.jobId
     );
 
     if (foundJobWithUser) {

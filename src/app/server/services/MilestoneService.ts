@@ -65,6 +65,7 @@ async function getMilestones(jobID: string): Promise<MilestoneData[]> {
     }
   }
 
+
   //Freelancer can upload work for milestone that client can view
   async function addReportURL( jobID:string ,milestoneID: string , reportURL :string){
     try {
