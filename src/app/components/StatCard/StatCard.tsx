@@ -9,15 +9,15 @@ const StatCard: React.FC<{
   textColor?: string;
 }> = ({ title, value, icon, color, textColor = 'text-white' }) => {
   return (
-    <div className={`p-4 rounded-lg ${color} transition-all hover:bg-gray-600/50`}>
-      <div className="flex items-center justify-between">
+    <section className={`p-4 rounded-lg ${color} transition-all hover:bg-gray-600/50`}>
+      <section className="flex items-center justify-between">
         <h4 className="text-sm font-medium text-gray-300">{title}</h4>
         {icon && <span className="text-gray-400">{icon}</span>}
-      </div>
+      </section>
       <p className={`text-2xl font-bold mt-2 ${textColor}`}>
         {value}
       </p>
-    </div>
+    </section>
   );
 };
 

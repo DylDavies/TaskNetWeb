@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import AdminTable from "../AdminTable/AdminTable";
-import SearchBar from "../searchbar/SearchBar";
 import { getPendingUsers } from "@/app/server/services/DatabaseService";
+import InputBar from "../inputbar/InputBar";
 
 interface User {
   uid: string;
@@ -51,7 +51,7 @@ useEffect(() => {
         {/* SearchBar */}
         <section className="w-full max-w-4xl mt-10 mb-6">
           <section className="w-full h-14">
-            <SearchBar
+            <InputBar
               value={SearchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search users..."

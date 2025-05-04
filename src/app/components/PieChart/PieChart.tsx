@@ -9,11 +9,11 @@ interface PieChartComponentProps {
 
 const PieChartComponent: React.FC<PieChartComponentProps> = ({ data, colors, title }) => {
   return (
-    <div className="bg-gray-800 p-4 rounded-lg border border-gray-700 group">
+    <section className="bg-gray-800 p-4 rounded-lg border border-gray-700 group">
       <h3 className="text-lg font-semibold mb-4 text-center text-white">
         {title}
       </h3>
-      <div className="h-64">
+      <section className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
@@ -49,8 +49,8 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({ data, colors, tit
             />
           </PieChart>
         </ResponsiveContainer>
-      </div>
-    </div>
+      </section>
+    </section>
   );
 };
 

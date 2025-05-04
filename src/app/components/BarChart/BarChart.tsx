@@ -18,11 +18,11 @@ interface BarChartComponentProps {
 
 const BarChartComponent: React.FC<BarChartComponentProps> = ({ data, colors, title }) => {
   return (
-    <div className="bg-gray-800 p-4 rounded-lg border border-gray-700 group">
+    <section className="bg-gray-800 p-4 rounded-lg border border-gray-700 group">
       <h3 className="text-lg font-semibold mb-4 text-center text-white">
         {title}
       </h3>
-      <div className="h-64">
+      <section className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
@@ -44,8 +44,8 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({ data, colors, tit
               }}
               itemStyle={{ color: '#ffffff' }}
               formatter={(value, name) => [
-                <span key="value" style={{ color: 'white' }}>{value}</span>,
-                <span key="name" style={{ color: 'white' }}>{name}</span>,
+                <section key="value" style={{ color: 'white' }}>{value}</section>,
+                <section key="name" style={{ color: 'white' }}>{name}</section>,
               ]}
               labelStyle={{ color: '#ffffff' }}
             />
@@ -56,8 +56,8 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({ data, colors, tit
             </Bar>
           </BarChart>
         </ResponsiveContainer>
-      </div>
-    </div>
+      </section>
+    </section>
   );
 };
 
