@@ -1,4 +1,4 @@
-import Notification from "../interfaces/Notification.interface";
+import Notification from "../../interfaces/Notification.interface";
 
 interface Props {
     notification?: Notification,

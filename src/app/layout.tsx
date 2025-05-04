@@ -3,8 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "./AuthContext";
 import NotificationProvider from "./NotificationContext";
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
 import JobProvider from "./JobContext";
+import ChatListenerInitializer from "./components/chatListener/ChatListener";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,10 +33,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Toaster position="top-center" reverseOrder={false} /> {/* This allows us to use toast messages on all pages, is used in the upload file component*/}
+        <Toaster position="top-center" reverseOrder={false} />{" "}
+        {/* This allows us to use toast messages on all pages, is used in the upload file component*/}
         <AuthProvider>
           <NotificationProvider>
             <JobProvider>
+              <ChatListenerInitializer />
               {children}
             </JobProvider>
           </NotificationProvider>

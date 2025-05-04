@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./JobOverview.css";
 import JobStatus from "@/app/enums/JobStatus.enum";
+import Image from "next/image";
+import { getUser } from "@/app/server/services/DatabaseService";
 
 /*
 --- NOTE ON USE ---
@@ -34,7 +36,7 @@ example:
 */
 
 interface JobCardProps {
-  company: string;
+  clientId: string;
   jobTitle: string;
   budget: string;
   deadline: string;
@@ -44,31 +46,45 @@ interface JobCardProps {
 }
 
 const JobCard: React.FC<JobCardProps> = ({
-  company,
   jobTitle,
   budget,
   deadline,
   skills,
   hired,
   onClick,
+  clientId
 }) => {
-  const displayName = company;
-  const initial = displayName.charAt(0).toUpperCase();
+  const [ name, setName ] = useState("Loading...");
+  const [ avatar, setAvatar ] = useState<string | null>();
+
+  useEffect(() => {
+    (async () => {
+      const user = await getUser(clientId);
+
+      setName(user?.username || "Not found");
+      setAvatar(user?.avatar);
+    })();
+  }, []);
 
   return (
     <article
       onClick={onClick}
-      className="m-5"
-      aria-label={`${jobTitle} at ${company}`}
+      aria-label={`${jobTitle} at ${name}`}
     >
-      <section className="job-card bg-gray-800 group mt-6 grid w-[450px] grid-cols-12 space-x-1 overflow-hidden rounded-lg border border-blue-900 py-4 px-4 text-gray-700 shadow transition hover:shadow-lg">
+      <section className="job-card bg-gray-800 group grid w-[450px] grid-cols-12 space-x-1 overflow-hidden rounded-lg border border-blue-900 py-4 px-4 text-gray-700 shadow transition hover:shadow-lg">
         {/* Header Row */}
         <section className="col-span-12 flex justify-between items-center mb-2">
           {/* Icon and Job Title */}
           <section className="flex items-center space-x-3">
-            <section className="w-10 h-10 rounded-full bg-purple-800 text-white flex items-center justify-center font-semibold text-base">
-              {initial}
-            </section>
+      { avatar ?
+      (
+        <Image src={avatar} alt="Avatar" className="w-10 h-10 rounded-full" width={200} height={200}></Image>
+      )
+      : (
+        <section className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-semibold text-sm sm:text-base">
+          {name.charAt(0).toUpperCase()}
+        </section>
+      )}
             <h2 className="text-xl font-bold text-gray-300">{jobTitle}</h2>
           </section>
 
@@ -120,7 +136,7 @@ const JobCard: React.FC<JobCardProps> = ({
 
           {/* Company and Deadline inline at the bottom */}
           <footer className="flex justify-between items-center text-sm text-gray-400 pt-1 border-t border-gray-700 mt-2">
-            <address className="italic">{company}</address>
+            <address className="italic">{name}</address>
           {hired === JobStatus.Posted && (
             <output className="italic text-orange-400">Open to applicants</output>
           )}

@@ -1,0 +1,150 @@
+.detail{
+    flex: 1;
+    background-color: #111827;
+    border-top-right-radius: 0.80rem; 
+    border-bottom-right-radius: 0.80rem;
+
+    .user{
+        padding: 30px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        /*border-bottom: 1px solid #dddddd35;*/
+
+        img{
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+    }
+
+    .info{
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+ 
+
+        .option{
+            border-top: 1px solid #dddddd35;
+            border-bottom: 1px solid #dddddd35;
+
+            .title{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                font-size: large;
+
+                img{
+                    width: 30px;
+                    height: 30px;
+                    background-color: rgba(17, 25, 40, 0.3);
+                    padding: 10px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                }
+            }
+
+            .items{
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+                padding: 10px;
+                font-size: small;
+            }
+
+            .photos{
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                margin-top: 20px;
+
+                .photoItem{
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+
+                    .photoDetail{
+                        display: flex;
+                        align-items: center;
+                        gap: 20px;
+                        img{
+                            width: 40px;
+                            height: 40px;
+                            border-radius: 5px;
+                            object-fit: cover;
+                        }
+
+                                            
+                    em{
+                        font-size: 14px;
+                        color: lightgray;
+                        font-weight: 300;
+                    }
+
+                    }
+
+                    .icon{
+                        width: 30px;
+                        height: 30px;
+                        background-color: rgba(17, 25, 40, 0.3);
+                        padding: 10px;
+                        border-radius: 50%;
+                        cursor:pointer;
+                    }
+
+                }
+
+            }
+        }
+
+        .feedback-list {
+            max-height: calc(5 * 38px); /* 5 items × estimated height */
+            overflow-y: auto;
+            padding: 6px 0;
+            margin-top: 4px;
+
+            &::-webkit-scrollbar {
+                width: 8px;
+              }
+            
+              &::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 10px;
+              }
+            
+              &::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.4);
+                border-radius: 10px;
+              }
+            
+              &::-webkit-scrollbar-thumb:hover {
+                background: rgba(255, 255, 255, 0.6);
+              }
+          }
+
+        .feedback-item {
+            padding: 6px 8px;
+            font-size: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            background-color: #1f2937; /* Tailwind gray-800 */
+            margin-bottom: 4px;
+            transition: background-color 0.2s;
+            color: #f9fafb; /* Tailwind gray-50 */
+          }
+          
+          .feedback-item:hover {
+            background-color: #374151; /* Tailwind gray-700 */
+          }
+          
+          .highlighted {
+            background-color: #fde68a !important; /* Tailwind yellow-300 */
+            color: #111827; /* readable text on yellow */
+            transition: background-color 0.4s ease-in-out;
+          }
+          
+    }
+}

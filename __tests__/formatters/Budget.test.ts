@@ -2,7 +2,7 @@ import { formatBudget } from "@/app/server/formatters/Budget";
 
 describe("Budget Utilities", () => {
   test("formats valid budget range", () => {
-    expect(formatBudget(100, 200)).toBe("R100 - R200");
+    expect(formatBudget(100, 200)).toBe("$100 - $200");
   });
 
   test("handles missing budgetMin", () => {
@@ -14,7 +14,7 @@ describe("Budget Utilities", () => {
   });
 
   test("handles zero values", () => {
-    expect(formatBudget(0, 0)).toBe("R0 - R0");
+    expect(formatBudget(0, 0)).toBe("$0 - $0");
   });
 
   test("handles both missing values", () => {
@@ -22,10 +22,10 @@ describe("Budget Utilities", () => {
   });
 
   test("formats large values with k", () => {
-    expect(formatBudget(12000, 42000)).toBe("R12k - R42k");
+    expect(formatBudget(12000, 42000)).toBe("$12k - $42k");
   });
 
   test("formats one large with k and one small without", () => {
-    expect(formatBudget(1200, 22000)).toBe("R1200 - R22k");
+    expect(formatBudget(1200, 22000)).toBe("$1200 - $22k");
   });
 });

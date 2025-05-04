@@ -7,7 +7,6 @@ import "../components/Header/Header.css";
 import SideBar from "../components/sidebar/SideBar";
 import "../components/sidebar/sidebar.css";
 import "./global.css";
-import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import React, { useContext, useState } from "react";
 import AuthService from "../services/AuthService";
@@ -18,12 +17,11 @@ import DashboardContent from "../components/AdminDashboard/AdminDashboard";
 
 
 const links = [
-  { name: "Home", href: "/" },
-  { name: "Client", href: "/client" },
-  { name: "Freelancer", href: "/freelancer" }];
+  { name: "Home", href: "/admin", selected: false }];
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
+
 
   const router = useRouter();
 
@@ -41,8 +39,8 @@ export default function Page() {
     else{
       setbuttonName("View Analytics");
       setCurrentView('dashboard');
-    }
 
+    }
 
   }
    
@@ -79,18 +77,12 @@ export default function Page() {
           ):(
             <AnalyticsPage />
           )}
-          
-            
+         
           </section>
         </main>
 
         <footer className="bg-gray-900 box-footer px-6 py-4">
-
-            <section className="flex justify-end">
-              <Button caption={"Log out"} 
-              onClick={() => signoutClick() } />
-            </section>
-          
+          <p>© {new Date().getFullYear()} tasknet.tech</p>  
         </footer>
       </section>
     </>

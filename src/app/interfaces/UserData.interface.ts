@@ -2,11 +2,11 @@ import UserStatus from "../enums/UserStatus.enum";
 import UserType from "../enums/UserType.enum";
 
 interface UserData {
-    type: UserType,
-    status: UserStatus,
-    username: string,
-    date: number
-
+    type: UserType;
+    status: UserStatus;
+    username: string;
+    date: number;
+    avatar?: string;
 }
 
 export default UserData;
