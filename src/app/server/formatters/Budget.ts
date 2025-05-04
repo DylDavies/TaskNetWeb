@@ -6,5 +6,5 @@ export const formatBudget = (budgetMin?: number, budgetMax?: number) => {
         return value >= 10000 ? `${value / 1000}k` : `${value}`;
     };
 
-    return `R${formatValue(budgetMin)} - R${formatValue(budgetMax)}`;
+    return `$${formatValue(budgetMin)} - $${formatValue(budgetMax)}`;
 };
