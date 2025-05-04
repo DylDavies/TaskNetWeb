@@ -179,7 +179,7 @@ const JobForm: React.FC<Props> = ({data, onClose}) => {
 
               {/* Bid Amount */}
               <section className="mb-6">
-                <label className="block text-sm font-medium text-gray-300 mb-2">Bid Amount (R)</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Bid Amount ($)</label>
                 <InputBar 
                   type="number" 
                   min={1} 

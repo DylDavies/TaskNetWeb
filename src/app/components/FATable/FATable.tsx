@@ -150,7 +150,7 @@ const FATable = ({ jobName }: Props) => {
                       <section>
                         <p className="font-semibold">{item.username}</p>
                         <p className="font-semibold">
-                          Bid amount: R{item.BidAmount}
+                          Bid amount: ${item.BidAmount}
                         </p>
                         <p className="text-xs text-gray-400">
                           Application date:{" "}

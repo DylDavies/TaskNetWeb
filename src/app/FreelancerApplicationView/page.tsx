@@ -71,7 +71,7 @@ export default function Page() {
           </section>
         </main>
 
-        <footer className="bg-gray-900 box-footer px-6 py-4">
+        <footer className="bg-[#f75509] py-4 flex justify-center bg-gray-900 box-footer">
           <p>© {new Date().getFullYear()} tasknet.tech</p>
         </footer>
       </section>

@@ -139,7 +139,7 @@ const MilestonesTable = ({
                         <section>
                           <p className="font-semibold">{item.title}</p>
                           <p className="font-semibold">
-                            Payment: R{item.payment}
+                            Payment: ${item.payment}
                           </p>
                           <p className="text-xs text-gray-400">
                             Deadline: {formatDateAsString(item.deadline)}
