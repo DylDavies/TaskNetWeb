@@ -60,9 +60,9 @@ const ViewMilestones: React.FC<Props> = ({
 
   useEffect(() => {
     if (user?.authUser?.uid == data.clientUID) {
-      setRole("freelancer");
-    } else {
       setRole("client");
+    } else {
+      setRole("freelancer");
     }
   }, [user, data.clientUID]);
 
@@ -244,25 +244,6 @@ const ViewMilestones: React.FC<Props> = ({
                     </section>
                   </fieldset>
                   <br />
-                  <section>
-                    <section>Chat with freelancer:</section>
-                    <section>
-                      {/* Link to chat with freelancer */}
-                      {jobWithUser && jobWithUser.userData ? (
-                        <>
-                          <ChatLink
-                            job={jobWithUser.job}
-                            userData={jobWithUser.userData}
-                            currentUserId={user!.authUser.uid}
-                          >
-                            Visit Chat
-                          </ChatLink>
-                        </>
-                      ) : (
-                        <p>Loading chat link...</p>
-                      )}
-                    </section>
-                  </section>
                 </section>
               )}
 
@@ -392,6 +373,22 @@ const ViewMilestones: React.FC<Props> = ({
                   Send the freelancer feedback with this link:
                 </h4>
                 {/*Pls put link to chat system here*/}
+                <section>
+                      {/* Link to chat with freelancer */}
+                      {jobWithUser && jobWithUser.userData ? (
+                        <>
+                          <ChatLink
+                            job={jobWithUser.job}
+                            userData={jobWithUser.userData}
+                            currentUserId={user!.authUser.uid}
+                          >
+                            Visit Chat
+                          </ChatLink>
+                        </>
+                      ) : (
+                        <p>Loading chat link...</p>
+                      )}
+                    </section>
                 <article className="mt-4">
                   <Button
                     caption={isApproving ? "Approving..." : "Approve"}
