@@ -18,6 +18,7 @@ import InputBar from "../components/inputbar/InputBar";
 const links = [
   { name: "Home", href: "/freelancer", selected: false },
   { name: "Find Jobs", href: "/jobSearch", selected: true },
+  { name: "Chat", href: "/chat", selected: false }
 ];
 
 
@@ -177,8 +178,8 @@ export default function Page() {
   
       {/* Footer */}
       <footer className="bg-[#f75509] py-4 flex justify-center bg-gray-900 box-footer">
-          <p>© {new Date().getFullYear()} tasknet.tech</p>
-        </footer>
+        <p>© {new Date().getFullYear()} tasknet.tech</p>
+      </footer>
     </section>
   );
   

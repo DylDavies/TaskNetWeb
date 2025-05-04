@@ -96,6 +96,7 @@ export default function Page() {
           <WelcomeCard
             username={user?.userData.username || "Username"}
             type="freelancer"
+            avatar={user?.userData.avatar}
           />
           <section className="w-full px-6">
             <h2 className="text-2xl font-bold text-gray-300 flex justify-center">
@@ -132,9 +133,9 @@ export default function Page() {
       </main>
 
       {/* Footer */}
-      <footer className="py-4 flex justify-end bg-gray-900 box-footer">
-        <p>© {new Date().getFullYear()} tasknet.tech</p>
-      </footer>
+      <footer className="bg-[#f75509] py-4 flex justify-center bg-gray-900 box-footer">
+          <p>© {new Date().getFullYear()} tasknet.tech</p>
+        </footer>
     </section>
   );
 }

@@ -1,12 +1,14 @@
 import React from "react";
+import Image from "next/image";
 
 type Props = {
   username: string; // username displayed on the card
   type: string; // freelancer or client to determine the message
+  avatar?: string;
 };
 
 // WelcomeCard component will take in username and type as props and then display an appropriate welcome message
-const WelcomeCard: React.FC<Props> = ({ username, type}) => {
+const WelcomeCard: React.FC<Props> = ({ username, type, avatar}) => {
     let message = "";
 
     //set message type 
@@ -18,9 +20,16 @@ const WelcomeCard: React.FC<Props> = ({ username, type}) => {
   return (
     // will have a username, message and icon with the users initial
     <section className="max-w-1/2 w-full bg-gray-800 rounded-2xl shadow-lg p-6 flex items-center space-x-4">
-    <section className="w-16 h-16 bg-blue-500 text-white rounded-full flex items-center justify-center text-2xl font-semibold">
-      {username.charAt(0).toUpperCase()}
-    </section>
+          {/* Profile Photo */}
+          { avatar ?
+          (
+            <Image src={avatar} alt="Avatar" className="w-16 h-16 rounded-full" width={200} height={200}></Image>
+          )
+          : (
+            <section className="w-16 h-16 bg-blue-500 text-white rounded-full flex items-center justify-center text-2xl font-semibold">
+            {username.charAt(0).toUpperCase()}
+          </section>
+          )}
     <section>
       <h2 className="text-xl font-bold text-white">
         Welcome, {username}
