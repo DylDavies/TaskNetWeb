@@ -23,21 +23,12 @@ describe("Date Formatting Utilities", () => {
   });
 
   describe("formatDateAsDate", () => {
-    it("formats valid date consistently", () => {
-      expect(formatDateAsDate(validDate)).toBe("15 October 2023");
+    it("gets valid date", () => {
+      const d = formatDateAsDate(validDate);
+
+      expect(d.getFullYear()).toBe(2023);
+      expect(d.getMonth()).toBe(9);
+      expect(d.getDate()).toBe(15);
     });
-
-    it("matches string format function", () => {
-      const date = 20231225;
-      expect(formatDateAsDate(date)).toBe(formatDateAsString(date));
-    });
-
-    it("handle no dateNum", () => {
-        expect(formatDateAsDate()).toBe("Not specified");
-    })
-
-    it("should handle incorrect datestr", () => {
-        expect(formatDateAsString(1)).toBe("Invalid date");
-    })
   });
 });

@@ -4,7 +4,7 @@ import { createContext, FC, ReactNode, useEffect, useState } from "react";
 import ActiveUser from "./interfaces/ActiveUser.interface";
 import { getAuth, onAuthStateChanged, Unsubscribe } from "firebase/auth";
 import { app, db } from "./firebase";
-import { getUser } from "./server/services/DatabaseService";
+import { getUser, setAvatar } from "./server/services/DatabaseService";
 import { doc, onSnapshot } from "firebase/firestore";
 import UserData from "./interfaces/UserData.interface";
 import { usePathname, useRouter } from "next/navigation";
@@ -18,11 +18,15 @@ export type AuthContextType = {
   user: ActiveUser | null;
 };
 
-const routes: { [key: string]: UserType } = {
-  "/client": UserType.Client,
-  "/freelancer": UserType.Freelancer,
-  "/admin": UserType.Admin,
-  "/signup": UserType.None
+const routes: { [key: string]: UserType[] } = {
+  "/client": [UserType.Client],
+  "/freelancer": [UserType.Freelancer],
+  "/admin": [UserType.Admin],
+  "/signup": [UserType.None],
+  "/chat": [UserType.Client, UserType.Freelancer],
+  "/FreelancerApplicationView": [UserType.Client],
+  "/jobSearch": [UserType.Freelancer],
+  "/Milestones": [UserType.Client, UserType.Freelancer]
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -51,6 +55,10 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         if (!dbUser) {
           setUser(null);
           return;
+        }
+
+        if ((!dbUser.avatar && currentUser.photoURL) || (dbUser.avatar !== currentUser.photoURL)) {
+          setAvatar(currentUser.uid, currentUser.photoURL);
         }
 
         setUser({ authUser: currentUser, userData: dbUser });
@@ -115,7 +123,7 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
               return;
             } else {
               if (user.userData.status == UserStatus.Approved) {
-                const allowed = routes[path] === user.userData.type || user.userData.type === UserType.Admin;
+                const allowed = routes[path].some(val => val == user.userData.type) || user.userData.type === UserType.Admin;
                 
                 if (!allowed) {
                     switch (user.userData.type) {

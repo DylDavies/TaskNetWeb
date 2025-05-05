@@ -122,7 +122,7 @@ const JobForm: React.FC<Props> = ({data, onClose}) => {
         onClose();
     } catch (error) {
       toast.error("Submission failed, please try again");
-      console.error("Application sibmission error:", error);
+      console.error("Application submission error:", error);
     }
     }
 
@@ -179,7 +179,7 @@ const JobForm: React.FC<Props> = ({data, onClose}) => {
 
               {/* Bid Amount */}
               <section className="mb-6">
-                <label className="block text-sm font-medium text-gray-300 mb-2">Bid Amount (R)</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Bid Amount ($)</label>
                 <InputBar 
                   type="number" 
                   min={1} 
@@ -200,6 +200,7 @@ const JobForm: React.FC<Props> = ({data, onClose}) => {
                     path="CV"
                     name={applicationID}
                     onUploadComplete={handleUploadComplete}
+                    fileType="application/pdf"
                   />
                 ) : (
                   <section className="flex items-center justify-between p-3 bg-neutral-700 rounded-lg border border-neutral-600">
@@ -208,7 +209,7 @@ const JobForm: React.FC<Props> = ({data, onClose}) => {
                       onClick={togglePdfPreview}
                     >
                       <FileText className="text-blue-400" />
-                      <span className="text-sm text-gray-200">{fileName}</span>
+                      <section className="text-sm text-gray-200 inline">{fileName}</section>
                     </section>
                     <button 
                       onClick={handleRemoveFile}

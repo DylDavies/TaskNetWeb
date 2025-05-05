@@ -1,0 +1,295 @@
+.chat{ /*styling for the "middle" flex item*/
+    display: flex;
+    flex-direction: column;
+    flex: 2;
+    border-left: 1px solid #dddddd35;
+    border-right: 1px solid #dddddd35;
+    background-color: rgba(30, 30, 30, 0.699); /* chat background color */
+
+    height: 100%;
+
+    .top{ /*Header with user info*/
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #dddddd35;
+        background-color: #111827bd;
+
+        .user{
+            display: flex;
+            align-items: center;
+            gap: 20px;
+
+            img{
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                object-fit: cover;
+            }
+
+            .texts{
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+
+                em{
+                    font-size: 18px;
+                    font-weight: bold;
+                }
+
+                p{
+                    font-size: 14px;
+                    font-weight: 300;
+                    color: #a5a5a5a5;
+                }
+            }
+        }
+
+        .icons{
+            display: flex;
+            gap: 20px;
+
+            img{
+                width: 20px;
+                height: 20px;
+                cursor: pointer;
+            }
+        }
+    }
+
+
+    .center{ /*actual chat logs with messages*/
+        padding: 20px;
+        flex: 1;
+        border-bottom: 1px solid #dddddd35; 
+    
+        /*scroll bar when chat log gets long*/
+        overflow-y: auto; 
+
+        &::-webkit-scrollbar {
+            width: 8px;
+          }
+        
+          &::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+          }
+        
+          &::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+          }
+        
+          &::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.6);
+          }
+
+        /*messages display*/
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        /*message css*/
+        .message{
+            max-width: 70%;
+            display: flex;
+            gap: 20px;
+
+            &.own{ /*if its a message and its my own message*/
+                align-self: flex-end;
+
+                .text{
+                    p{
+                        padding: 20px 30px;
+                        background-color: #111827;
+                        box-shadow: 
+                        0 2px 4px rgba(0, 0, 0, 0.3), /* Stronger shadow for depth */
+                        0 1px 2px rgba(0, 0, 0, 0.2);
+                    }
+
+                    em{
+                      font-size: 12; /*font size of date/ when message was sent*/
+                      text-align: right;
+                  }
+                }
+
+
+            }
+
+            img{
+                width: 30px;
+                height: 30px;
+                border: 50%;
+                object-fit: cover;
+            }
+
+            .text{
+                flex:1;
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+                word-wrap: break-word; /* Allow long words to break and wrap onto the next line */
+                word-break: break-all;  /* Break long words wherever necessary */
+
+                /* for the images sent by users*/
+                img{
+                    width: 100%;
+                    height: 300px;
+                    border: 50%;
+                    border-radius: 30px;
+                    object-fit: cover;
+                }
+
+                p{
+                    padding: 20px 30px;
+                    background-color: #1f2937;/*rgba(17, 25, 40, 0.3);  if not our own message*/
+                    box-shadow: 
+                    0 2px 4px rgba(0, 0, 0, 0.3),
+                    0 1px 2px rgba(0, 0, 0, 0.2);
+                    border-radius: 30px;  /*for the circular style on messages*/
+
+                    width: fit-content;
+                    max-width: 100%;
+                    word-wrap: break-word;
+                }
+
+                em{
+                    font-size: 12; /*font size of date/ when message was sent*/
+                }
+            }
+
+            .meta {
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+            }
+            
+            .dot {
+              width: 10px;
+              height: 10px;
+              border-radius: 50%;
+            }
+            
+            .feedback-dot {
+              background-color: #e74c3c; /* red */
+            }
+            
+            .concern-dot {
+              background-color: #f1c40f; /* yellow */
+            }
+
+        }
+    }
+
+    .bottom{ /*input bar emojis etc*/
+        padding: 20px;
+        margin-top: auto;
+        gap: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-right: 1px solid #dddddd35;
+        background-color: #111827bd;
+
+        img{
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .icons{
+            display: flex;
+            gap: 20;
+
+        }
+        
+        .input-class{
+            flex: 1;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 16px;
+
+        }
+
+        .emoji{
+            position:relative;
+
+            .picker{
+                position: absolute;
+                bottom: 50px;
+                left: 0j;
+            }
+        }
+
+        /* Message Type Pills */
+.message-type-pills {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  
+  .message-type-pills h4 {
+    margin: 0;
+    font-size: 12px;
+    color: #9ca3af; /* Tailwind gray-400 */
+    font-weight: 500;
+  }
+  
+  .pills {
+    display: flex;
+    gap: 6px;
+  }
+  
+  .pill {
+    padding: 4px 4px;
+    border-radius: 9999px; /* Full pill shape */
+    font-size: 9px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  /* Feedback (Red) */
+  .pill.feedback {
+    background: #ef4444; /* Tailwind red-500 */
+    color: white;
+  }
+  
+  .pill.feedback:hover {
+    background: #dc2626; /* Tailwind red-600 */
+    transform: translateY(-1px);
+  }
+  
+  /* Concern (Yellow) */
+  .pill.concern {
+    background: #f59e0b; /* Tailwind yellow-500 */
+    color: white;
+  }
+  
+  .pill.concern:hover {
+    background: #d97706; /* Tailwind yellow-600 */
+    transform: translateY(-1px);
+  }
+  
+  /* Standard (Green) */
+  .pill.standard {
+    background: #10b981; /* Tailwind green-500 */
+    color: white;
+  }
+  
+  .pill.standard:hover {
+    background: #059669; /* Tailwind green-600 */
+    transform: translateY(-1px);
+  }
+
+  .pill.active {
+    background-color: #333;
+    color: white;
+    transform: translateY(-4px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+    }
+}

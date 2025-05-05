@@ -32,10 +32,13 @@ export enum Sizes {
 }
 
 interface Props {
-  caption: string;
+  caption?: string;
   onClick?: () => void;
   style?: React.CSSProperties;
   size?: Sizes;
+  disabled?: boolean;
+  icon?: React.ReactNode;
+  type?: "button" | "submit" | "reset";
 }
 
 const sizeClasses = {
@@ -44,16 +47,27 @@ const sizeClasses = {
   [Sizes.Bigger]: "text-lg py-4 px-8",
 };
 
-const Button = ({ caption, onClick, style, size = Sizes.Normal }: Props) => {
+const Button = ({
+  caption,
+  onClick,
+  style,
+  size = Sizes.Normal,
+  disabled = false,
+  icon,
+  type = "button"
+}: Props) => {
   const sizeClass = sizeClasses[size];
 
   return (
     <button
       role="button"
       onClick={onClick}
-      className={`btn-grad rounded-full  ${sizeClass}`}
+      className={`btn-grad rounded-full flex items-center justify-center ${sizeClass}`}
       style={style}
+      disabled={disabled}
+      type={type}
     >
+      {icon && <em className={caption ? "mr-2" : ""}>{icon}</em>}
       {caption}
     </button>
   );

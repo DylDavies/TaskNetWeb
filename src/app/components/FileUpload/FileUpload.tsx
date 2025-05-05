@@ -1,6 +1,7 @@
 import { Upload } from "lucide-react";
 import toast from "react-hot-toast";
-//props for upload funciton
+import { ChangeEvent } from "react";
+
 type UploadFunction = (
   file: File,
   path: string,
@@ -13,43 +14,49 @@ type UploadComponentProps = {
   path: string;
   name: string;
   onUploadComplete?: (url: string, file: File) => void;
+  fileType?: string; // Changed to lowercase to match convention
 };
 
-function UploadComponent({ uploadFunction, path, name, onUploadComplete  }: UploadComponentProps) 
-{
+function UploadComponent({ 
+  uploadFunction, 
+  path, 
+  name, 
+  onUploadComplete, 
+  fileType 
+}: UploadComponentProps) {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
 
-  //const [progress, setProgress] = useState<number>(0);
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
+    const file = e.target.files[0];
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-      const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
-
-      //checking file size
-      if (file.size > MAX_FILE_SIZE) {
-        toast.error("File size exceeds 10MB limit");
-        return;
-      }
-
-     // setProgress(0);
-      // Show uploading toast
-      const toastId = toast.loading("Uploading File...");
-
-      uploadFunction(file, path, name)
-        .then((url) => {
-          toast.dismiss(toastId);
-          toast.success("Upload complete!");
-          if (onUploadComplete) {
-            onUploadComplete(url, file);
-          }
-          
-        })
-        .catch((error) => {
-          console.error("Upload failed:", error);
-          toast.dismiss(toastId);
-          toast.error("Upload failed. Please try again.");
-        });
+    // Validate file type first
+    if(fileType){
+    if (!file.type.includes(fileType.toLowerCase())) {
+      toast.error(`Only ${fileType} files are allowed`);
+      return;
     }
+    }
+
+    // Then validate file size
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error("File size exceeds 10MB limit");
+      return;
+    }
+
+    const toastId = toast.loading("Uploading File...");
+
+    uploadFunction(file, path, name)
+      .then((url) => {
+        toast.dismiss(toastId);
+        toast.success("Upload complete!");
+        onUploadComplete?.(url, file);
+      })
+      .catch((error) => {
+        console.error("Upload failed:", error);
+        toast.dismiss(toastId);
+        toast.error("Upload failed. Please try again.");
+      });
   };
 
   return (
@@ -59,32 +66,11 @@ function UploadComponent({ uploadFunction, path, name, onUploadComplete  }: Uplo
         Upload
         <input
           type="file"
-          accept="application/pdf"
+          accept={fileType} // Dynamically set accepted file type
           onChange={handleFileChange}
           className="hidden"
         />
       </label>
-
-      {/*uploading && (
-        <section className="w-full">
-          <Progress value={progress} />
-          <p className="text-sm text-gray-600 mt-1">{progress.toFixed(0)}%</p>
-        </section>
-      )*/}
-
-      {/*downloadURL && (
-        <section className="text-center mt-2">
-          <p className="text-green-600 text-sm">Upload complete!</p>
-          <a
-            href={downloadURL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 underline text-sm"
-          >
-            View uploaded file
-          </a>
-        </section>
-      )*/}
     </section>
   );
 }
