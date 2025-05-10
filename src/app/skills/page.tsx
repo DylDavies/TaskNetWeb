@@ -30,12 +30,7 @@ export default function Page() {
   const [skills, setSkills] = useState<SkillData[]>();
   const[inputValue, setInputValue] = useState("");
   const [selectedSkillArea, setSelectedSkillArea] = useState<string>();
-  const [refreshFlag, setRefreshFlag] = useState(false);
   
-  function refetch() {
-    setRefreshFlag((prev) => !prev);
-  }
-
   //signs the user out of google
   function signoutClick() {
       AuthService.googleSignout();
@@ -52,12 +47,11 @@ export default function Page() {
             const fetchSkills = await getSkillArray();
             setSkills(fetchSkills)
         } catch (error){
-            console.log("Error fetching skills");
+            console.log("Error fetching skills:", error);
         }
     };
 
     fetchSkills();
-    refetch();
   },[skills, selectedSkillArea]);
 
   const addSkills = () => {
@@ -71,7 +65,6 @@ export default function Page() {
         AddSkill(selectedSkillArea, inputValue);
         setSelectedSkillArea(undefined);
         setInputValue("");
-        refetch();
     }
   }
 

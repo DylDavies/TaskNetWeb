@@ -12,7 +12,7 @@ async function AddSkill(SkillArea: string, skillName: string) {
       names: arrayUnion(skillName)
     });
   } catch (error){
-    console.log("Error adding skill")
+    console.log("Error adding skill;", error)
   }   
 };
 
