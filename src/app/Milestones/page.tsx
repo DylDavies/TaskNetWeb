@@ -19,6 +19,9 @@ import MilestoneProgressBar from "../components/MilestoneProgressBar/MilestonePr
 import JobData from "../interfaces/JobData.interface";
 import JobStatus from "../enums/JobStatus.enum";
 import { createNotification } from "../server/services/NotificationService";
+import RateUserModal from "../components/RatingModal/RateUserModal";
+import UserData from "../interfaces/UserData.interface";
+import { getUser } from "../server/services/DatabaseService";
 
 const linksClient = [
   { name: "Home", href: "/client", selected: false },
@@ -40,10 +43,30 @@ export default function Page() {
   const [milestones, setMilestones] = useState<MilestoneData[]>([]);
   const [job, setJob] = useState<JobData>();
   const [hasNotifiedCompletion, setHasNotifiedCompletion] = useState(false);
-
+  const [userToRate, setUserToRate] = useState<UserData | null>(null);
+  
   function refetch() {
     setRefreshFlag((prev) => !prev);
   }
+
+  //This function fetches the data of the user to be rated
+  useEffect(() => {
+    async function fetchUserToRate() {
+      if (!job) return;
+      
+      // Determine who should be rated based on current user type
+      const uidToRate = user?.userData.type === UserType.Client 
+        ? job.hiredUId // If current user is client, rate the freelancer
+        : job.clientUId; // If current user is freelancer, rate the client
+  
+      if (uidToRate) {
+        const userData = await getUser(uidToRate);
+        setUserToRate(userData);
+      }
+    }
+  
+    fetchUserToRate();
+  }, [job, user]);
 
   //This function converts the usetype to a string to be displayed in the header
   function userTypeToString(value: UserType | undefined): string {
@@ -77,12 +100,13 @@ export default function Page() {
     fetchJobTitle();
   }, []);
 
+  //This function opens the modal to view milestone information when clicking on a milestone in the table
   function handleMilestoneClick(milestone: MilestoneData) {
     setModalOpen(true);
     setSelectedMilestone(milestone);
   }
 
-  // Calculate progress
+  // Calculate the jobs progress
   const completedCount = milestones.filter(
     (m) => m.status === 3 || m.status === 2
   ).length;
@@ -91,6 +115,7 @@ export default function Page() {
       ? Math.round((completedCount / milestones.length) * 100)
       : 0;
 
+  //If the job is completed, this function changes the jobs status to completed and sends the client a notification that the job is completed
   useEffect(() => {
     if (
       progress === 100 &&
@@ -158,6 +183,16 @@ export default function Page() {
                     ? "Click on a milestone to see more information and edit progress"
                     : ""}
                 </h2>
+              </section>
+
+              <section className="w-full max-w-8xl flex justify-start mb-4 cursor-pointer ">
+              {userToRate  && job?.hiredUId && job?.clientUId && (
+                <RateUserModal 
+                data={userToRate} 
+                uid={user?.userData.type === UserType.Client ? job?.hiredUId : job?.clientUId}
+              
+                />
+              )}
               </section>
 
               <section className="w-full max-w-8xl flex justify-start mb-4 cursor-pointer ">

@@ -9,7 +9,7 @@ interface UserData {
     avatar?: string;
     ratingAverage?: number;
     ratingCount?: number;
-    ratings?: [];
+    ratings?: number[];
 }
 
 export default UserData;

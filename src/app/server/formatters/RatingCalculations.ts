@@ -1,51 +1,51 @@
 import UserData from "@/app/interfaces/UserData.interface";
 
 //This function takes in the user data and the new rating for the users performance and returns true if the new value is an outlier and false if it is not
-const isRatingOutlier = (data: Partial<UserData>, newRating: number): boolean =>{
-    const ratings = data.ratings;
-
-    if (!ratings || ratings.length < 4) {
+const isRatingOutlier = (data: Partial<UserData>, newRating: number): boolean => {
+    const ratings = data.ratings || [];
+    
+    // Need at least 5 ratings to reliably detect outliers
+    if (ratings.length < 5) {
         return false;
-      }
+    }
     
-      const ratingsArr = [...ratings].sort((a, b) => a - b);
+    const sortedRatings = [...ratings].sort((a, b) => a - b);
+    const mid = Math.floor(sortedRatings.length / 2);
     
-      const getMedian = (arr: number[]): number => {
-        const mid = Math.floor(arr.length / 2);
-        return arr.length % 2 === 0
-          ? (arr[mid - 1] + arr[mid]) / 2
-          : arr[mid];
-      };
+    const q1 = getMedian(sortedRatings.slice(0, mid));
+    const q3 = getMedian(sortedRatings.slice(-mid));
+    const iqr = q3 - q1;
     
-      const lowerHalf = ratingsArr.slice(0, Math.floor(ratingsArr.length / 2));
-      const upperHalf = ratingsArr.slice(Math.ceil(ratingsArr.length / 2));
+    const lowerBound = q1 - 1.5 * iqr;
+    const upperBound = q3 + 1.5 * iqr;
     
-      const q1 = getMedian(lowerHalf);
-      const q3 = getMedian(upperHalf);
-      const iqr = q3 - q1;
-    
-      const lowerBound = q1 - 1.5 * iqr;
-      const upperBound = q3 + 1.5 * iqr;
-    
-      return newRating < lowerBound || newRating > upperBound;
+    return newRating < lowerBound || newRating > upperBound;
 };
 
-//This function takes in the existing user data (the existing rating average) and the new user rating and updates the user rating with the value from the new one weighted according to whether it is an outlier or not
-const newRatingCalculation = (data: Partial<UserData>,newRating: number): number =>{
-    
+// Helper function moved outside for clarity
+const getMedian = (arr: number[]): number => {
+    if (arr.length === 0) return 0;
+    const mid = Math.floor(arr.length / 2);
+    return arr.length % 2 === 0 ? (arr[mid - 1] + arr[mid]) / 2 : arr[mid];
+};
+
+const newRatingCalculation = (data: Partial<UserData>, newRating: number): number => {
     const currentRating = data.ratingAverage ?? 0;
     const numRatings = data.ratingCount ?? 0;
-    const weight = 0.5;
-    let newAveRating = 0;
+    const weight = 0.7; // Adjusted to be less severe
     
-    if(!isRatingOutlier(data, newRating)){
-        newAveRating = ((currentRating*numRatings)+ newRating)/(numRatings+1)
+    // Handle first rating case
+    if (numRatings === 0) {
+        return newRating;
     }
-    else{
-        newAveRating = ((currentRating*numRatings)+ (weight*newRating))/(numRatings+ weight)
+    
+    // Handle normal rating
+    if (!isRatingOutlier(data, newRating)) {
+        return ((currentRating * numRatings) + newRating) / (numRatings + 1);
     }
-    return newAveRating;
-}
-
+    
+    // Handle outlier with weighted adjustment
+    return ((currentRating * numRatings) + (weight * newRating)) / (numRatings + weight);
+};
 export {newRatingCalculation}
    
