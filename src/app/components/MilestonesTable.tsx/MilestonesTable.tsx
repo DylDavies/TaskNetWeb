@@ -143,14 +143,14 @@ const MilestonesTable = ({
                           </p>
                           <p className="text-xs text-gray-400">
                             Deadline: {formatDateAsString(item.deadline)}
-                            {item.deadline < currentDate &&
+                          </p>
+                          {item.deadline < currentDate &&
                               item.status !== MilestoneStatus.Completed &&
                               item.status !== MilestoneStatus.Approved && (
-                                <section className="text-red-500 font-semibold">
+                                <p className="text-red-500 text-xs font-semibold">
                                   Deadline has passed
-                                </section>
+                                </p>
                               )}
-                          </p>
                         </section>
                       </section>
                     </td>
