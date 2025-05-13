@@ -1,11 +1,12 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Notifications from "../Notifications/Notifications";
 import "./Header.css";
 import { AuthContext, AuthContextType } from "@/app/AuthContext";
 import Image from "next/image";
 import UserType from "@/app/enums/UserType.enum";
-import { MoreVertical } from "lucide-react";
 import VerticalDots from "../VerticalDots/VerticalDots";
+import FreelancerSkillsModal from "../FreelancerSkillsModal/FreelancerSkillsModal";
+import MultiSelect from "../MultiSelectBar/MultiSelectBar";
 
 type Props = {
   usertype: string; // freelancer or client to determine the messag
@@ -16,6 +17,21 @@ type Props = {
 const Header: React.FC<Props> = ({ usertype, name }) => {
   const { user } = useContext(AuthContext) as AuthContextType;
   const initial = name.charAt(0).toUpperCase();
+
+  // State to manage modal visibility and skills data
+  const [showSkillsModal, setShowSkillsModal] = useState<boolean>(false);
+  const [skills, setSkills] = useState<{ [skillArea: string]: string[] }>(
+    user?.userData.skills ?? {}
+  );
+
+  // Update skills in the local state and optionally update Firestore
+  const handleUpdateSkills = (updatedSkills: {
+    [skillArea: string]: string[];
+  }) => {
+    setSkills(updatedSkills);
+    // TODO: Optionally add Firestore update logic here if needed
+    // e.g., update the Firestore document with updated skills
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full bg-gray-900 border-b border-gray-800 box-header">
@@ -59,14 +75,22 @@ const Header: React.FC<Props> = ({ usertype, name }) => {
             {name}
           </section>
 
-          {/* Freelancer edit skills */}
+          {/* Freelancer skills display and editing*/}
           <section>
             <VerticalDots
               isVisible={user?.userData.type === UserType.Freelancer}
               caption="Edit your skills"
-              onClick={() => console.log("Clicked edit")}
+              onClick={() => setShowSkillsModal(true)}
             />
           </section>
+
+          {/* Freelancer Skills Modal */}
+          <FreelancerSkillsModal
+            show={showSkillsModal}
+            onClose={() => setShowSkillsModal(false)}
+            userSkills={skills}
+            onUpdateSkills={handleUpdateSkills}
+          />
         </section>
       </section>
     </header>
