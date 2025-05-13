@@ -1,7 +1,6 @@
 import UserData from "@/app/interfaces/UserData.interface";
 
-
-
+//This function takes in the user data and the new rating for the users performance and returns true if the new value is an outlier and false if it is not
 const isRatingOutlier = (data: Partial<UserData>, newRating: number): boolean =>{
     const ratings = data.ratings;
 
@@ -31,6 +30,7 @@ const isRatingOutlier = (data: Partial<UserData>, newRating: number): boolean =>
       return newRating < lowerBound || newRating > upperBound;
 };
 
+//This function takes in the existing user data (the existing rating average) and the new user rating and updates the user rating with the value from the new one weighted according to whether it is an outlier or not
 const newRatingCalculation = (data: Partial<UserData>,newRating: number): number =>{
     
     const currentRating = data.ratingAverage ?? 0;
@@ -44,7 +44,7 @@ const newRatingCalculation = (data: Partial<UserData>,newRating: number): number
     else{
         newAveRating = ((currentRating*numRatings)+ (weight*newRating))/(numRatings+ weight)
     }
-    return newRating;
+    return newAveRating;
 }
 
 export {newRatingCalculation}

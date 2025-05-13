@@ -7,6 +7,9 @@ interface UserData {
     username: string;
     date: number;
     avatar?: string;
+    ratingAverage?: number;
+    ratingCount?: number;
+    ratings?: [];
 }
 
 export default UserData;
