@@ -1,5 +1,5 @@
 'use server'
-import { arrayUnion, doc, updateDoc } from "firebase/firestore"; 
+import { doc, updateDoc,getDoc } from "firebase/firestore"; 
 import { db } from "../../firebase";
 
 //  This function will take in a new average for the users performance rating and update its value in the database
@@ -28,14 +28,24 @@ async function SetRatingCount(uid: string, newRatingCount: number | null){
 
 //This function will add to the array that stores all the ratings for a person
 async function AddRating(uid: string, newRating: number) {
-    try {
-      const userRef = doc(db, "users", uid);
-      await updateDoc(userRef, {
-        ratings: arrayUnion(newRating) // Adds to array or creates it
-      });
-    } catch (error) {
-      console.error("Failed to add rating:", error);
-    }
-  };
+  try {
+    const userRef = doc(db, "users", uid);
+    
+    // 1. First get the current array
+    const userSnap = await getDoc(userRef);
+    const currentRatings = userSnap.data()?.ratings || [];
+    
+    // 2. Manually append the new rating
+    const updatedRatings = [...currentRatings, newRating];
+    
+    // 3. Write the entire array back
+    await updateDoc(userRef, {
+      ratings: updatedRatings
+    });
+    
+  } catch (error) {
+    console.error("Failed to add rating:", error);
+  }
+};
 
   export {SetRatingAverage, SetRatingCount, AddRating}
