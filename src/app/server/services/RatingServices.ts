@@ -30,15 +30,10 @@ async function SetRatingCount(uid: string, newRatingCount: number | null){
 async function AddRating(uid: string, newRating: number) {
   try {
     const userRef = doc(db, "users", uid);
-    
-    // 1. First get the current array
     const userSnap = await getDoc(userRef);
     const currentRatings = userSnap.data()?.ratings || [];
-    
-    // 2. Manually append the new rating
     const updatedRatings = [...currentRatings, newRating];
     
-    // 3. Write the entire array back
     await updateDoc(userRef, {
       ratings: updatedRatings
     });

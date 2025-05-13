@@ -8,6 +8,9 @@ import "../button/Button.css";
 import { newRatingCalculation } from "@/app/server/formatters/RatingCalculations";
 import { SetRatingAverage, SetRatingCount, AddRating } from "@/app/server/services/RatingServices";
 import UserData from "@/app/interfaces/UserData.interface";
+import { useContext } from "react";
+import { AuthContext } from "@/app/AuthContext";
+import { AuthContextType } from "@/app/AuthContext";
 
 interface RateUserModalProps {
   
@@ -16,8 +19,10 @@ interface RateUserModalProps {
 }
 
 const RateUserModal = ({ data, uid }: RateUserModalProps) => {
+  const { user } = useContext(AuthContext) as AuthContextType;
   const [rating, setRating] = useState(0);
   const [modalIsOpen, setIsOpen] = useState(false);
+  const usersType = user?.userData.type;
 
 
   useEffect(() => {
@@ -74,7 +79,10 @@ const RateUserModal = ({ data, uid }: RateUserModalProps) => {
       <section className="fixed inset-0 flex items-center justify-center z-50 bg-opacity-50">
         <article className="bg-neutral-800 rounded-2xl p-6 w-full max-w-md shadow-lg text-white max-h-[90vh] overflow-y-auto">
           <section className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">Rate This User</h2>
+            {usersType === 2 &&(
+              <h2 className="text-xl font-bold">Rate {} performance</h2>
+            )}
+            
             <button
               onClick={closeModal}
               className="text-white text-xl hover:text-red-400"

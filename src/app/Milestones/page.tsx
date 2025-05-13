@@ -44,8 +44,7 @@ export default function Page() {
   const [job, setJob] = useState<JobData>();
   const [hasNotifiedCompletion, setHasNotifiedCompletion] = useState(false);
   const [userToRate, setUserToRate] = useState<UserData | null>(null);
-  const [showRatingModal, setShowRatingModal] = useState(false);
-
+  
   function refetch() {
     setRefreshFlag((prev) => !prev);
   }
