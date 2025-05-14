@@ -8,22 +8,36 @@ import "../button/Button.css";
 import { newRatingCalculation } from "@/app/server/formatters/RatingCalculations";
 import { SetRatingAverage, SetRatingCount, AddRating } from "@/app/server/services/RatingServices";
 import UserData from "@/app/interfaces/UserData.interface";
+import toast from "react-hot-toast";
+import UserType from "@/app/enums/UserType.enum";
+import { setFreelancerHasRated, setClientHasRated } from "@/app/server/services/RatingServices";
 import { useContext } from "react";
-import { AuthContext } from "@/app/AuthContext";
-import { AuthContextType } from "@/app/AuthContext";
+import { JobContext, JobContextType } from "@/app/JobContext";
+import { AuthContext, AuthContextType } from "@/app/AuthContext";
 
 interface RateUserModalProps {
-  
   data: UserData;
   uid: string;
+  ratedName: string;
+  isOpen: boolean;
+
 }
 
-const RateUserModal = ({ data, uid }: RateUserModalProps) => {
-  const { user } = useContext(AuthContext) as AuthContextType;
-  const [rating, setRating] = useState(0);
-  const [modalIsOpen, setIsOpen] = useState(false);
-  const usersType = user?.userData.type;
 
+
+
+const RateUserModal = ({ data, uid,ratedName,isOpen }: RateUserModalProps) => {
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const[ModalisOpen, setModalisOpen] = useState(isOpen)
+  const { user } = useContext(AuthContext) as AuthContextType;
+  const { jobID } = useContext(JobContext) as JobContextType;
+
+  const CloseModal = () =>{
+    setModalisOpen(false);
+  }
+  
+  
 
   useEffect(() => {
   if (typeof window !== "undefined") {
@@ -31,34 +45,31 @@ const RateUserModal = ({ data, uid }: RateUserModalProps) => {
   }
   }, []);
 
-  function openModal() {
-    setIsOpen(true);
-  }
-
-  function closeModal() {
-    setIsOpen(false);
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (rating === 0) return; // Don't submit if no rating selected
-    
+    if (rating === 0 )  return; // Don't submit if no rating is selected
   
     try {
-      // 1. Add the new rating to the ratings array
-      await AddRating(uid, rating);
-      
-      // 2. Calculate the new average rating
+      if(jobID){
+        await AddRating(uid, rating);
+     
       const newAverage = newRatingCalculation(data, rating);
-      
-      // 3. Update the average rating in the database
       await SetRatingAverage(uid, newAverage);
       
-      // 4. Update the rating count (increment by 1)
       const newCount = (data.ratingCount || 0) + 1;
       await SetRatingCount(uid, newCount);
+
+      if (user?.userData.type === UserType.Freelancer) {
+        await setFreelancerHasRated(jobID);
+      } else {
+        await setClientHasRated(jobID);
+      }
       
-      closeModal();
+      toast.success(`You rated ${ratedName} ${rating} star${rating > 1 ? 's' : ''}!`);
+      CloseModal;
+      }
+  
+      
     } catch (error) {
       console.error("Failed to submit rating:", error);
 
@@ -69,25 +80,22 @@ const RateUserModal = ({ data, uid }: RateUserModalProps) => {
 
   return (
     <section id ="root">
-      <Button caption={"Rate person"} onClick={openModal}/>
     <Modal
-      isOpen={modalIsOpen}
-      onRequestClose={closeModal}
+      isOpen={ModalisOpen}
+      onRequestClose={CloseModal}
       className="rounded-2xl p-6 w-full max-w-md shadow-lg text-white max-h-[90vh] overflow-y-auto z-50"
       overlayClassName="fixed inset-0 bg-purple bg-opacity-0 backdrop-blur-sm z-40 flex items-center justify-center"
     >
       <section className="fixed inset-0 flex items-center justify-center z-50 bg-opacity-50">
         <article className="bg-neutral-800 rounded-2xl p-6 w-full max-w-md shadow-lg text-white max-h-[90vh] overflow-y-auto">
           <section className="flex justify-between items-center mb-4">
-            {usersType === 2 &&(
-              <h2 className="text-xl font-bold">Rate {} performance</h2>
-            )}
-            
-            <button
-              onClick={closeModal}
-              className="text-white text-xl hover:text-red-400"
+              <h2 className="text-xl font-bold">Rate , {ratedName} , during this job</h2>
+              <button
+              onClick={CloseModal}
+              className="text-gray-400 hover:text-white text-2xl transition-colors"
+              aria-label="Close"
             >
-              ×
+              &times;
             </button>
           </section>
 
@@ -99,13 +107,17 @@ const RateUserModal = ({ data, uid }: RateUserModalProps) => {
                   type="button"
                   onClick={() => setRating(star)}
                   aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
+                  onMouseEnter={() => setHoverRating(star)}
+                  onMouseLeave={() => setHoverRating(0)}
                   className="text-3xl transition-colors"
                 >
                   <AiFillStar
-                    className={
-                      star <= rating ? "text-yellow-400" : "text-gray-500"
-                    }
-                  />
+                      className={`text-4xl ${
+                        star <= (hoverRating || rating) 
+                          ? "text-yellow-400" 
+                          : "text-gray-500"
+                      }`}
+                    />
                 </button>
               ))}
             </section>

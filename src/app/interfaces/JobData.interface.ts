@@ -14,6 +14,8 @@ interface JobData{
     hiredUId: string,
     clientUId: string, 
     createdAt:number, 
+    hasClientRated?:boolean,
+    hasFreelancerRated?:boolean
 }
 
 // Date as a number format: YYYYMMDD

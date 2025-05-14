@@ -17,6 +17,7 @@ import { AuthContext, AuthContextType } from "@/app/AuthContext";
 import toast from "react-hot-toast";
 import { sanitizeJobData } from "@/app/server/formatters/JobDataSanitization";
 import { createJob } from "@/app/server/services/JobDatabaseService";
+import { setClientHasRated } from "@/app/server/services/RatingServices";
 
 interface Props {
   refetch: () => void
@@ -154,6 +155,8 @@ const CreateJobModal = ({refetch}: Props) => {
       hiredUId: hiredUid,
       clientUId: clientUid,
       createdAt: currentDate,
+      hasClientRated: false,
+      hasFreelancerRated: false
     };
     //console.log(job);
 
@@ -192,6 +195,7 @@ const CreateJobModal = ({refetch}: Props) => {
     setMaxBudget("");
     setSelectedSkills([]);
     setSkillInput("");
+    
   };
 
   const handleSkillSelect = (skill: string) => {

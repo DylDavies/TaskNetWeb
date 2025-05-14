@@ -22,6 +22,7 @@ import { createNotification } from "../server/services/NotificationService";
 import RateUserModal from "../components/RatingModal/RateUserModal";
 import UserData from "../interfaces/UserData.interface";
 import { getUser } from "../server/services/DatabaseService";
+import { getUsername } from "../server/services/DatabaseService";
 
 const linksClient = [
   { name: "Home", href: "/client", selected: false },
@@ -36,15 +37,16 @@ const linksFreelancer = [
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
   const { jobID } = useContext(JobContext) as JobContextType;
-  const [selectedMilestone, setSelectedMilestone] =
-    useState<MilestoneData | null>(null);
+  const [selectedMilestone, setSelectedMilestone] = useState<MilestoneData | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [milestones, setMilestones] = useState<MilestoneData[]>([]);
   const [job, setJob] = useState<JobData>();
   const [hasNotifiedCompletion, setHasNotifiedCompletion] = useState(false);
   const [userToRate, setUserToRate] = useState<UserData | null>(null);
-  
+  const [ratedName, setRatedName] = useState("");
+  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+
   function refetch() {
     setRefreshFlag((prev) => !prev);
   }
@@ -67,6 +69,19 @@ export default function Page() {
   
     fetchUserToRate();
   }, [job, user]);
+
+  //This function fetches the username of the user to be rated
+  useEffect(() => {
+    const fetchUsername = async () => {
+      if (userToRate && job?.hiredUId && job?.clientUId) {
+        const name = await getUsername(
+          user?.userData.type === UserType.Client ? job.hiredUId : job.clientUId
+        );
+        setRatedName(name);
+      }
+    };
+    fetchUsername();
+  }, [userToRate, job, user]);
 
   //This function converts the usetype to a string to be displayed in the header
   function userTypeToString(value: UserType | undefined): string {
@@ -97,8 +112,8 @@ export default function Page() {
       }
     }
 
-    fetchJobTitle();
-  }, []);
+    if (jobID) fetchJobTitle();
+  }, [jobID]);
 
   //This function opens the modal to view milestone information when clicking on a milestone in the table
   function handleMilestoneClick(milestone: MilestoneData) {
@@ -116,6 +131,23 @@ export default function Page() {
       : 0;
 
   //If the job is completed, this function changes the jobs status to completed and sends the client a notification that the job is completed
+  useEffect(() =>{
+    if(job && job.status === JobStatus.Completed && jobID){
+      const showFreelancerRating = user?.userData.type === UserType.Freelancer && !job.hasFreelancerRated
+      if(showFreelancerRating){
+        
+        setIsRatingModalOpen(true)  
+      }
+
+      const showClientRating = user?.userData.type === UserType.Client && !job.hasClientRated
+      if(showClientRating){
+        
+        setIsRatingModalOpen(true)
+        
+      }
+    }
+  }, [hasNotifiedCompletion]);
+
   useEffect(() => {
     if (
       progress === 100 &&
@@ -128,6 +160,12 @@ export default function Page() {
       const completeJob = async () => {
         try {
           await updateJobStatus(jobID, JobStatus.Completed);
+          const updatedJob = await getJob(jobID);
+          if (updatedJob) {
+            setJob(updatedJob);
+          } else {
+            console.error("Failed to fetch updated job data");
+          }
 
           await createNotification({
             message: `${job.title} - has been completed.`,
@@ -136,6 +174,7 @@ export default function Page() {
           });
 
           setHasNotifiedCompletion(true);
+
         } catch (error) {
           console.error("Error completing job or sending notification:", error);
         }
@@ -144,6 +183,7 @@ export default function Page() {
       completeJob();
     }
   }, [progress, job, jobID, clientUID, hasNotifiedCompletion]);
+
 
   return (
     <>
@@ -186,13 +226,29 @@ export default function Page() {
               </section>
 
               <section className="w-full max-w-8xl flex justify-start mb-4 cursor-pointer ">
-              {userToRate  && job?.hiredUId && job?.clientUId && (
-                <RateUserModal 
-                data={userToRate} 
-                uid={user?.userData.type === UserType.Client ? job?.hiredUId : job?.clientUId}
-              
-                />
-              )}
+              {
+                userToRate && 
+                ((user?.userData.type === UserType.Freelancer && job?.clientUId &&!job.hasFreelancerRated  )) && (
+                  <RateUserModal 
+                    data={userToRate} 
+                    uid={ job?.clientUId}
+                    ratedName={ratedName}
+                    isOpen={isRatingModalOpen}
+            
+                  />
+                 )
+              }
+              {
+                userToRate && 
+                ((user?.userData.type === UserType.Client && job?.hiredUId &&!job.hasClientRated )  ) && (
+                  <RateUserModal 
+                    data={userToRate} 
+                    uid={ job?.hiredUId}
+                    ratedName={ratedName}
+                    isOpen={isRatingModalOpen}
+                  />
+                 )
+              }
               </section>
 
               <section className="w-full max-w-8xl flex justify-start mb-4 cursor-pointer ">
