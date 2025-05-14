@@ -209,7 +209,7 @@ const CreateMilestone = ({ refetch }: Props) => {
 
   return (
     <section id="root">
-      <Button caption={"Create Milestone"} onClick={openModal} />
+      <Button caption={"Create Milestone"} onClick={openModal}/>
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
