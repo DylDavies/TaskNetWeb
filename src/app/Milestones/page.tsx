@@ -46,6 +46,7 @@ export default function Page() {
   const [userToRate, setUserToRate] = useState<UserData | null>(null);
   const [ratedName, setRatedName] = useState("");
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+  
 
   function refetch() {
     setRefreshFlag((prev) => !prev);
@@ -146,7 +147,7 @@ export default function Page() {
         
       }
     }
-  }, [job, jobID, user, isRatingModalOpen]);
+  }, [job, jobID, user, refreshFlag]);
 
   useEffect(() => {
     if (
@@ -174,6 +175,7 @@ export default function Page() {
           });
 
           setHasNotifiedCompletion(true);
+      
 
         } catch (error) {
           console.error("Error completing job or sending notification:", error);
