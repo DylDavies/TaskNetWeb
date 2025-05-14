@@ -66,7 +66,7 @@ const RateUserModal = ({ data, uid,ratedName,isOpen }: RateUserModalProps) => {
       }
       
       toast.success(`You rated ${ratedName} ${rating} star${rating > 1 ? 's' : ''}!`);
-      
+      CloseModal();
       }
       
       
@@ -74,7 +74,7 @@ const RateUserModal = ({ data, uid,ratedName,isOpen }: RateUserModalProps) => {
       console.error("Failed to submit rating:", error);
 
   };
-  CloseModal;
+  
 }
 
 

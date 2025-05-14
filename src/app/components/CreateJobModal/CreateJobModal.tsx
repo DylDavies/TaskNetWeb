@@ -17,7 +17,6 @@ import { AuthContext, AuthContextType } from "@/app/AuthContext";
 import toast from "react-hot-toast";
 import { sanitizeJobData } from "@/app/server/formatters/JobDataSanitization";
 import { createJob } from "@/app/server/services/JobDatabaseService";
-import { setClientHasRated } from "@/app/server/services/RatingServices";
 
 interface Props {
   refetch: () => void
