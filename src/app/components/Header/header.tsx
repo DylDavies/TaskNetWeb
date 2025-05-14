@@ -16,8 +16,6 @@ type Props = {
 const Header: React.FC<Props> = ({ usertype, name }) => {
   const { user } = useContext(AuthContext) as AuthContextType;
   const initial = name.charAt(0).toUpperCase();
-
-  // State to manage modal visibility and skills data
   const [showSkillsModal, setShowSkillsModal] = useState<boolean>(false);
   const [skills, setSkills] = useState<{ [skillArea: string]: string[] }>(
     user?.userData.skills ?? {}
