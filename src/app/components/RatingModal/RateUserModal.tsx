@@ -41,7 +41,7 @@ const RateUserModal = ({ data, uid,ratedName,isOpen }: RateUserModalProps) => {
 
   useEffect(() => {
   if (typeof window !== "undefined") {
-    Modal.setAppElement("body");
+    Modal.setAppElement(document.body);
   }
   }, []);
 
@@ -66,14 +66,15 @@ const RateUserModal = ({ data, uid,ratedName,isOpen }: RateUserModalProps) => {
       }
       
       toast.success(`You rated ${ratedName} ${rating} star${rating > 1 ? 's' : ''}!`);
-      CloseModal;
+      
       }
-  
+      
       
     } catch (error) {
       console.error("Failed to submit rating:", error);
 
   };
+  CloseModal;
 }
 
 

@@ -146,7 +146,7 @@ export default function Page() {
         
       }
     }
-  }, [hasNotifiedCompletion]);
+  }, [job, jobID, user, isRatingModalOpen]);
 
   useEffect(() => {
     if (
