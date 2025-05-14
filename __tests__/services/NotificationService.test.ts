@@ -1,15 +1,9 @@
 import { 
-    addDoc, collection, doc, updateDoc, getDocs, query, where, writeBatch, 
-    and,
-    setDoc
-  } from "firebase/firestore";
-  import { db } from "../../src/app/firebase";
-  import { 
-    createNotification, deleteNotification, setNotificationSeen, 
-    getNotificationsForUser, fromDB, toDB, markAllNotificationsAsSeenForUser 
-  } from "../../src/app/server/services/NotificationService";
-  import Notification from "@/app/interfaces/Notification.interface";
-  import FSNotification from "@/app/interfaces/FSNotification.interface";
+  createNotification, deleteNotification, setNotificationSeen, 
+  getNotificationsForUser, fromDB, toDB, markAllNotificationsAsSeenForUser 
+} from "../../src/app/server/services/NotificationService";
+import Notification from "@/app/interfaces/Notification.interface";
+import FSNotification from "@/app/interfaces/FSNotification.interface";
 import NotificationActionType from "@/app/enums/NotificationActionType.enum";
   
   jest.mock("firebase/firestore");
@@ -39,6 +33,7 @@ import NotificationActionType from "@/app/enums/NotificationActionType.enum";
   describe("NotificationService", () => {
     beforeEach(() => {
       jest.clearAllMocks();
+      global.fetch = jest.fn();
     });
   
     describe("Data Conversion", () => {
@@ -63,84 +58,89 @@ import NotificationActionType from "@/app/enums/NotificationActionType.enum";
   
     describe("createNotification", () => {
       it("should create a new notification", async () => {
-        const mockDocRef = { id: "new-notif" };
-        (addDoc as jest.Mock).mockResolvedValue(mockDocRef);
-        (collection as jest.Mock).mockReturnValue("notifications-collection");
-  
+        (global.fetch as jest.Mock).mockReturnValue({status: 200});
+
         await createNotification({
           message: "New message",
           uidFor: "user123",
           seen: false
         });
   
-        expect(addDoc).toHaveBeenCalledWith("notifications-collection", expect.any(Object));
-        expect(setDoc).toHaveBeenCalledWith(mockDocRef, expect.objectContaining({
-          uid: "new-notif",
-          deleted: false
-        }));
+        expect(fetch).toHaveBeenCalledWith("/api/notifications/create", {
+          method: "POST",
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: "New message",
+            uidFor: "user123",
+            seen: false
+          })
+        })
       });
     });
   
     describe("deleteNotification", () => {
       it("should mark notification as deleted", async () => {
-        await deleteNotification("notif123");
-        expect(updateDoc).toHaveBeenCalledWith(doc(db, "notifications", "notif123"), {
-          deleted: true
-        });
+        (global.fetch as jest.Mock).mockReturnValue({status: 200});
+
+        await deleteNotification("notif123")
+
+        expect(fetch).toHaveBeenCalledWith("/api/notifications/delete", {
+          method: "DELETE",
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({uid: "notif123"})
+        })
       });
     });
   
     describe("setNotificationSeen", () => {
       it("should update seen status", async () => {
+        (global.fetch as jest.Mock).mockReturnValue({status: 200});
+
         await setNotificationSeen("notif123", true);
-        expect(updateDoc).toHaveBeenCalledWith(doc(db, "notifications", "notif123"), {
-          seen: true
-        });
+
+        expect(fetch).toHaveBeenCalledWith("/api/notifications/seen", {
+          method: "PATCH",
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({uid: "notif123", seen: true})
+        })
       });
     });
   
     describe("markAllNotificationsAsSeenForUser", () => {
         it("should batch update notifications", async () => {
-            const mockBatch = { update: jest.fn(), commit: jest.fn() };
-            (writeBatch as jest.Mock).mockReturnValue(mockBatch);
-    
-            await markAllNotificationsAsSeenForUser(["notif1", "notif2"]);
-            
-            expect(mockBatch.update).toHaveBeenCalledTimes(2);
-            expect(mockBatch.commit).toHaveBeenCalled();
+          (global.fetch as jest.Mock).mockReturnValue({status: 200});
+
+          await markAllNotificationsAsSeenForUser(["notif1", "notif2"]);
+
+          expect(fetch).toHaveBeenCalledWith("/api/notifications/aseen", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({uids: ["notif1", "notif2"]})
+          })
         });
   
         it("should handle batch commit errors", async () => {
-            const mockBatch = { 
-                update: jest.fn(), 
-                commit: jest.fn().mockRejectedValue(new Error("Batch error"))
-            };
+          (global.fetch as jest.Mock).mockReturnValue({status: 500, json: async () => "error"});
 
-            (writeBatch as jest.Mock).mockReturnValue(mockBatch);
-            const consoleSpy = jest.spyOn(console, "error").mockImplementation();
-        
-            await markAllNotificationsAsSeenForUser(["notif1"])
+          const consoleSpy = jest.spyOn(console, "error").mockImplementation();
+      
+          await markAllNotificationsAsSeenForUser(["notif1"])
 
-            expect(consoleSpy).toHaveBeenCalled();
+          expect(consoleSpy).toHaveBeenCalled();
         });
     });
   
     describe("getNotificationsForUser", () => {
       it("should fetch user notifications", async () => {
-        const mockSnapshot = {
-          forEach: jest.fn(cb => cb({ data: () => mockFSNotification }))
-        };
-
-        (getDocs as jest.Mock).mockResolvedValue(mockSnapshot);
-        (query as jest.Mock).mockReturnValue("user-query");
-        (and as jest.Mock).mockReturnValue({})
+        (global.fetch as jest.Mock).mockReturnValue({status: 200, json: async () => ({ results: [mockNotification] })})
   
         const result = await getNotificationsForUser("user123");
         
-        expect(query).toHaveBeenCalledWith(
-          collection(db, "notifications"),
-          expect.any(Object)
-        );
+        expect(fetch).toHaveBeenCalledWith("/api/notifications/get/user123", {
+          method: "GET",
+          headers: { 'Content-Type': 'application/json' }
+        });
+
         expect(result).toHaveLength(1);
         expect(result[0]).toMatchObject(mockNotification);
       });
