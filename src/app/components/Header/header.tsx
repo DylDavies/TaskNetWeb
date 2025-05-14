@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Notifications from "../Notifications/Notifications";
 import "./Header.css";
 import { AuthContext, AuthContextType } from "@/app/AuthContext";
@@ -6,7 +6,6 @@ import Image from "next/image";
 import UserType from "@/app/enums/UserType.enum";
 import VerticalDots from "../VerticalDots/VerticalDots";
 import FreelancerSkillsModal from "../FreelancerSkillsModal/FreelancerSkillsModal";
-import MultiSelect from "../MultiSelectBar/MultiSelectBar";
 
 type Props = {
   usertype: string; // freelancer or client to determine the messag
@@ -24,19 +23,22 @@ const Header: React.FC<Props> = ({ usertype, name }) => {
     user?.userData.skills ?? {}
   );
 
-  // Update skills in the local state and optionally update Firestore
+  useEffect(() => {
+    if (user?.userData.skills) {
+      setSkills(user.userData.skills);
+    }
+  }, [user?.userData.skills]);
+
+  // Update skills
   const handleUpdateSkills = (updatedSkills: {
     [skillArea: string]: string[];
   }) => {
     setSkills(updatedSkills);
-    // TODO: Optionally add Firestore update logic here if needed
-    // e.g., update the Firestore document with updated skills
   };
 
   return (
     <header className="sticky top-0 z-50 w-full bg-gray-900 border-b border-gray-800 box-header">
       <section className="flex items-center justify-between max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-3 lg:py-4">
-        {/* Left Side: Logo */}
         <section className="flex items-center gap-3 lg:gap-4">
           {/*<img
         src="/images/WhiteLogo.png"
@@ -47,12 +49,8 @@ const Header: React.FC<Props> = ({ usertype, name }) => {
           <h1 className="text-xl sm:text-2xl font-bold text-white">TaskNet</h1>
         </section>
 
-        {/* Center: Message */}
         <p className="text-xl sm:text-2xl font-bold text-white">{usertype}</p>
-
-        {/* Right Side: User Info */}
         <section className="flex items-center gap-6 sm:gap-5">
-          {/* Notification Icon */}
           <Notifications></Notifications>
 
           {/* Profile Photo */}

@@ -1,11 +1,13 @@
+import Image from "next/image";
+import "./FreelancerSkillList.css";
 interface FreelancerSkillListProps {
   skills: string[];
-  area: string | null;
+  onRemoveSkill?: (skill: string) => void;
 }
 
 const FreelancerSkillList: React.FC<FreelancerSkillListProps> = ({
   skills,
-  area,
+  onRemoveSkill,
 }) => {
   //if (!area) return <section className="text-gray-500">Select a skill area</section>;
 
@@ -19,7 +21,21 @@ const FreelancerSkillList: React.FC<FreelancerSkillListProps> = ({
           key={skill}
           className="border p-2 rounded flex justify-between items-center"
         >
-          <em>{skill}</em>
+          <section className="container">
+            <em>{skill}</em>
+            <button
+              className="delete-btn"
+              onClick={() => onRemoveSkill?.(skill)}
+            >
+              <Image
+                src="/images/deleteIcon.png"
+                alt="Delete"
+                width={25}
+                height={25}
+                className="delete-icon"
+              />
+            </button>
+          </section>
         </li>
       ))}
     </ul>
