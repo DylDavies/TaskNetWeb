@@ -5,9 +5,9 @@ import { and, collection, getDocs, query, where } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 import Notification from "@/app/interfaces/Notification.interface";
 
-export async function GET(req: NextRequest, { params } : { params: { uid: string } }) {
+export async function GET(req: NextRequest, { params } : { params: Promise<{ uid: string }> }) {
     try {
-        const snapshot = await getDocs(query(collection(db, "notifications"), and(where("uidFor", "==", params.uid), where("deleted", "==", false))));
+        const snapshot = await getDocs(query(collection(db, "notifications"), and(where("uidFor", "==", (await params).uid), where("deleted", "==", false))));
 
         const results: Notification[] = [];
     
