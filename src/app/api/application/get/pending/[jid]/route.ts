@@ -1,7 +1,6 @@
 import ApplicationStatus from "@/app/enums/ApplicationStatus.enum";
 import { db } from "@/app/firebase";
-import { getUsername } from "@/app/server/services/DatabaseService";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDoc, getDocs, query, where, doc } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{jid: string}> }) {
@@ -10,17 +9,22 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{jid: 
 
     const snapshot = await getDocs(pending);
 
-    const pendingApplicants = snapshot.docs.map(doc => ({
-        ApplicationID: doc.id,
-        ApplicantID: doc.data().ApplicantID,
-        ApplicationDate: doc.data().ApplicationDate,
-        BidAmount: doc.data().BidAmount,
-        CVURL: doc.data().CVURL,
-        EstimatedTimeline: doc.data().EstimatedTimeline,
-        JobID: doc.data().JobID,
-        Status: doc.data().Status,
-        username:getUsername(doc.data().ApplicantID)
-    }));
+    const pendingApplicants = snapshot.docs.map(async dc => {
+        const d = dc.data();
+        const userDoc = await getDoc(doc(db, "users", d.ApplicantID))
 
-    return NextResponse.json({results: pendingApplicants}, {status: 200});
+        return {
+            ApplicationID: dc.id,
+            ApplicantID: dc.data().ApplicantID,
+            ApplicationDate: dc.data().ApplicationDate,
+            BidAmount: dc.data().BidAmount,
+            CVURL: dc.data().CVURL,
+            EstimatedTimeline: dc.data().EstimatedTimeline,
+            JobID: dc.data().JobID,
+            Status: dc.data().Status,
+            username: userDoc.exists() ? userDoc.data().username || "No username" : "No username"
+        }
+    });
+
+    return NextResponse.json({results: await Promise.all(pendingApplicants)}, {status: 200});
 }

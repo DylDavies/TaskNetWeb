@@ -1,5 +1,3 @@
-'use server';
-
 import ApplicantData from "../../interfaces/ApplicationData.interface";
 
 async function getApplicant(ApplicantID: string): Promise<ApplicantData | null> {
@@ -16,7 +14,7 @@ async function getPendingApplicants(JobID: string): Promise<ApplicantData[]>{
     const response = await fetch(`/api/application/get/pending/${JobID}`, {
         method: "GET",
         headers: { 'Content-Type': 'application/json' }
-    }); 
+    });
 
     return (await response.json()).results;
 };  
