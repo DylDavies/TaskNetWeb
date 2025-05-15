@@ -4,21 +4,35 @@ import { NextRequest, NextResponse } from "next/server";
 import ActiveJob from "@/app/interfaces/ActiveJob.interface";
 import JobData from "@/app/interfaces/JobData.interface";
 
-export async function GET(req: NextRequest, { params }: { params: { cid: string } }) {
+interface Params {
+  cid?: string;
+}
+
+export async function GET(req: NextRequest, { params }: { params: Params }) {
   try {
-    const Query = query(collection(db, "Jobs"), where("clientUId", "==", params.cid));
+    const clientId = params?.cid;
+
+    if (!clientId) {
+      return NextResponse.json({ error: "Missing client ID" }, { status: 400 });
+    }
+
+    const Query = query(collection(db, "Jobs"), where("clientUId", "==", clientId)); // Use clientId here
     const jobDocs = await getDocs(Query);
 
     const jobs: ActiveJob[] = [];
     jobDocs.forEach((doc) => {
       jobs.push({
         jobId: doc.id,
-        jobData: doc.data() as JobData
+        jobData: doc.data() as JobData,
       });
     });
 
     return NextResponse.json({ results: jobs }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ message: "Error getting jobs by client ID", error }, { status: 500 });
+    console.error("Error getting jobs by client ID", error);
+    return NextResponse.json(
+      { message: "Error getting jobs by client ID", error },
+      { status: 500 }
+    );
   }
 }
