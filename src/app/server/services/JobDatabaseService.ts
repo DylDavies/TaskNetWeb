@@ -201,6 +201,7 @@ async function getContracted(userID: string, userType:UserType): Promise<ActiveJ
           where("clientUId", "==", userID),   
           or(                                 
             where("status", "==", JobStatus.Employed),
+            where("status", "==", JobStatus.InProgress),
             where("status", "==", JobStatus.Completed)
           )
         )
@@ -214,6 +215,7 @@ async function getContracted(userID: string, userType:UserType): Promise<ActiveJ
           where("hiredUId", "==", userID),   
           or(                                 
             where("status", "==", JobStatus.Employed),
+            where("status", "==", JobStatus.InProgress),
             where("status", "==", JobStatus.Completed)
           )
         )

@@ -23,6 +23,9 @@ import RateUserModal from "../components/RatingModal/RateUserModal";
 import UserData from "../interfaces/UserData.interface";
 import { getUser } from "../server/services/DatabaseService";
 import { getUsername } from "../server/services/DatabaseService";
+import Button from "../components/button/Button";
+import { onSnapshot, doc } from "firebase/firestore";
+import { db } from "../firebase";
 
 const linksClient = [
   { name: "Home", href: "/client", selected: false },
@@ -113,13 +116,30 @@ export default function Page() {
       }
     }
 
-    if (jobID) fetchJobTitle();
+    if (jobID) {
+      fetchJobTitle();
+
+      const unsub = onSnapshot(doc(db, "Jobs", jobID as string), (ss) => {
+        setJob(ss.data() as JobData)
+      });
+  
+      return () => {
+        if (unsub) unsub();
+      }
+    }
   }, [jobID]);
 
   //This function opens the modal to view milestone information when clicking on a milestone in the table
   function handleMilestoneClick(milestone: MilestoneData) {
     setModalOpen(true);
     setSelectedMilestone(milestone);
+  }
+
+  function handleProceedJob(){
+    if (jobID){
+      updateJobStatus(jobID,JobStatus.InProgress);
+
+    }
   }
 
   // Calculate the jobs progress
@@ -238,9 +258,9 @@ export default function Page() {
                     isOpen={isRatingModalOpen}
             
                   />
-                 )
+                )
               }
-              {
+              { 
                 userToRate && 
                 ((user?.userData.type === UserType.Client && job?.hiredUId &&!job.hasClientRated )  ) && (
                   <RateUserModal 
@@ -249,16 +269,18 @@ export default function Page() {
                     ratedName={ratedName}
                     isOpen={isRatingModalOpen}
                   />
-                 )
+                )
               }
               </section>
 
-              <section className="w-full max-w-8xl flex justify-start mb-4 cursor-pointer ">
-                {(user?.userData.type === UserType.Client ||
-                  user?.userData.type === UserType.Admin) && (
-                  <CreateMilestone refetch={refetch} />
-                )}
-              </section>
+      <section className="w-full max-w-8xl flex justify-start mb-4 cursor-pointer flex-col space-y-4">
+        {((user?.userData.type === UserType.Client || user?.userData.type === UserType.Admin) && (job && job.status === JobStatus.Employed)) && (
+          <>
+            <CreateMilestone refetch={refetch} />
+          </>
+          )}
+        </section>
+
 
               <section className="w-full max-w-8xl mt-12">
                 {job && (
@@ -275,6 +297,7 @@ export default function Page() {
                 <ViewMilestones
                   data={{
                     jobId: jobID,
+                    jobStatus:job!.status,
                     clientUID: clientUID,
                     milestone: selectedMilestone,
                   }}
@@ -286,8 +309,16 @@ export default function Page() {
                   refetch={refetch}
                 ></ViewMilestones>
               )}
+
             </section>
+            {((user?.userData.type === UserType.Client || user?.userData.type === UserType.Admin) && milestones.length > 0)  && (job && job.status === JobStatus.Employed) && (
+              <section className="w-full max-w-8xl flex justify-end mt-4">
+                <Button caption="Proceed with Job" onClick={handleProceedJob} />
+                </section>
+          )}
+
           </section>
+          
         </main>
 
         <footer className="bg-[#f75509] py-4 flex justify-center bg-gray-900 box-footer">

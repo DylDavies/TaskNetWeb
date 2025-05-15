@@ -46,7 +46,7 @@ async function getCompletionStats(StartDate: Date, EndDate: Date) {
     if(doc.data().status == JobStatus.Completed){
       completedProjects++;
     }
-    if(doc.data().status == JobStatus.Employed){
+    if(doc.data().status == JobStatus.Employed || doc.data().status == JobStatus.InProgress){
       hiredProjects++;
       
     }

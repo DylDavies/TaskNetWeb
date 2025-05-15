@@ -1,8 +1,9 @@
 enum JobStatus{
-    Posted,
-    Employed,
-    Deleted,
-    Completed
+    Posted, //0
+    Employed, //1
+    Deleted, //2
+    Completed, //3
+    InProgress, //4
 }
 // 0 -> 3
 

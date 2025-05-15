@@ -13,6 +13,8 @@ import {
   createNotification,
   getNotificationsForUser,
 } from "@/app/server/services/NotificationService";
+import { collection, onSnapshot, Unsubscribe } from "firebase/firestore";
+import { db } from "@/app/firebase";
 
 type JobData = {
   hiredUId: string;
@@ -40,6 +42,8 @@ const MilestonesTable = ({
   const sentRef = useRef(false);
 
   useEffect(() => {
+    let unsub: Unsubscribe;
+
     async function fetchMilestones() {
       if (!jobID || !hiredID) return;
 
@@ -50,9 +54,23 @@ const MilestonesTable = ({
       } catch (error) {
         console.error("Error fetching milestones:", error);
       }
+
+      unsub = onSnapshot(collection(db, "Jobs", jobID, "milestones"), (ss) => {
+        const results: MilestoneData[] = [];
+
+        ss.forEach(s => {
+          results.push({...(s.data()), id: s.id} as MilestoneData)
+        });
+
+        setMilestones(results);
+      })
     }
 
     fetchMilestones();
+
+    return () => {
+      if (unsub) unsub();
+    }
   }, [jobID, hiredID, refresh]);
 
   useEffect(() => {

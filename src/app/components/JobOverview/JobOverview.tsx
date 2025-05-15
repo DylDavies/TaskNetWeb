@@ -145,6 +145,10 @@ const JobCard: React.FC<JobCardProps> = ({
             <output className="italic text-yellow-400">Hired</output>
           )}
 
+          {hired === JobStatus.InProgress && (
+            <output className="italic text-yellow-400">In Progress</output>
+          )}
+
           {hired === JobStatus.Completed && (
             <output className="italic text-green-400">Completed</output>
           )}

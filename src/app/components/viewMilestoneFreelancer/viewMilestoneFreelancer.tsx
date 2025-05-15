@@ -24,12 +24,14 @@ import { createNotification } from "@/app/server/services/NotificationService";
 import ChatLink from "../ChatLink/ChatLink";
 import { useChatStore } from "@/app/stores/chatStore";
 import JobWithUser from "@/app/interfaces/JobWithOtherUser.interface";
+import JobStatus from "@/app/enums/JobStatus.enum";
 
 type JobData = {
-  jobId: string;
-  clientUID: string;
-  milestone: MilestoneData;
-};
+    jobId: string;
+    jobStatus:JobStatus;
+    clientUID: string;
+    milestone: MilestoneData;
+  };
 
 type Props = {
   data: JobData;
@@ -130,7 +132,7 @@ const ViewMilestones: React.FC<Props> = ({
   const handleReportSubmit = async () => {
     try {
       if (!reportURL) {
-        toast.error("Please upload your CV first");
+        toast.error("Please upload your Report first");
         return;
       }
 
@@ -205,8 +207,9 @@ const ViewMilestones: React.FC<Props> = ({
               </p>
             </section>
             {role === "freelancer" &&
-              status !== MilestoneStatus.Completed &&
-              status !== MilestoneStatus.Approved && (
+              (status !== MilestoneStatus.Completed &&
+              status !== MilestoneStatus.Approved)
+              && (data && data.jobStatus === JobStatus.InProgress) && (
                 <section>
                   <fieldset>
                     <legend>Select Status</legend>
