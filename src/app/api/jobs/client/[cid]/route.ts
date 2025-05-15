@@ -5,12 +5,12 @@ import ActiveJob from "@/app/interfaces/ActiveJob.interface";
 import JobData from "@/app/interfaces/JobData.interface";
 
 interface Params {
-  cid?: string;
+  cid: string;
 }
 
-export async function GET(req: NextRequest, { params }: { params: Params }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<Params> }) {
   try {
-    const clientId = params?.cid;
+    const clientId = (await params).cid;
 
     if (!clientId) {
       return NextResponse.json({ error: "Missing client ID" }, { status: 400 });

@@ -4,9 +4,9 @@ import { NextRequest, NextResponse } from "next/server";
 import ActiveJob from "@/app/interfaces/ActiveJob.interface";
 import JobData from "@/app/interfaces/JobData.interface";
 
-export async function GET(req: NextRequest, { params }: { params: { fid: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ fid: string }> }) {
   try {
-    const Query = query(collection(db, "Jobs"), where("hiredUId", "==", params.fid));
+    const Query = query(collection(db, "Jobs"), where("hiredUId", "==", (await params).fid));
     const jobDocs = await getDocs(Query);
 
     const jobs: ActiveJob[] = [];
