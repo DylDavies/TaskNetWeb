@@ -3,6 +3,9 @@ import "./JobOverview.css";
 import JobStatus from "@/app/enums/JobStatus.enum";
 import Image from "next/image";
 import { getUser } from "@/app/server/services/DatabaseService";
+import StarRatingDisplay from "../RatingStars/RatingStars";
+
+
 
 /*
 --- NOTE ON USE ---
@@ -43,6 +46,8 @@ interface JobCardProps {
   skills: string[];
   hired?: JobStatus;
   onClick?: () => void;
+  averageRating?: number;
+  totalRatings?: number;
 }
 
 const JobCard: React.FC<JobCardProps> = ({
@@ -52,7 +57,9 @@ const JobCard: React.FC<JobCardProps> = ({
   skills,
   hired,
   onClick,
-  clientId
+  clientId,
+  averageRating,
+  totalRatings,
 }) => {
   const [ name, setName ] = useState("Loading...");
   const [ avatar, setAvatar ] = useState<string | null>();
@@ -137,6 +144,9 @@ const JobCard: React.FC<JobCardProps> = ({
           {/* Company and Deadline inline at the bottom */}
           <footer className="flex justify-between items-center text-sm text-gray-400 pt-1 border-t border-gray-700 mt-2">
             <address className="italic">{name}</address>
+          {(averageRating !== undefined && totalRatings !== undefined) && (
+                  <StarRatingDisplay averageRating={averageRating} totalRatings={totalRatings} />
+              )}
           {hired === JobStatus.Posted && (
             <output className="italic text-orange-400">Open to applicants</output>
           )}
