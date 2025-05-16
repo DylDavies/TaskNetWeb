@@ -13,7 +13,7 @@ import ActiveJob from "../interfaces/ActiveJob.interface";
 import MultiViewModal from "../components/MultiViewModal/MultiViewModal";
 import JobStatus from "../enums/JobStatus.enum";
 import InputBar from "../components/inputbar/InputBar";
-import { recommendJob } from "../server/services/RecommendationService";
+import { recommendJobs } from "../server/services/RecommendationService";
 import ActiveUser from "../interfaces/ActiveUser.interface";
 
 //constant for links to other pages
@@ -26,6 +26,7 @@ const links = [
 
 export default function Page() {
   const [jobCards, setJobCards] = useState<ActiveJob[]>([]);
+  const [recommended, setRecommended] = useState<{jobId: string, reason: string}[]>([]);
   const [skills, setSkills] = useState<string[]>([]); // all skills from all skills areas
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]); // Selected skills from filter
   const [jobNameFilter, setJobNameFilter] = useState("");
@@ -81,9 +82,9 @@ export default function Page() {
       try {
         const activeJobs = await getAllJobs();
 
-        // recommendJob(user as ActiveUser, activeJobs).then(res => {
-        //   console.log(res);
-        // });
+        recommendJobs(user as ActiveUser, activeJobs).then(res => {
+          setRecommended(res);
+        });
   
         const filtered = activeJobs.filter((job) => {
           if (job.jobData.status !== JobStatus.Posted) return false;
@@ -170,6 +171,9 @@ export default function Page() {
                 deadline={formatDateAsString(job.jobData.deadline)}
                 skills={Object.values(job.jobData.skills).flat()}
                 onClick={() => handleCardClick(job)}
+                hired={job.jobData.status}
+                isAIRcommended={recommended.some(v => v.jobId == job.jobId)}
+                aiRecommendationReason={recommended.find(v => v.jobId == job.jobId)?.reason}
               />
             ))}
             {openModal && data && (
