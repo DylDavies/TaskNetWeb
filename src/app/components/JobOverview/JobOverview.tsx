@@ -46,8 +46,6 @@ interface JobCardProps {
   skills: string[];
   hired?: JobStatus;
   onClick?: () => void;
-  averageRating?: number;
-  totalRatings?: number;
 }
 
 const JobCard: React.FC<JobCardProps> = ({
@@ -58,10 +56,10 @@ const JobCard: React.FC<JobCardProps> = ({
   hired,
   onClick,
   clientId,
-  averageRating,
-  totalRatings,
 }) => {
   const [ name, setName ] = useState("Loading...");
+  const[aveRating, setRating] = useState<number |null>();
+  const[totalRating,setTotalRatings]= useState<number | null>();
   const [ avatar, setAvatar ] = useState<string | null>();
 
   useEffect(() => {
@@ -69,6 +67,8 @@ const JobCard: React.FC<JobCardProps> = ({
       const user = await getUser(clientId);
 
       setName(user?.username || "Not found");
+      setRating(user?.ratingAverage);
+      setTotalRatings(user?.ratingCount);
       setAvatar(user?.avatar);
     })();
   }, []);
@@ -144,8 +144,8 @@ const JobCard: React.FC<JobCardProps> = ({
           {/* Company and Deadline inline at the bottom */}
           <footer className="flex justify-between items-center text-sm text-gray-400 pt-1 border-t border-gray-700 mt-2">
             <address className="italic">{name}</address>
-          {(averageRating !== undefined && totalRatings !== undefined) && (
-                  <StarRatingDisplay averageRating={averageRating} totalRatings={totalRatings} />
+          {(aveRating !== undefined && totalRating !== undefined && aveRating && totalRating) && (
+                  <StarRatingDisplay averageRating={aveRating} totalRatings={totalRating} />
               )}
           {hired === JobStatus.Posted && (
             <output className="italic text-orange-400">Open to applicants</output>
