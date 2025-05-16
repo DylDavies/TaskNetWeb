@@ -5,14 +5,15 @@ import jsPDF from 'jspdf';
 import CompletionStats from '../interfaces/CompletionStatsInterface';
 import autoTable from 'jspdf-autotable'
 import html2canvas from 'html2canvas'
-import { ProjectPieChart } from '../components/PdfComponents/ProjectPieChart';
-import { MilestoneBarChart } from '../components/PdfComponents/MilestoneBarChart';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import PaymentStats from '../interfaces/PaymentStats.interface';
+import { PDFUnifiedChart } from '../components/PdfComponents/PDFUnifiedChart';
   
+type ChartType = 'pie' | 'bar';
 
 //exporting an element as a pdf
-export async function exportElementToPDF(elementId: string, filename = 'report.pdf') {
+  export async function exportElementToPDF(elementId: string, filename = 'report.pdf') {
   const node = document.getElementById(elementId);
   if (!node) {
     console.error('Element not found:', elementId);
@@ -38,10 +39,10 @@ export async function exportElementToPDF(elementId: string, filename = 'report.p
   } catch (err) {
     console.error('Failed to export PDF:', err);
   }
-}
+  }
 
-// exporting the stats themselves as a pdf
-    export async function exportStatsToPDF(
+  // exporting the stats themselves as a pdf
+  export async function exportCompletionStatsToPDF(
       stats: CompletionStats,
       startDate: Date,
       endDate: Date,
@@ -51,7 +52,6 @@ export async function exportElementToPDF(elementId: string, filename = 'report.p
       const margin = 15;
       let y = margin;
     
-      // --- Add Logo ---
       try {
         const logoResponse = await fetch('/images/Logo.png');
         const logoBlob = await logoResponse.blob();
@@ -68,18 +68,18 @@ export async function exportElementToPDF(elementId: string, filename = 'report.p
         y += 20;
       }
     
-      // --- Report Title ---
+      //Title
       doc.setFontSize(18);
       doc.setTextColor(40, 40, 40);
       doc.text('Project Completion Report', 105, y, { align: 'center' });
       y += 10;
     
-      // --- Date Range ---
+      //Date
       doc.setFontSize(11);
       doc.text(`Date Range: ${startDate.toDateString()} - ${endDate.toDateString()}`, 105, y, { align: 'center' });
       y += 20;
     
-      // --- Stats Table ---
+      //Table
       interface AutoTableFinalYDoc extends jsPDF {
         lastAutoTable?: {
           finalY?: number;
@@ -110,12 +110,243 @@ export async function exportElementToPDF(elementId: string, filename = 'report.p
         },
       });
       
-      // Type-safe access to finalY
+      // Fixes for the lint so we dont use any
       const safeDoc = doc as AutoTableFinalYDoc;
       y = (safeDoc.lastAutoTable?.finalY ?? y) + 15;
     
-      // --- Helper: Render React Chart to Canvas ---
-      async function renderChartToImage(ChartComponent: React.FC<{ stats: CompletionStats, width?: number, height?: number }>, props: { stats: CompletionStats; width?: number; height?: number }): Promise<HTMLCanvasElement> {
+      //Piechart
+      const PiedataValues: number[][] = [];
+      PiedataValues.push([stats.completedProjects, stats.hiredProjects, stats.totalProjects - stats.hiredProjects - stats.completedProjects]);
+      const PiedataLabels: string[] = ["Completed", "Hired", "In Progress"];
+      const PieaxisLabels: string[] = ["Completed", "Hired", "In Progress"];
+      const PiechartTitle: string= "Completion Stats";
+      try {
+        const pieCanvas = await  renderChartToImage(PDFUnifiedChart, { chartType: 'pie', dataValues: PiedataValues, dataLabels: PiedataLabels, axisLabels: PieaxisLabels, chartTitle: PiechartTitle , width: 600, height: 300 });
+        const imgWidth = 180;
+        const imgHeight = (pieCanvas.height * imgWidth) / pieCanvas.width;
+    
+        if (y + imgHeight > 280) {
+          doc.addPage();
+          y = 20;
+        }
+    
+        const pieImg = pieCanvas.toDataURL('image/png');
+        doc.addImage(pieImg, 'PNG', 15, y, imgWidth, imgHeight);
+        y += imgHeight + 10;
+      } catch {
+        doc.setFontSize(10);
+        doc.text('Error rendering Project Pie Chart.', 15, y);
+        y += 10;
+      }
+    
+      // Barchart
+      //Chart values:
+        const BardataValues: number[][] = [];
+        BardataValues.push([stats.CompletedMilestones], [stats.totalMilestones - stats.CompletedMilestones]);
+        const BardataLabels: string[] = ["Completed", "Remaining"];
+        const BaraxisLabels: string[] = ["Milestones"];
+        const BarchartTitle: string= "Milestone Stats";
+      try {
+        const barCanvas = await renderChartToImage(PDFUnifiedChart, { chartType: 'bar', dataValues: BardataValues, dataLabels: BardataLabels, axisLabels: BaraxisLabels, chartTitle: BarchartTitle , width: 600, height: 300 });
+        const imgWidth = 180;
+        const imgHeight = (barCanvas.height * imgWidth) / barCanvas.width;
+    
+        if (y + imgHeight > 280) {
+          doc.addPage();
+          y = 20;
+        }
+    
+        const barImg = barCanvas.toDataURL('image/png');
+        doc.addImage(barImg, 'PNG', 15, y, imgWidth, imgHeight);
+      } catch {
+        doc.setFontSize(10);
+        doc.text('Error rendering Milestone Bar Chart.', 15, y);
+      }
+
+
+      //Footers for each page
+      const pageCount = doc.getNumberOfPages();
+      const generatedDate = new Date().toLocaleDateString();
+
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(9);
+        doc.setTextColor(150);
+
+        const footerText = `Page ${i} of ${pageCount}`;
+        const dateText = `Generated on: ${generatedDate}`;
+
+        doc.text(dateText, margin, 290);
+
+        doc.text(footerText, doc.internal.pageSize.getWidth() - margin, 290, {
+          align: 'right',
+        });
+      }
+    
+      //metadata 
+      doc.setProperties({
+        title: 'Project Completion Report',
+        subject: 'Generated project metrics and charts',
+        author: 'ProjectTracker',
+        keywords: 'project, report, stats, pdf',
+      });
+      
+      doc.save(filename);
+  }
+
+
+  export async function exportPaymentStatsToPDF(
+      stats: PaymentStats,
+      startDate: Date,
+      endDate: Date,
+      filename = 'Payment-stats.pdf'
+    ) {
+      const doc = new jsPDF();
+      const margin = 15;
+      let y = margin;
+    
+      try {
+        const logoResponse = await fetch('/images/Logo.png');
+        const logoBlob = await logoResponse.blob();
+        const logoUrl = URL.createObjectURL(logoBlob);
+    
+        const img = new Image();
+        img.src = logoUrl;
+        await new Promise(resolve => (img.onload = resolve));
+    
+        doc.addImage(img, 'PNG', 70, y, 70, 40);
+        y += 50;
+      } catch (error) {
+        console.warn('Logo not found or failed to load:', error);
+        y += 20;
+      }
+    
+      //Title
+      doc.setFontSize(18);
+      doc.setTextColor(40, 40, 40);
+      doc.text('Payment Report', 105, y, { align: 'center' });
+      y += 10;
+    
+      //Date
+      doc.setFontSize(11);
+      doc.text(`Date Range: ${startDate.toDateString()} - ${endDate.toDateString()}`, 105, y, { align: 'center' });
+      y += 20;
+    
+      //Table
+      interface AutoTableFinalYDoc extends jsPDF {
+        lastAutoTable?: {
+          finalY?: number;
+        };
+      }
+      const selectedIndices = [0, 1, 4, 6, 7, 8];
+      const PDFTableInfo = stats.tabelInfo.map(row => selectedIndices.map(index => row[index]));
+
+      const headers = ['Job ID', 'Job Title', 'Client ID', 'Total Paid', 'Unpaid', 'ESCROW']
+      autoTable(doc, {
+        startY: y,
+        head: [headers],
+        body: PDFTableInfo,
+        styles: {
+          halign: 'center',
+          fontSize: 8,
+        },
+        headStyles: {
+          fillColor: [99, 102, 241],
+          textColor: [255, 255, 255],
+        },
+        alternateRowStyles: {
+          fillColor: [245, 245, 245],
+        },
+      });
+      
+      // Fixes for the lint so we dont use any
+      const safeDoc = doc as AutoTableFinalYDoc;
+      y = (safeDoc.lastAutoTable?.finalY ?? y) + 15;
+    
+      //Piechart
+      //Chart values:
+        const PiedataValues: number[][] = [];
+        PiedataValues.push([stats.totalESCROW, stats.totalPayed, stats.totalUnpaid]);
+        const PiedataLabels: string[] = ["ESCROW", "Paid", "Unpaid"];
+        const PieaxisLabels: string[] = ["ESCROW", "Paid", "Unpaid"];
+        const PiechartTitle: string= "Percentage comparison";
+      try {
+
+        const pieCanvas = await renderChartToImage(PDFUnifiedChart, { chartType: 'pie', dataValues: PiedataValues, dataLabels: PiedataLabels, axisLabels: PieaxisLabels, chartTitle: PiechartTitle , width: 600, height: 300 });
+        const imgWidth = 180;
+        const imgHeight = (pieCanvas.height * imgWidth) / pieCanvas.width;
+    
+        if (y + imgHeight > 280) {
+          doc.addPage();
+          y = 20;
+        }
+    
+        const pieImg = pieCanvas.toDataURL('image/png');
+        doc.addImage(pieImg, 'PNG', 15, y, imgWidth, imgHeight);
+        y += imgHeight + 40;
+      } catch {
+        doc.setFontSize(10);
+        doc.text('Error rendering Project Pie Chart.', 15, y);
+        y += 10;
+      }
+    
+      // Barchart
+      //Chart values:
+        const BardataValues: number[][] = [];
+        BardataValues.push([stats.totalESCROW], [stats.totalPayed], [stats.totalUnpaid]);
+        const BardataLabels: string[] = ["ESCROW", "Paid", "Unpaid"];
+        const BaraxisLabels: string[] = ["Categories"];
+        const BarchartTitle: string= "Comparison in $";
+      try {
+        const barCanvas = await renderChartToImage(PDFUnifiedChart, { chartType: 'bar', dataValues: BardataValues, dataLabels: BardataLabels, axisLabels: BaraxisLabels, chartTitle: BarchartTitle , width: 600, height: 300 });
+        const imgWidth = 180;
+        const imgHeight = (barCanvas.height * imgWidth) / barCanvas.width;
+    
+        if (y + imgHeight > 280) {
+          doc.addPage();
+          y = 20;
+        }
+    
+        const barImg = barCanvas.toDataURL('image/png');
+        doc.addImage(barImg, 'PNG', 15, y, imgWidth, imgHeight);
+      } catch {
+        doc.setFontSize(10);
+        doc.text('Error rendering Milestone Bar Chart.', 15, y);
+      }
+
+
+      //Footers for each page
+      const pageCount = doc.getNumberOfPages();
+      const generatedDate = new Date().toLocaleDateString();
+
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(9);
+        doc.setTextColor(150);
+
+        const footerText = `Page ${i} of ${pageCount}`;
+        const dateText = `Generated on: ${generatedDate}`;
+
+        doc.text(dateText, margin, 290);
+
+        doc.text(footerText, doc.internal.pageSize.getWidth() - margin, 290, {
+          align: 'right',
+        });
+      }
+    
+      //metadata 
+      doc.setProperties({
+        title: 'Project Completion Report',
+        subject: 'Generated project metrics and charts',
+        author: 'ProjectTracker',
+        keywords: 'project, report, stats, pdf',
+      });
+      
+      doc.save(filename);
+  }
+
+  async function renderChartToImage(ChartComponent: React.FC<{ chartType: ChartType; dataValues: number[][]; dataLabels: string[]; axisLabels: string[]; chartTitle: string;width?: number;height?: number; maintainAspectRatio?: boolean;showLegend?: boolean;}>,
+                                           props: { chartType: ChartType; dataValues: number[][]; dataLabels: string[]; axisLabels: string[]; chartTitle: string;width?: number;height?: number; maintainAspectRatio?: boolean;showLegend?: boolean; }): Promise<HTMLCanvasElement> {
         return new Promise(async (resolve, reject) => {
           try {
             const container = document.createElement('div');
@@ -137,7 +368,7 @@ export async function exportElementToPDF(elementId: string, filename = 'report.p
               allowTaint: true,
               windowWidth: container.scrollWidth * 3,
               windowHeight: container.scrollHeight * 3,
-            } as Partial<Parameters<typeof html2canvas>[1]>; // <- this is key
+            } as Partial<Parameters<typeof html2canvas>[1]>; 
             
             const canvas = await html2canvas(container, options);
 
@@ -149,77 +380,7 @@ export async function exportElementToPDF(elementId: string, filename = 'report.p
             reject(err);
           }
         });
-      }
-    
-      // --- Insert Project Pie Chart ---
-      try {
-        const pieCanvas = await renderChartToImage(ProjectPieChart, { stats, width: 600, height: 300 });
-        const imgWidth = 180;
-        const imgHeight = (pieCanvas.height * imgWidth) / pieCanvas.width;
-    
-        if (y + imgHeight > 280) {
-          doc.addPage();
-          y = 20;
-        }
-    
-        const pieImg = pieCanvas.toDataURL('image/png');
-        doc.addImage(pieImg, 'PNG', 15, y, imgWidth, imgHeight);
-        y += imgHeight + 10;
-      } catch {
-        doc.setFontSize(10);
-        doc.text('Error rendering Project Pie Chart.', 15, y);
-        y += 10;
-      }
-    
-      // --- Insert Milestone Bar Chart ---
-      try {
-        const barCanvas = await renderChartToImage(MilestoneBarChart, { stats, width: 600, height: 300 });
-        const imgWidth = 180;
-        const imgHeight = (barCanvas.height * imgWidth) / barCanvas.width;
-    
-        if (y + imgHeight > 280) {
-          doc.addPage();
-          y = 20;
-        }
-    
-        const barImg = barCanvas.toDataURL('image/png');
-        doc.addImage(barImg, 'PNG', 15, y, imgWidth, imgHeight);
-      } catch {
-        doc.setFontSize(10);
-        doc.text('Error rendering Milestone Bar Chart.', 15, y);
-      }
-
-      const pageCount = doc.getNumberOfPages();
-      const generatedDate = new Date().toLocaleDateString();
-
-      for (let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
-        doc.setFontSize(9);
-        doc.setTextColor(150);
-
-        const footerText = `Page ${i} of ${pageCount}`;
-        const dateText = `Generated on: ${generatedDate}`;
-
-        // Left aligned date
-        doc.text(dateText, margin, 290);
-
-        // Right aligned page number
-        doc.text(footerText, doc.internal.pageSize.getWidth() - margin, 290, {
-          align: 'right',
-        });
-      }
-    
-      //metadata 
-      doc.setProperties({
-        title: 'Project Completion Report',
-        subject: 'Generated project metrics and charts',
-        author: 'ProjectTracker',
-        keywords: 'project, report, stats, pdf',
-      });
-      
-      // --- Save PDF ---
-      doc.save(filename);
-    }
+  }
     
  
   

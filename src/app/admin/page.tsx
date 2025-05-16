@@ -11,36 +11,32 @@ import React, { useContext, useState } from "react";
 import { AuthContext, AuthContextType } from "../AuthContext";
 import AnalyticsPage from "../components/AdminStatsDashboard/StatsDashboard";
 import DashboardContent from "../components/AdminDashboard/AdminDashboard";
-import PaymentInfo from "../components/PaymentInfo/PaymentInfo";
+import PaymentAnalyticsPage from "../components/AdminPaymentStatsDashboard/PaymentDashboard";
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
 
-  function handleViewChange(){
-    if (buttonName == "View Analytics"){
-      setbuttonName("View Pending Users");
-      setCurrentView('analytics');
-    }
-    else{
-      setbuttonName("View Analytics");
-      setCurrentView('dashboard');
 
-    }
-
+  function handleViewPendingUsers(){
+    setCurrentView('Pending')
   }
+
+  function handleViewCompletionStats(){
+    setCurrentView('Completion')
+  }
+  function handleViewPaymentStats(){
+    setCurrentView('Payment')
+  }
+
+  const buttonClasses = (isActive: boolean) => 
+  `w-full text-left px-4 py-2 rounded-md transition-colors ${
+    isActive
+      ? 'bg-gray-700 text-white cursor-not-allowed' 
+      : 'text-gray-300 hover:text-white hover:bg-gray-700'
+  }`;
+
    
-  const [buttonName, setbuttonName] = useState<"View Analytics" | "View Pending Users">("View Analytics");
-  const [currentView, setCurrentView] = useState<'dashboard' | 'analytics'>('dashboard');
-
-  //This will allow the admin to change between pending users and analytics
-  const ChangeViewButton = () => {
-    return(
-      <section>
-      <button onClick={() => handleViewChange()} > {buttonName}</button>
-      </section>
-    );
-  };
-
+  const [currentView, setCurrentView] = useState<'Pending' | 'Completion' | 'Payment'>('Pending');
 
   return (
     <>
@@ -53,22 +49,18 @@ export default function Page() {
 
           <aside className="w-64">
             <SideBar
-              myfunction={ChangeViewButton()} />
+              buttons={[
+                <button key="1" onClick={() => handleViewPendingUsers()} disabled={currentView === 'Pending'}  className={buttonClasses(currentView === 'Pending')}> Pending Users</button>,
+                <button key="2" onClick={() => handleViewCompletionStats()} disabled={currentView === 'Completion'}  className={buttonClasses(currentView === 'Completion')}> Completion Stats</button>,
+                <button key="3" onClick={() => handleViewPaymentStats()} disabled={currentView === 'Payment'}  className={buttonClasses(currentView === 'Payment')}> Payment Stats</button>
+              ]} />
           </aside>
           <section className="flex-1 p-4">
-          {currentView === 'dashboard' ? (
-            <DashboardContent
-          />
-          ):(
-            //<AnalyticsPage />
-            <PaymentInfo
-              startDate={new Date('2024-01-01')}
-              endDate={new Date('2025-12-31')}
-            />
-          )}
-         
+            {currentView === 'Pending' && <DashboardContent />}
+            {currentView === 'Completion' && <AnalyticsPage />}
+            {currentView === 'Payment' && <PaymentAnalyticsPage />}
           </section>
-          <AnalyticsPage />
+          
         </main>
 
         <footer className="bg-[#f75509] py-4 flex justify-center bg-gray-900 box-footer">

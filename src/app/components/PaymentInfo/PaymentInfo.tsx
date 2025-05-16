@@ -1,25 +1,18 @@
 'use client';
 import React from 'react';
 import StatCard from '../StatCard/StatCard';
-import { useEffect, useState } from 'react';
 import {
   BanknotesIcon,
   HandCoinsIcon,
   LockClosedIcon,
   DocumentTextIcon
 } from '../Icons/Icons';
-import { getPaymentStats } from '@/app/server/services/adminService';
 import PieChartComponent from '../PieChart/PieChart';
 import BarChartComponent from '../BarChart/BarChart';
-
-interface PaymentStats {
-  tabelInfo: string[][]; // [jobId, title, client, freelancer, clientUid, total, paid, unpaid, escrow]
-  totalPayed: number;
-  totalESCROW: number;
-  totalUnpaid: number;
-}
+import PaymentStats from '@/app/interfaces/PaymentStats.interface';
 
 interface PaymentInfoProps {
+  stats: PaymentStats
   startDate: Date;
   endDate: Date;
 }
@@ -34,23 +27,11 @@ const COLORS = [
 ];
 
 const PaymentInfo: React.FC<PaymentInfoProps> = ({
+  stats,
   startDate,
   endDate,
 }) => {
-  const [stats, setStats] = useState<PaymentStats | null>(null);
-
-  useEffect(() => {
-    const loadStats = async () => {
-      const data = await getPaymentStats(startDate, endDate);
-      setStats(data);
-    };
-    loadStats();
-  }, [startDate, endDate,]);
-
-  if (!stats) {
-    return <div className="text-white">Loading payment stats...</div>;
-  }
-
+  
   const projectData = [
     { name: 'Escrow', value: stats.totalESCROW},
     { name: 'Paid', value: stats.totalPayed },
