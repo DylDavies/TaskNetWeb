@@ -11,7 +11,7 @@ import React, { useContext, useState } from "react";
 import { AuthContext, AuthContextType } from "../AuthContext";
 import AnalyticsPage from "../components/AdminStatsDashboard/StatsDashboard";
 import DashboardContent from "../components/AdminDashboard/AdminDashboard";
-
+import PaymentInfo from "../components/PaymentInfo/PaymentInfo";
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
@@ -60,10 +60,15 @@ export default function Page() {
             <DashboardContent
           />
           ):(
-            <AnalyticsPage />
+            //<AnalyticsPage />
+            <PaymentInfo
+              startDate={new Date('2024-01-01')}
+              endDate={new Date('2025-12-31')}
+            />
           )}
          
           </section>
+          <AnalyticsPage />
         </main>
 
         <footer className="bg-[#f75509] py-4 flex justify-center bg-gray-900 box-footer">

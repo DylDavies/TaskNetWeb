@@ -6,6 +6,9 @@ import formatDateAsNumber from "../formatters/FormatDates";
 import { getMilestones } from "./MilestoneService";
 import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
 import JobStatus from "@/app/enums/JobStatus.enum";
+import PaymentStatus from "@/app/enums/PaymentStatus.enum";
+import { getJob } from "./JobDatabaseService";
+import { getUsername } from "./DatabaseService";
 
 async function AddSkill(SkillArea: string, skillName: string) {
     await setDoc(doc(db, "skills", SkillArea), {
@@ -83,4 +86,80 @@ async function getCompletionStatsPerJob(JobID:string) {
   }
 }
 
-export {AddSkill, getSkillByID, getCompletionStatsPerJob, getCompletionStats};
+async function getPaymentStatsPerJob(JobID: string){
+  const milestones = await getMilestones(JobID);
+  let totalPaid = 0;
+  let totalUnpaid = 0;
+  let totalESCROW = 0;
+
+  milestones.forEach((item)=> {
+    if(item.paymentStatus){
+      if (item.paymentStatus == PaymentStatus.Paid){
+        totalPaid += item.payment;
+      }
+      else if(item.paymentStatus === PaymentStatus.Escrow){
+        totalESCROW += item.payment;
+      }  
+      else {
+        totalESCROW += item.payment;;
+      }  
+    }
+    else{
+      totalUnpaid += item.payment;
+    }
+    
+  })
+
+  return{
+
+   totalESCROW,
+   totalPaid,
+   totalUnpaid
+  }
+}
+
+
+async function getPaymentStats(StartDate: Date, EndDate: Date) {
+  // Calculate date range
+  const startDateNum = formatDateAsNumber(StartDate);
+  const endDateNum = formatDateAsNumber(EndDate);
+
+  // Query projects
+  const dbRef = collection(db,'Jobs');
+  const InTimeFrame = query(dbRef,where('createdAt', '>=',startDateNum), where('createdAt', '<=',endDateNum));
+  const snapshot = await getDocs(InTimeFrame);
+
+  let totalPayed = 0;
+  let totalESCROW = 0;
+  let totalUnpaid = 0;
+  const tabelInfo: string[][]= [];
+  
+  for(const doc of snapshot.docs){
+    if (doc.data().status === JobStatus.Employed || doc.data().status === JobStatus.Completed ){
+
+    const JobStats = await getPaymentStatsPerJob(doc.id);
+      
+    totalPayed += JobStats.totalPaid;
+    totalESCROW += JobStats.totalESCROW;
+    totalUnpaid += JobStats.totalUnpaid;
+    
+
+    const JobData = await getJob(doc.id) ;
+    const totalAmount = JobStats.totalESCROW + JobStats.totalPaid + JobStats.totalUnpaid;
+    if(JobData){
+      const ClientName = await getUsername(JobData.clientUId);
+      const FreelanceName = await getUsername(JobData.hiredUId);
+      tabelInfo.push([doc.id, JobData.title, ClientName, FreelanceName, JobData.clientUId, totalAmount.toString(), JobStats.totalPaid.toString(), JobStats.totalUnpaid.toString(), JobStats.totalESCROW.toString()])
+    }
+  } 
+}
+  
+  return {
+    tabelInfo,
+    totalESCROW,
+    totalPayed,
+    totalUnpaid,
+  };
+}
+
+export {AddSkill, getSkillByID, getCompletionStatsPerJob, getCompletionStats, getPaymentStats};
