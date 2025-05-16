@@ -13,8 +13,6 @@ import ActiveJob from "../interfaces/ActiveJob.interface";
 import MultiViewModal from "../components/MultiViewModal/MultiViewModal";
 import JobStatus from "../enums/JobStatus.enum";
 import InputBar from "../components/inputbar/InputBar";
-import { getUser } from "../server/services/DatabaseService";
-import UserData from "../interfaces/UserData.interface";
 
 //constant for links to other pages
 const links = [
