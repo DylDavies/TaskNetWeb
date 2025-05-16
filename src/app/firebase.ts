@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
+import { getGenerativeModel, getVertexAI } from "firebase/vertexai";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDYgCHlflSVMDNxn3WJzoWCc1tOLBZUULo",
@@ -15,5 +16,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
+const vertexAI = getVertexAI(app);
 
-export { app, db, storage };
+const AI = getGenerativeModel(vertexAI, { model: "gemini-2.0-flash" });
+
+export { app, db, storage, AI };

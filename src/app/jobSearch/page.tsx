@@ -13,6 +13,8 @@ import ActiveJob from "../interfaces/ActiveJob.interface";
 import MultiViewModal from "../components/MultiViewModal/MultiViewModal";
 import JobStatus from "../enums/JobStatus.enum";
 import InputBar from "../components/inputbar/InputBar";
+import { recommendJob } from "../server/services/RecommendationService";
+import ActiveUser from "../interfaces/ActiveUser.interface";
 
 //constant for links to other pages
 const links = [
@@ -78,6 +80,10 @@ export default function Page() {
     async function filterJobs() {
       try {
         const activeJobs = await getAllJobs();
+
+        // recommendJob(user as ActiveUser, activeJobs).then(res => {
+        //   console.log(res);
+        // });
   
         const filtered = activeJobs.filter((job) => {
           if (job.jobData.status !== JobStatus.Posted) return false;
