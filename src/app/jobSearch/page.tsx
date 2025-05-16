@@ -41,7 +41,6 @@ export default function Page() {
     async function fetchSkills() {
       try {
         const skillData = await getAllSkills(); // gets all skills as an array
-        //console.log(skillData);
         setSkills(skillData);
       } catch (err) {
         console.error("could not fetch skillData: ", err);

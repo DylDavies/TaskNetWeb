@@ -26,6 +26,9 @@ import { getUsername } from "../server/services/DatabaseService";
 import Button from "../components/button/Button";
 import { onSnapshot, doc } from "firebase/firestore";
 import { db } from "../firebase";
+import { getMilestones } from "../server/services/MilestoneService";
+import { getApplicant } from "../server/services/ApplicationDatabaseServices";
+import toast from "react-hot-toast";
 
 const linksClient = [
   { name: "Home", href: "/client", selected: false },
@@ -62,8 +65,8 @@ export default function Page() {
       
       // Determine who should be rated based on current user type
       const uidToRate = user?.userData.type === UserType.Client 
-        ? job.hiredUId // If current user is client, rate the freelancer
-        : job.clientUId; // If current user is freelancer, rate the client
+        ? job.hiredUId 
+        : job.clientUId; 
   
       if (uidToRate) {
         const userData = await getUser(uidToRate);
@@ -135,10 +138,32 @@ export default function Page() {
     setSelectedMilestone(milestone);
   }
 
-  function handleProceedJob(){
-    if (jobID){
-      updateJobStatus(jobID,JobStatus.InProgress);
+  async function handleProceedJob() {
+    if (jobID && job?.hiredUId ) {
+      try {
+        
+        const milestonesForJob = await getMilestones(jobID);
+        const freelancerApplication = await getApplicant(job.hiredUId)
+      
+        const totalPayment = milestonesForJob.reduce((sum, milestone) => {
+          return sum + (milestone.payment || 0);
+        }, 0);
 
+        if(freelancerApplication){
+          if(totalPayment < freelancerApplication?.BidAmount){
+            toast.error(`The total payment should be equal to or more than the freelancers bid amount of ${freelancerApplication.BidAmount}`)
+            return
+          }
+        }
+        
+        
+        await updateJobStatus(jobID, JobStatus.InProgress);
+        toast.success("The freelancer can now proceed with the job")
+        
+      } catch (error) {
+        console.error("Error proceeding with job:", error);
+        // Handle error appropriately (show notification, etc.)
+      }
     }
   }
 
@@ -151,7 +176,7 @@ export default function Page() {
       ? Math.round((completedCount / milestones.length) * 100)
       : 0;
 
-  //If the job is completed, this function changes the jobs status to completed and sends the client a notification that the job is completed
+  //If the job is completed, the user get prompted to rate the person they were working with on a job
   useEffect(() =>{
     if(job && job.status === JobStatus.Completed && jobID){
       const showFreelancerRating = user?.userData.type === UserType.Freelancer && !job.hasFreelancerRated
