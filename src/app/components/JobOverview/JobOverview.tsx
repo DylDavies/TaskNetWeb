@@ -1,9 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
-// Assuming your CSS file is in the same directory or adjust path accordingly
-// import "./JobOverview.css";
-import JobStatus from "@/app/enums/JobStatus.enum"; // Assuming this path is correct
+import JobStatus from "@/app/enums/JobStatus.enum";
 import Image from "next/image";
-import { getUser } from "@/app/server/services/DatabaseService"; // Assuming this path is correct
+import { getUser } from "@/app/server/services/DatabaseService";
 
 interface JobCardProps {
   clientId: string;
@@ -13,15 +11,15 @@ interface JobCardProps {
   skills: string[];
   hired?: JobStatus;
   onClick?: () => void;
-  isAIRcommended?: boolean; // Prop for AI recommendation
-  aiRecommendationReason?: string; // New prop for the reason
+  isAIRcommended?: boolean;
+  aiRecommendationReason?: string;
 }
 
 // Simple Tooltip Wrapper Component
 interface TooltipWrapperProps {
   tooltipText: string;
   children: React.ReactNode;
-  className?: string; // Optional className for the wrapper
+  className?: string;
 }
 
 const TooltipWrapper: React.FC<TooltipWrapperProps> = ({ tooltipText, children, className }) => {
@@ -141,7 +139,7 @@ const JobCard: React.FC<JobCardProps> = ({
               d="M12 6v6l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <time dateTime={deadline} className="text-sm text-gray-400">{deadline}</time> {/* Assuming deadline is in a format suitable for dateTime attribute or can be converted */}
+          <time dateTime={deadline} className="text-sm text-gray-400">{deadline}</time>
         </section>
       </section>
 
@@ -150,7 +148,7 @@ const JobCard: React.FC<JobCardProps> = ({
       <section className="col-span-12 space-y-4">
         <section className="text-sm font-medium text-gray-300">
           <strong className="font-semibold text-gray-200">Budget:</strong>
-          <data value={budget} className="ml-1 rounded-full bg-blue-800 px-2 py-0.5 text-blue-100"> {/* Assuming budget can be a machine-readable value */}
+          <data value={budget} className="ml-1 rounded-full bg-blue-800 px-2 py-0.5 text-blue-100">
             {budget}
           </data>
         </section>

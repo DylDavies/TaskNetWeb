@@ -1,9 +1,8 @@
-import { AI } from "@/app/firebase"; // Assuming AI is correctly configured
+import { AI } from "@/app/firebase";
 import ActiveJob from "@/app/interfaces/ActiveJob.interface";
 import ActiveUser from "@/app/interfaces/ActiveUser.interface";
-import JobStatus from "@/app/enums/JobStatus.enum"; // Assuming you have this for JobStatus.Employed etc.
+import JobStatus from "@/app/enums/JobStatus.enum";
 
-// Define an interface for the expected structure of each item in the AI's JSON response
 export interface AIJobRecommendation {
   jobId: string;
   reason: string;
