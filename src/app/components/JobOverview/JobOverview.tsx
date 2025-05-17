@@ -26,18 +26,13 @@ interface TooltipWrapperProps {
 
 const TooltipWrapper: React.FC<TooltipWrapperProps> = ({ tooltipText, children, className }) => {
   const [isVisible, setIsVisible] = useState(false);
-  // Refs are not strictly needed for this CSS-only position adjustment, but kept in case of future JS-based positioning
-  const tooltipRef = useRef<HTMLDivElement>(null); 
+  const tooltipRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const showTooltip = () => setIsVisible(true);
   const hideTooltip = () => setIsVisible(false);
 
-  // Adjusted tooltip positioning:
-  // It will now align to the left of the trigger element ("AI Pick")
-  // and appear above it.
-  let tooltipPositionClasses = "bottom-full left-0 mb-2"; // Changed from left-1/2 -translate-x-1/2
-
+  let tooltipPositionClasses = "bottom-full left-0 mb-2";
 
   return (
     <div
@@ -54,7 +49,6 @@ const TooltipWrapper: React.FC<TooltipWrapperProps> = ({ tooltipText, children, 
           className={`absolute ${tooltipPositionClasses} z-20 w-max max-w-xs p-2 text-xs font-normal text-white bg-gray-900 rounded-md shadow-lg transition-opacity duration-300 dark:bg-gray-700`}
         >
           {tooltipText}
-          {/* Arrow remains centered relative to the tooltip body */}
           <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-gray-900 dark:border-t-gray-700"></div>
         </div>
       )}
@@ -98,6 +92,7 @@ const JobCard: React.FC<JobCardProps> = ({
       className="h-4 w-4 mr-1 text-yellow-500"
       viewBox="0 0 20 20"
       fill="currentColor"
+      aria-hidden="true"
     >
       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
     </svg>
@@ -111,9 +106,7 @@ const JobCard: React.FC<JobCardProps> = ({
         isAIRcommended ? 'border-yellow-500 shadow-lg shadow-yellow-500/30' : 'border-blue-900'
       } py-4 px-4 text-gray-300 shadow transition hover:shadow-lg relative`}
     >
-      {/* Header Row */}
       <section className="col-span-12 flex justify-between items-start mb-2">
-        {/* Icon and Job Title */}
         <section className="flex items-center space-x-3">
           {avatar ? (
             <Image
@@ -132,7 +125,6 @@ const JobCard: React.FC<JobCardProps> = ({
           <h2 className="text-xl font-bold text-gray-200">{jobTitle}</h2>
         </section>
 
-        {/* Deadline with Clock Icon */}
         <section className="flex items-center space-x-2 mt-1 shrink-0">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -141,6 +133,7 @@ const JobCard: React.FC<JobCardProps> = ({
             viewBox="0 0 24 24"
             stroke="currentColor"
             strokeWidth={2}
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -148,29 +141,26 @@ const JobCard: React.FC<JobCardProps> = ({
               d="M12 6v6l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <time className="text-sm text-gray-400">{deadline}</time>
+          <time dateTime={deadline} className="text-sm text-gray-400">{deadline}</time> {/* Assuming deadline is in a format suitable for dateTime attribute or can be converted */}
         </section>
       </section>
 
-      {/* Divider line under header */}
       <hr className="col-span-12 border-t border-gray-700 mb-3" />
 
-      {/* Main Content */}
       <section className="col-span-12 space-y-4">
-        {/* Budget */}
         <section className="text-sm font-medium text-gray-300">
           <strong className="font-semibold text-gray-200">Budget:</strong>
-          <data className="ml-1 rounded-full bg-blue-800 px-2 py-0.5 text-blue-100">
+          <data value={budget} className="ml-1 rounded-full bg-blue-800 px-2 py-0.5 text-blue-100"> {/* Assuming budget can be a machine-readable value */}
             {budget}
           </data>
         </section>
 
-        {/* Skills */}
         <section className="flex flex-wrap gap-2 text-sm font-medium text-gray-300">
           <strong className="font-semibold mr-2 text-gray-200">Skills:</strong>
           {skills.map((skill, index) => (
             <data
               key={index}
+              value={skill}
               className="rounded-full bg-gray-700 px-3 py-0.5 text-sm text-gray-200 hover:bg-gray-600 transition-colors"
             >
               {skill}
@@ -178,40 +168,35 @@ const JobCard: React.FC<JobCardProps> = ({
           ))}
         </section>
 
-        {/* Company and Status inline at the bottom */}
         <footer className="flex justify-between items-center text-sm text-gray-400 pt-2 border-t border-gray-700 mt-3">
-          {/* Left side of footer: AI Pick (if applicable) and Client Name */}
+
           <div className="flex items-center space-x-3">
-            {isAIRcommended && aiRecommendationReason && ( // Only show if there's a reason
+            {isAIRcommended && aiRecommendationReason && ( 
               <TooltipWrapper tooltipText={aiRecommendationReason} className="cursor-help">
                 <div className="flex items-center text-xs text-yellow-400 font-semibold">
                   <StarIcon />
-                  <span>AI Pick</span>
+                  AI Pick
                 </div>
               </TooltipWrapper>
             )}
-            {/* If AI recommended but no specific reason, show simple "AI Pick" without tooltip */}
             {isAIRcommended && !aiRecommendationReason && (
                  <div className="flex items-center text-xs text-yellow-400 font-semibold">
                     <StarIcon />
-                    <span>AI Pick</span>
+                    AI Pick
                  </div>
             )}
             <address className="not-italic font-medium text-gray-300">{name}</address>
           </div>
 
-          {/* Right side of footer: Status Output */}
-          <div>
-            {hired === JobStatus.Posted && (
-              <output className="font-medium text-orange-400">Open to applicants</output>
-            )}
-            {hired === JobStatus.Employed && (
-              <output className="font-medium text-yellow-400">Hired</output>
-            )}
-            {hired === JobStatus.Completed && (
-              <output className="font-medium text-green-400">Completed</output>
-            )}
-          </div>
+          {hired === JobStatus.Posted && (
+            <output className="font-medium text-orange-400">Open to applicants</output>
+          )}
+          {hired === JobStatus.Employed && (
+            <output className="font-medium text-yellow-400">Hired</output>
+          )}
+          {hired === JobStatus.Completed && (
+            <output className="font-medium text-green-400">Completed</output>
+          )}
         </footer>
       </section>
     </article>
