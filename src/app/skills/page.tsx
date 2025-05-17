@@ -47,7 +47,7 @@ export default function Page() {
             const fetchSkills = await getSkillArray();
             setSkills(fetchSkills)
         } catch (error){
-            console.log("Error fetching skills:", error);
+            console.error("Error fetching skills:", error);
         }
     };
 
@@ -65,6 +65,7 @@ export default function Page() {
         AddSkill(selectedSkillArea, inputValue);
         setSelectedSkillArea(undefined);
         setInputValue("");
+        toast.success("Skill Successfully added")
     }
   }
 
