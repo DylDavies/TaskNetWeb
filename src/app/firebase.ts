@@ -3,13 +3,13 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDYgCHlflSVMDNxn3WJzoWCc1tOLBZUULo",
-    authDomain: "tasknet-4bede.firebaseapp.com",
-    projectId: "tasknet-4bede",
-    storageBucket: "tasknet-4bede.firebasestorage.app",
-    messagingSenderId: "816574519721",
-    appId: "1:816574519721:web:1ad265ce1cf6af657c0cb8",
-    measurementId: "G-TS820424K4"
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APPID,
+    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 }
 
 const app = initializeApp(firebaseConfig);
