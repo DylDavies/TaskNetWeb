@@ -78,7 +78,7 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({
         />
       </section>
 
-      <section className="bg-gray-800 p-4 rounded-lg border border-gray-700 group" id="CompletionPieChart">
+      <section className="bg-gray-800 p-4 rounded-lg border border-gray-700 group" >
         <section className="flex flex-col md:flex-row gap-4 justify-center items-start">
           <section className="flex-1">
           <PieChartComponent 

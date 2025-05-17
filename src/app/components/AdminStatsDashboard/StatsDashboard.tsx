@@ -3,14 +3,14 @@ import { useState, useEffect } from 'react';
 
 import { RefreshCw } from 'lucide-react';
 import CompletionStats from '@/app/interfaces/CompletionStatsInterface';
-import { getCompletionStats } from '@/app/server/services/adminService';
+import { getCompletionStats } from '@/app/server/services/statsService';
 import { EmptyState } from '../EmptyState/EmptyState';
 import { ErrorBoundary } from 'react-error-boundary';
 import CompletionInfo from '../CompletionRateInfo/CompletionRateInfo';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { isValidDateString } from '@/app/server/formatters/FormatDates';
-import { exportCompletionStatsToPDF } from '@/app/services/AnalyticsServices';
+import { exportCompletionStatsToPDF } from '@/app/components/PDFBuilder/PDFBuilder';
 
 function ErrorFallback({ error }: { error: Error }) {
   return (
