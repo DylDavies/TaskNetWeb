@@ -41,7 +41,7 @@ async function recommendJobs(
     skills: Object.values(user.userData.skills ?? {}).flat()
   };
 
-  let prompt = `
+  const prompt = `
     You are an expert job recommendation assistant.
     Based on the provided user profile and a list of available jobs, please select up to 5 jobs that would be a good fit for the user.
     Do not include any jobs the user has already been hired for, or jobs that are already 'Employed' or 'Completed'.
@@ -64,7 +64,7 @@ async function recommendJobs(
 
   try {
     const { response } = await AI.generateContent(prompt);
-    let responseText = response.text()
+    const responseText = response.text()
 
     const jsonMatch = responseText.match(/(\[[\s\S]*\]|\{[\s\S]*\})/);
 
@@ -101,6 +101,7 @@ async function recommendJobs(
   } catch (error) {
     console.error("Error in recommendJobs function:", error);
     if (error instanceof SyntaxError) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         console.error("JSON Parsing Error. Raw text was:", (error as any).sourceText);
     }
     return [];
