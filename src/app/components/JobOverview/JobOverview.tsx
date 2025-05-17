@@ -32,7 +32,7 @@ const TooltipWrapper: React.FC<TooltipWrapperProps> = ({ tooltipText, children, 
   const showTooltip = () => setIsVisible(true);
   const hideTooltip = () => setIsVisible(false);
 
-  let tooltipPositionClasses = "bottom-full left-0 mb-2";
+  const tooltipPositionClasses = "bottom-full left-0 mb-2";
 
   return (
     <div
