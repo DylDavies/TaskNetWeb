@@ -169,7 +169,7 @@ export default function Page() {
 
   // Calculate the jobs progress
   const completedCount = milestones.filter(
-    (m) => m.status === 3 || m.status === 2
+    (m) => m.status === 3
   ).length;
   const progress =
     milestones.length > 0

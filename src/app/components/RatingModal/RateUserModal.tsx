@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect} from "react";
+import React, { useState} from "react";
 
 import Modal from "react-modal";
 import { AiFillStar } from "react-icons/ai";
@@ -37,13 +37,11 @@ const RateUserModal = ({ data, uid,ratedName,isOpen }: RateUserModalProps) => {
     setModalisOpen(false);
   }
   
-  
-
-  useEffect(() => {
   if (typeof window !== "undefined") {
-    Modal.setAppElement(document.body);
-  }
-  }, []);
+      Modal.setAppElement(document.body); // You can also use "#__next" if your layout root uses that
+    }
+
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
