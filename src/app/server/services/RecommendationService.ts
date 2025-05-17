@@ -37,7 +37,8 @@ async function recommendJobs(
   const userDetailsForPrompt = {
     userId: user.authUser.uid,
     username: user.userData.username,
-    ratingAverage: user.userData.ratingAverage
+    ratingAverage: user.userData.ratingAverage,
+    skills: Object.values(user.userData.skills ?? {}).flat()
   };
 
   let prompt = `
