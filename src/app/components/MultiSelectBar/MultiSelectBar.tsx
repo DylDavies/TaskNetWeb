@@ -31,7 +31,6 @@ const MultiSelect: React.FC<MultiSelectProps> = ({ skills, onSelect }) => {
   const handleSelect = (value: string) => {
     if (!selected.includes(value)) {
       setSelected([...selected, value]);
-      //console.log("Selected Skills (in MultiSelect):", [...selected, value]);
       setInputValue("");
       setFiltered(skills.filter((skill) => skill !== value));
     }

@@ -19,7 +19,6 @@ const DateSelector: React.FC = () => {
         onChange={(date) => {
           if (date) {
             setSelectedDate(date);
-            console.log("Selected Date:", format(date, "YYYY/MM/DD"));
           }
         }}
         dateFormat="yyyy/MM/dd"

@@ -9,6 +9,7 @@ import { getUsername } from "./DatabaseService";
 import { getCompletionStatsPerJob, getPaymentStatsPerJob } from "./adminService";
 import SkillAreaAnalysis from "@/app/interfaces/SkillAreaAnalysis.interface";
 
+//This function will return the completion stats for the given date range
 async function getCompletionStats(StartDate: Date, EndDate: Date) {
   // Calculate date range
   const startDateNum = formatDateAsNumber(StartDate);
@@ -37,6 +38,7 @@ async function getCompletionStats(StartDate: Date, EndDate: Date) {
       
     }
 
+    //Completion stats for each job
     const JobStats = await getCompletionStatsPerJob(doc.id)
     if(JobStats){
         totalMilestones = totalMilestones + JobStats.TotalMilestones;
@@ -57,6 +59,7 @@ async function getCompletionStats(StartDate: Date, EndDate: Date) {
   };
 }
 
+//This funciton will return the payment stats for the given date range
 async function getPaymentStats(StartDate: Date, EndDate: Date) {
   // Calculate date range
   const startDateNum = formatDateAsNumber(StartDate);
@@ -72,6 +75,7 @@ async function getPaymentStats(StartDate: Date, EndDate: Date) {
   let totalUnpaid = 0;
   const tabelInfo: string[][]= [];
   
+  //Getting paymetn stats for each job in the db
   for(const doc of snapshot.docs){
     if (doc.data().status === JobStatus.Employed || doc.data().status === JobStatus.Completed ){
 
@@ -100,6 +104,7 @@ async function getPaymentStats(StartDate: Date, EndDate: Date) {
   };
 }
 
+//This funciton will return the skill stats for the given date range
 async function getSkillStats(StartDate: Date, EndDate: Date) {
   // Calculate date range
   const startDateNum = formatDateAsNumber(StartDate);
@@ -139,20 +144,17 @@ async function getSkillStats(StartDate: Date, EndDate: Date) {
                     skillAreaMap[skillArea].completedProjects++;
                 }
 
-
-
-                // Count skill occurrences for "most in demand"
+                // Count skill occurrences for most in demand
                 const skills = job.skills[skillArea];
                 const skillCounts: { [skill: string]: number } = {};
                 for (const skill of skills) {
                     skillCounts[skill] = (skillCounts[skill] || 0) + 1;
                 }
 
-                // Convert skill counts to sorted array for "most in demand"
+                // Convert skill counts to sorted array for most in demand
                 const sortedSkills = Object.entries(skillCounts)
                     .map(([skill, count]) => ({ skill, count }))
-                    .sort((a, b) => b.count - a.count);  // Sort descending by count
-
+                    .sort((a, b) => b.count - a.count);  
                 skillAreaMap[skillArea].mostInDemandSkills = sortedSkills;
             }
         }

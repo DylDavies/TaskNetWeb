@@ -6,6 +6,7 @@ Chart.register(...registerables);
 
 type ChartType = 'pie' | 'bar';
 
+//this componet will return a bar or pie chart that can be saved to a pdf
 interface UnifiedChartProps {
   chartType: ChartType;
   dataValues: number[][];
