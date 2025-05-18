@@ -2,13 +2,13 @@
 import { useState, useEffect } from 'react';
 
 import { RefreshCw } from 'lucide-react';
-import { getPaymentStats } from '@/app/server/services/adminService';
+import { getPaymentStats } from '@/app/server/services/statsService';
 import { EmptyState } from '../EmptyState/EmptyState';
 import { ErrorBoundary } from 'react-error-boundary';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { isValidDateString } from '@/app/server/formatters/FormatDates';
-import { exportPaymentStatsToPDF } from '@/app/services/AnalyticsServices';
+import { exportPaymentStatsToPDF } from '@/app/components/PDFBuilder/PDFBuilder';
 import PaymentStats from '@/app/interfaces/PaymentStats.interface';
 import PaymentInfo from '../PaymentInfo/PaymentInfo';
 

@@ -1,0 +1,102 @@
+'use server';
+
+import { collection, getDocs, query,  where } from "firebase/firestore"; 
+import { db } from "../../firebase";
+import formatDateAsNumber from "../formatters/FormatDates";
+import JobStatus from "@/app/enums/JobStatus.enum";
+import { getJob } from "./JobDatabaseService";
+import { getUsername } from "./DatabaseService";
+import { getCompletionStatsPerJob, getPaymentStatsPerJob } from "./adminService";
+
+async function getCompletionStats(StartDate: Date, EndDate: Date) {
+  // Calculate date range
+  const startDateNum = formatDateAsNumber(StartDate);
+  const endDateNum = formatDateAsNumber(EndDate);
+
+  // Query projects
+  const dbRef = collection(db,'Jobs');
+  const InTimeFrame = query(dbRef,where('createdAt', '>=',startDateNum), where('createdAt', '<=',endDateNum));
+  const snapshot = await getDocs(InTimeFrame);
+
+  let totalProjects = 0;
+  let completedProjects = 0;
+  let totalMilestones = 0;
+  let CompletedMilestones = 0;
+  let hiredProjects = 0;
+ 
+  for(const doc of snapshot.docs){
+    if (doc.data().status != JobStatus.Deleted){
+
+    totalProjects++;
+    if(doc.data().status == JobStatus.Completed){
+      completedProjects++;
+    }
+    if(doc.data().status == JobStatus.Employed){
+      hiredProjects++;
+      
+    }
+
+    const JobStats = await getCompletionStatsPerJob(doc.id)
+    if(JobStats){
+        totalMilestones = totalMilestones + JobStats.TotalMilestones;
+        CompletedMilestones = CompletedMilestones + JobStats.CompletedMilestones;
+    }
+  } 
+}
+
+  const completionRate = totalProjects > 0 ? (completedProjects / totalProjects) * 100 : 0;
+  
+  return {
+    totalMilestones,
+    CompletedMilestones,
+    hiredProjects,
+    totalProjects,
+    completedProjects,
+    completionRate: completionRate.toFixed(2) + '%'
+  };
+}
+
+async function getPaymentStats(StartDate: Date, EndDate: Date) {
+  // Calculate date range
+  const startDateNum = formatDateAsNumber(StartDate);
+  const endDateNum = formatDateAsNumber(EndDate);
+
+  // Query projects
+  const dbRef = collection(db,'Jobs');
+  const InTimeFrame = query(dbRef,where('createdAt', '>=',startDateNum), where('createdAt', '<=',endDateNum));
+  const snapshot = await getDocs(InTimeFrame);
+
+  let totalPayed = 0;
+  let totalESCROW = 0;
+  let totalUnpaid = 0;
+  const tabelInfo: string[][]= [];
+  
+  for(const doc of snapshot.docs){
+    if (doc.data().status === JobStatus.Employed || doc.data().status === JobStatus.Completed ){
+
+    const JobStats = await getPaymentStatsPerJob(doc.id);
+      
+    totalPayed += JobStats.totalPaid;
+    totalESCROW += JobStats.totalESCROW;
+    totalUnpaid += JobStats.totalUnpaid;
+    
+
+    const JobData = await getJob(doc.id) ;
+    const totalAmount = JobStats.totalESCROW + JobStats.totalPaid + JobStats.totalUnpaid;
+    if(JobData){
+      const ClientName = await getUsername(JobData.clientUId);
+      const FreelanceName = await getUsername(JobData.hiredUId);
+      tabelInfo.push([doc.id, JobData.title, ClientName, FreelanceName, JobData.clientUId, totalAmount.toString(), JobStats.totalPaid.toString(), JobStats.totalUnpaid.toString(), JobStats.totalESCROW.toString()])
+    }
+  } 
+}
+  
+  return {
+    tabelInfo,
+    totalESCROW,
+    totalPayed,
+    totalUnpaid,
+  };
+}
+
+export {getPaymentStats, getCompletionStats}

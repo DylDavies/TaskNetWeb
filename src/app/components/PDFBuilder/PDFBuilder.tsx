@@ -1,14 +1,12 @@
-// utils/pdfExport.ts
-
 import domtoimage from 'dom-to-image';
 import jsPDF from 'jspdf';
-import CompletionStats from '../interfaces/CompletionStatsInterface';
+import CompletionStats from '../../interfaces/CompletionStatsInterface';
 import autoTable from 'jspdf-autotable'
 import html2canvas from 'html2canvas'
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import PaymentStats from '../interfaces/PaymentStats.interface';
-import { PDFUnifiedChart } from '../components/PdfComponents/PDFUnifiedChart';
+import PaymentStats from '../../interfaces/PaymentStats.interface';
+import { PDFUnifiedChart } from '../PdfComponents/PDFUnifiedChart';
   
 type ChartType = 'pie' | 'bar';
 
