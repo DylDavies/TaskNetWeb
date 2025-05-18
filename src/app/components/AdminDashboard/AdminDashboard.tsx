@@ -7,9 +7,6 @@ import PendingUser from "@/app/interfaces/PendingUser.interface";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/app/firebase";
 
-
-
-
   export default function DashboardContent() {
 
     const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
@@ -28,7 +25,7 @@ import { db } from "@/app/firebase";
     fetchPendingUsers();
   }, []);
 
-
+  //This will set pending users when they load the page
   useEffect(() => {
     const usersRef = collection(db, "users");
   
@@ -40,7 +37,7 @@ import { db } from "@/app/firebase";
     return () => unsubscribe();
   }, []);
   
-
+//This will set pending users in the table when there is a change in perding users or searched for users
 useEffect(() => {
   let filtered = pendingUsers;
   const query = SearchQuery.toLowerCase();
@@ -70,7 +67,7 @@ useEffect(() => {
           </section>
         </section>
   
-        {/* AdminTable */}
+        {/* Pending users table */}
         <section className="w-full max-w-8xl mt-16">
           <AdminTable data={filteredUsers} />
         </section>

@@ -2,10 +2,8 @@
 
 import { arrayUnion, doc, getDoc, setDoc } from "firebase/firestore"; 
 import { db } from "../../firebase";
-
 import { getMilestones } from "./MilestoneService";
 import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
-
 import PaymentStatus from "@/app/enums/PaymentStatus.enum";
 
 //adds a skill to an area
@@ -25,6 +23,7 @@ async function getSkillByID(SkillArea: string){
   return skillDoc.data() as []; 
 }
 
+//This funciton will return the completion stats for a given job
 async function getCompletionStatsPerJob(JobID:string) {
   const milestones = await getMilestones(JobID);
   const TotalMilestones = milestones.length;
@@ -42,6 +41,7 @@ async function getCompletionStatsPerJob(JobID:string) {
   }
 }
 
+//This funciton will return payment stats for the given job id
 async function getPaymentStatsPerJob(JobID: string){
   const milestones = await getMilestones(JobID);
   let totalPaid = 0;
