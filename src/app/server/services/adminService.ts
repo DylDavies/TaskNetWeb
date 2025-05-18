@@ -66,7 +66,6 @@ async function getPaymentStatsPerJob(JobID: string){
   })
 
   return{
-
    totalESCROW,
    totalPaid,
    totalUnpaid

@@ -109,7 +109,7 @@ export default function Page() {
                 My job postings:{" "}
               </h2>
               <h3 className="text-2xl italic text-gray-300 flex justify-center">
-                Click to see applicants:{" "}
+                Click to see applicants if open to applicants and to create milestones if  someone has been hired:{" "}
               </h3>
               <section className="border-2 border-gray-600 rounded-lg p-4 flex flex-wrap justify-center gap-6">
                 {jobCards.length > 0 ? (

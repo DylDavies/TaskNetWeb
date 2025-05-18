@@ -18,24 +18,37 @@ import { useRouter } from "next/navigation";
 import { JobContext, JobContextType } from "@/app/JobContext";
 import { createChat } from "@/app/server/services/MessageDatabaseServices";
 import { AuthContext, AuthContextType } from "@/app/AuthContext";
+import { getUser } from "@/app/server/services/DatabaseService";
+import UserData from "@/app/interfaces/UserData.interface";
+import StarRatingDisplay from "../RatingStars/RatingStars";
 
+interface ApplicantWithRating extends ApplicationData {
+  userData?: UserData | null;
+}
 interface Props {
   jobName: string;
 }
 
 const FATable = ({ jobName }: Props) => {
   const router = useRouter();
-
   const { jobID } = useContext(JobContext) as JobContextType;
   const { user } = useContext(AuthContext) as AuthContextType;
-
-  const [pendingApplicants, setPendingApplicants] = useState<ApplicationData[]>(
-    []
-  );
+  const [applicantsWithRatings, setApplicantsWithRatings] = useState<ApplicantWithRating[]>([]);
+  const [pendingApplicants, setPendingApplicants] = useState<ApplicationData[]>([]);
 
   async function fetchPendingApplicants() {
     const pendingApplicants = await getPendingApplicants(jobID as string);
     setPendingApplicants(pendingApplicants);
+
+    // Fetch user data for each applicant
+    const applicantsWithUserData = await Promise.all(
+      pendingApplicants.map(async (applicant) => {
+        const userData = await getUser(applicant.ApplicantID);
+        return { ...applicant, userData };
+      })
+    );
+    
+    setApplicantsWithRatings(applicantsWithUserData);
   }
 
   // To update the table after the client accepts or rejects applicants
@@ -128,13 +141,14 @@ const FATable = ({ jobName }: Props) => {
             <thead>
               <tr className="text-xs font-semibold tracking-wide text-left uppercase border-b border-gray-700 bg-gray-800 text-gray-400">
                 <th className="px-4 py-3">Applicant</th>
+                <th className="px-4 py-3">Rating</th>
                 <th className="px-4 py-3">Status</th>
                 {/*<th className="px-4 py-3">Date</th>*/}
                 <th className="px-4 py-3">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700 bg-gray-800">
-              {pendingApplicants.map((item, index) => (
+              {applicantsWithRatings.map((item, index) => (
                 <tr
                   key={index}
                   className="text-gray-400 hover:bg-gray-700 transition duration-150"
@@ -162,7 +176,17 @@ const FATable = ({ jobName }: Props) => {
 
                   {/* Always show Pending in orange */}
                   <td className="px-4 py-3 text-xs">
-                    <strong className="px-2 py-1 font-semibold leading-tight rounded-full text-white bg-orange-600">
+                  {item.userData && (
+                      <StarRatingDisplay 
+                      averageRating={item.userData.ratingAverage || 0}
+                      totalRatings={item.userData.ratingCount || 0}
+                      />
+                    )}
+                      {!item.userData && <article>Not rated</article>}
+                    
+                  </td>
+                  <td className="px-4 py-3 text-xs space-x-2">
+                  <strong className="px-2 py-1 font-semibold leading-tight rounded-full text-white bg-orange-600">
                       Pending
                     </strong>
                   </td>

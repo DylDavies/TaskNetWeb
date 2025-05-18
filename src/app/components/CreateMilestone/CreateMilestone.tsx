@@ -17,9 +17,9 @@ import {
   getMilestones,
 } from "@/app/server/services/MilestoneService";
 import { JobContext, JobContextType } from "@/app/JobContext";
-import { getJob, updateJobStatus } from "@/app/server/services/JobDatabaseService";
+import { getJob } from "@/app/server/services/JobDatabaseService";
 import { createNotification } from "@/app/server/services/NotificationService";
-import JobStatus from "@/app/enums/JobStatus.enum";
+//import JobStatus from "@/app/enums/JobStatus.enum";
 
 interface Props {
   refetch: () => void;
@@ -178,7 +178,7 @@ const CreateMilestone = ({ refetch }: Props) => {
     }
     try {
       await addMilestone(jobID, sanitizedMilestoneData);
-      await updateJobStatus(jobID, JobStatus.Employed);
+      //await updateJobStatus(jobID, JobStatus.Employed);
       const jobData = await getJob(jobID);
       const hiredUID = jobData?.hiredUId;
 

@@ -3,6 +3,9 @@ import "./JobOverview.css";
 import JobStatus from "@/app/enums/JobStatus.enum";
 import Image from "next/image";
 import { getUser } from "@/app/server/services/DatabaseService";
+import StarRatingDisplay from "../RatingStars/RatingStars";
+
+
 
 /*
 --- NOTE ON USE ---
@@ -52,9 +55,11 @@ const JobCard: React.FC<JobCardProps> = ({
   skills,
   hired,
   onClick,
-  clientId
+  clientId,
 }) => {
   const [ name, setName ] = useState("Loading...");
+  const[aveRating, setRating] = useState<number |null>();
+  const[totalRating,setTotalRatings]= useState<number | null>();
   const [ avatar, setAvatar ] = useState<string | null>();
 
   useEffect(() => {
@@ -62,6 +67,8 @@ const JobCard: React.FC<JobCardProps> = ({
       const user = await getUser(clientId);
 
       setName(user?.username || "Not found");
+      setRating(user?.ratingAverage);
+      setTotalRatings(user?.ratingCount);
       setAvatar(user?.avatar);
     })();
   }, []);
@@ -137,12 +144,19 @@ const JobCard: React.FC<JobCardProps> = ({
           {/* Company and Deadline inline at the bottom */}
           <footer className="flex justify-between items-center text-sm text-gray-400 pt-1 border-t border-gray-700 mt-2">
             <address className="italic">{name}</address>
+          {(aveRating !== undefined && totalRating !== undefined && aveRating && totalRating) && (
+                  <StarRatingDisplay averageRating={aveRating} totalRatings={totalRating} />
+              )}
           {hired === JobStatus.Posted && (
             <output className="italic text-orange-400">Open to applicants</output>
           )}
 
           {hired === JobStatus.Employed && (
             <output className="italic text-yellow-400">Hired</output>
+          )}
+
+          {hired === JobStatus.InProgress && (
+            <output className="italic text-yellow-400">In Progress</output>
           )}
 
           {hired === JobStatus.Completed && (
