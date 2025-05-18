@@ -33,13 +33,10 @@ export default function Page() {
 
   const handleSignupClick = async () => {
     try {
-      console.log(user)
 
       if (user) {
         const userEmail = user.authUser.email;
         const userName = user.authUser.displayName;
-        console.log(userEmail);
-        console.log(userName);
 
         if (!userEmail) {
           alert("No email found for the current user.");
@@ -50,8 +47,6 @@ export default function Page() {
           alert("No username found for the current user.");
           return;
         }
-
-        console.log("Sending email to:", userEmail);
 
         // Send the signup confirmation email
         const subject = "Welcome to TaskNet! You're on the Waiting List";

@@ -7,7 +7,6 @@ import { getUser } from "../server/services/DatabaseService";
 
 // This function will take in a router and redirect the user to the secondary login page if they haven't already picked a usertype
 async function LoginRedirect(router: AppRouterInstance) {
-  console.log("called")
   const auth = getAuth(app);
 
   if(auth.currentUser){

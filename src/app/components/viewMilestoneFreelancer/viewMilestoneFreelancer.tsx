@@ -89,7 +89,7 @@ const ViewMilestones: React.FC<Props> = ({
       setStatus(enumValue);
       refetch();
     } catch (err) {
-      console.log("Error updating milestone:", err);
+      console.error("Error updating milestone:", err);
     }
   };
   function MilestoneStatusToString(value: MilestoneStatus | undefined): string {
@@ -99,7 +99,6 @@ const ViewMilestones: React.FC<Props> = ({
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function handleSuccessfulPayment(details: any) {
-    console.log(details);
     if (details.status == "COMPLETED") {
       updateMilestonePaymentStatus(
         data.jobId,

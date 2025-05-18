@@ -7,6 +7,8 @@ interface PieChartComponentProps {
   title: string;
 }
 
+
+//This component will display a react pie chart for the given data
 const PieChartComponent: React.FC<PieChartComponentProps> = ({ data, colors, title }) => {
   return (
     <section className="bg-gray-800 p-4 rounded-lg border border-gray-700 group">

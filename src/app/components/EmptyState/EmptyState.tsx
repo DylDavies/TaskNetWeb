@@ -10,6 +10,7 @@ interface EmptyStateProps {
   action?: ReactNode;
 }
 
+//This funciton is used when there is no data to be found in a given range on the admin page
 export function EmptyState({
   title = "No data available",
   description = "There are no records to display for the selected criteria",

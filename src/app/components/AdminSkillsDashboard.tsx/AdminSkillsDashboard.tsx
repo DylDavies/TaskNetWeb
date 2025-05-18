@@ -12,6 +12,7 @@ import SkillAreaAnalysis from '@/app/interfaces/SkillAreaAnalysis.interface';
 import SkillsInfo from '../SkillsInfo/SkillsInfo';
 import { exportSkillStatsToPDF } from '../PDFBuilder/PDFBuilder';
 
+//Used for error handling
 function ErrorFallback({ error }: { error: Error }) {
   return (
     <section role="alert" className="p-4 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -21,6 +22,7 @@ function ErrorFallback({ error }: { error: Error }) {
   );
 }
 
+//this function will return an analytics page for the skills information
 export default function SkillsAnalyticsPage() {
   const [stats, setStats] = useState<SkillAreaAnalysis[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -29,6 +31,7 @@ export default function SkillsAnalyticsPage() {
   const [startInput, setStartInput] = useState(startDate.toISOString().split('T')[0]);
   const [endInput, setEndInput] = useState(endDate.toISOString().split('T')[0]);
 
+  //This will handle and validate a change in the dates
   const handleChangeFilters = () => {
     if (!isValidDateString(startInput)) {
       toast.error("Please enter a valid start date.");
@@ -52,9 +55,8 @@ export default function SkillsAnalyticsPage() {
       }
   };
 
+  //This will load stats when the date range changes
   useEffect(() => {
-
-
     async function loadStats() {
       setLoading(true);
       try {
@@ -71,6 +73,7 @@ export default function SkillsAnalyticsPage() {
     loadStats();
   }, [startDate, endDate]);
 
+  //displays a loader
   if (loading) return (
     <section className="flex justify-center items-center h-64">
       <section className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></section>
@@ -83,7 +86,8 @@ export default function SkillsAnalyticsPage() {
     
   }
 
-  if (!stats ) return (
+  //Displays an error message if there is no informaion in the date range
+  if (!stats || stats.length == 0) return (
     <EmptyState 
       title="No analytics data"
       description="We couldn't find any payment data for the selected date range. Try adjusting your filters."
@@ -99,6 +103,7 @@ export default function SkillsAnalyticsPage() {
     />
   );
 
+  //This allows the user to download a pdf report of the skillls data
   async function HandleDownloadClick(){
      if (stats) {
     const loadingToast = toast.loading("Generating PDF"); 
@@ -143,7 +148,7 @@ export default function SkillsAnalyticsPage() {
         />
       </section>
   
-      {/* Button aligned right */}
+      {/* Buttons*/}
       <section className="ml-auto flex gap-4">
         <button
           onClick={handleChangeFilters}
@@ -161,6 +166,7 @@ export default function SkillsAnalyticsPage() {
       </section>
     </section>
 
+    {/* Error boundary where information is loaded*/}
     <ErrorBoundary FallbackComponent={ErrorFallback}>
         <SkillsInfo stats = {stats} startDate={startDate} endDate={endDate} />
     </ErrorBoundary>

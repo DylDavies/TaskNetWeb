@@ -45,6 +45,7 @@ export default function Page() {
   //current view of user  
   const [currentView, setCurrentView] = useState<'Pending' | 'Completion' | 'Payment' | 'Skills'>('Pending');
 
+  //The user wll have a different view depending on their current view
   return (
     <>
       <section className="min-h-screen flex flex-col bg-[#27274b] text-white font-sans">

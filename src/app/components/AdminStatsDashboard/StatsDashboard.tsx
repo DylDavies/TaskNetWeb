@@ -21,6 +21,7 @@ function ErrorFallback({ error }: { error: Error }) {
   );
 }
 
+//This component will display the completion stats
 export default function AnalyticsPage() {
   const [stats, setStats] = useState<CompletionStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -29,6 +30,7 @@ export default function AnalyticsPage() {
   const [startInput, setStartInput] = useState(startDate.toISOString().split('T')[0]);
   const [endInput, setEndInput] = useState(endDate.toISOString().split('T')[0]);
 
+  //Handle and validate a change in the date range
   const handleChangeFilters = () => {
     if (!isValidDateString(startInput)) {
       toast.error("Please enter a valid start date.");
@@ -52,9 +54,9 @@ export default function AnalyticsPage() {
       }
   };
 
+
+  //Will load stats for the given dates, will reload stats when these dates change
   useEffect(() => {
-
-
     async function loadStats() {
       setLoading(true);
       try {
@@ -71,18 +73,21 @@ export default function AnalyticsPage() {
     loadStats();
   }, [startDate, endDate]);
 
+  //Displays a loading screen
   if (loading) return (
     <section className="flex justify-center items-center h-64">
       <section className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></section>
     </section>
   );
 
+  //Resents the dates when there is an error
   function HandleErrorClick(){
     setStartDate(new Date(new Date().setMonth(new Date().getMonth() - 1)));
     setEndDate(new Date())
     
   }
 
+  //Allows the user to download the completion rate report
   async function HandleDownloadClick(){
      if (stats) {
     const loadingToast = toast.loading("Generating PDF"); 
@@ -100,6 +105,7 @@ export default function AnalyticsPage() {
   }
   }
 
+  //Displays an error message if there is no stats for a given date range and prompts the user to enter a new set of ranges
   if (!stats || stats.totalProjects == 0) return (
     <EmptyState 
       title="No analytics data"
@@ -143,7 +149,7 @@ export default function AnalyticsPage() {
         />
       </section>
   
-      {/* Button aligned right */}
+      {/* Buttons */}
       <section className="ml-auto flex gap-4">
         <button
           onClick={handleChangeFilters}
@@ -161,6 +167,7 @@ export default function AnalyticsPage() {
       </section>
     </section>
 
+    {/* Error boundary where information is loaded*/}
     <ErrorBoundary FallbackComponent={ErrorFallback}>
         <CompletionInfo stats={stats} startDate={startDate} endDate={endDate} />
     </ErrorBoundary>

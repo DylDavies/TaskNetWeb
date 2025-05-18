@@ -7,6 +7,7 @@ import UserStatus from "@/app/enums/UserStatus.enum";
 import nodemailer from 'nodemailer';
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
+//This function will return the user data for a given user id
 async function getUser(uid: string): Promise<UserData | null> {
    if (!uid || typeof uid !== 'string' || uid.trim() === '') {
     console.warn('Invalid UID provided to getUser:', uid);
@@ -86,6 +87,7 @@ async function SetUserName(uid: string, username: string){
   };
 };
 
+//This funciton will set hte avatar as the google profile picture
 async function setAvatar(uid: string, avatar: string | null) {
   try {
     const userRef = doc(db, "users", uid);
@@ -107,6 +109,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+//This function creats and sends an email to a user
 const sendEmail = (to: string, subject: string, text: string) => {
   const mailOptions = {
     from: '"TaskNet" <no-reply@tasknet.tech>', // sender name + email

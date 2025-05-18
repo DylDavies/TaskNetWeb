@@ -339,9 +339,7 @@ export default function Page() {
                     milestone: selectedMilestone,
                   }}
                   onClose={() => setSelectedMilestone(null)}
-                  onUpload={() => {
-                    console.log("upload");
-                  }}
+                  onUpload={() => {}}
                   modalIsOpen={modalOpen}
                   refetch={refetch}
                 ></ViewMilestones>

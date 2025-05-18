@@ -1,6 +1,7 @@
 import SkillData from "@/app/interfaces/SkillData.interface";
 import { getJob } from "./JobDatabaseService";
 
+//This funciton will add a skill to the skill database
 async function AddSkill(SkillArea: string, skillName: string) {
   try {
     const response = await fetch(`/api/skills/add`, {

@@ -193,7 +193,7 @@ type ChartType = 'pie' | 'bar';
       doc.save(filename);
   }
 
-
+  //This will save the payment stats to a pdf
   export async function exportPaymentStatsToPDF(
       stats: PaymentStats,
       startDate: Date,
@@ -205,6 +205,7 @@ type ChartType = 'pie' | 'bar';
       let y = margin;
     
       try {
+        //header with tasknet logo
         const logoResponse = await fetch('/images/Logo.png');
         const logoBlob = await logoResponse.blob();
         const logoUrl = URL.createObjectURL(logoBlob);
@@ -344,6 +345,7 @@ type ChartType = 'pie' | 'bar';
       doc.save(filename);
   }
 
+  //This funciton will render the given chart to an image that can then be used in the stats pdfs
   async function renderChartToImage(ChartComponent: React.FC<{ chartType: ChartType; dataValues: number[][]; dataLabels: string[]; axisLabels: string[]; chartTitle: string;width?: number;height?: number; maintainAspectRatio?: boolean;showLegend?: boolean;}>,
                                            props: { chartType: ChartType; dataValues: number[][]; dataLabels: string[]; axisLabels: string[]; chartTitle: string;width?: number;height?: number; maintainAspectRatio?: boolean;showLegend?: boolean; }): Promise<HTMLCanvasElement> {
         return new Promise(async (resolve, reject) => {
@@ -355,7 +357,9 @@ type ChartType = 'pie' | 'bar';
             container.style.width = '600px';
             container.style.backgroundColor = 'white';
             document.body.appendChild(container);
-    
+            
+
+            //creating a place to put the components
             const root = createRoot(container);
             root.render(React.createElement(ChartComponent, props));
     
@@ -381,6 +385,8 @@ type ChartType = 'pie' | 'bar';
         });
   }
 
+
+  //Saves the skills dashboard to a pdf
   export async function exportSkillStatsToPDF(
       //initialization
       stats: SkillAreaAnalysis[],
@@ -427,7 +433,7 @@ type ChartType = 'pie' | 'bar';
           finalY?: number;
         };
       }
-      // Summary Table (Total, Hired, Completed Projects per Skill Area)
+      // Summary Table
       autoTable(doc, {
         startY: y,
         head: [['Skill Area', 'Total Projects', 'Hired Projects', 'Completed Projects']],
@@ -476,9 +482,7 @@ type ChartType = 'pie' | 'bar';
       autoTable(doc, {
         startY: y,
        head: [
-      // First row: custom section heading
       [{ content: `${area.skillArea}`, colSpan: 2, styles: { halign: 'center', fontSize: 12, textColor: [33, 33, 33], fillColor: [230, 230, 250] } }],
-      // Second row: column headers
       ['Skill', 'Count'],
     ],
         body: area.mostInDemandSkills.map(skill => [skill.skill, skill.count.toString()]),

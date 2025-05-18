@@ -7,6 +7,7 @@ import ApiService from "./ApiService";
 const provider = new GoogleAuthProvider();
 
 export default class AuthService {
+    //This funciton will allow the user to sign in automatically if they already have an account
     static async autoSignIn() {
         const auth = getAuth(app);
 
@@ -27,6 +28,7 @@ export default class AuthService {
         return false;
     }
 
+    //This function will sign the user in with google
     static async signin(): Promise<boolean> {
         const auth = getAuth(app);
     
@@ -54,6 +56,7 @@ export default class AuthService {
         }
     }
 
+    //This function sighn the user out from the google auth pespective
     static googleSignout() {
         const auth = getAuth(app);
     

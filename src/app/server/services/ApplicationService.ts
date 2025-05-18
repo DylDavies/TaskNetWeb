@@ -1,7 +1,8 @@
 import { uploadFile } from './DatabaseService';
 import { getCurrentDateAsNumber } from '../formatters/FormatDates';
 
-  async function uploadCV(file: File, ApplicationID: string){
+//This funciton will upload a CV to the database
+async function uploadCV(file: File, ApplicationID: string){
     if(file.type !== "application/pdf"){
         alert("Please submit a pdf only");
         return " "; 
@@ -14,6 +15,7 @@ import { getCurrentDateAsNumber } from '../formatters/FormatDates';
 
 }
 
+//This funciton will add an application to the database
 async function AddApplication(ApplicantID: string, BidAmount: number, CVURL: string, EstimatedTimeline: number, JobID:string){
     const ApplicantionID = makeApplicationID(JobID, ApplicantID);
     const ApplicationDate = getCurrentDateAsNumber();
@@ -27,6 +29,7 @@ async function AddApplication(ApplicantID: string, BidAmount: number, CVURL: str
     if (response.status == 500) console.error(await response.json());
 }
 
+//This function will check if the user has applied for the job
 async function hasApplied(AID: string, JobID: string): Promise<boolean> {
     const response = await fetch(`/api/application/applied/${JobID}/${AID}`, {
         method: "GET",
@@ -38,6 +41,7 @@ async function hasApplied(AID: string, JobID: string): Promise<boolean> {
     return (await response.json()).result;
 }
 
+//This function will combine the IDs into an application ID
 function makeApplicationID(jid: string, uid: string){
     return jid+uid;
 }

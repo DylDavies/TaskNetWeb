@@ -73,40 +73,4 @@ const Button = ({
   );
 };
 
-/*
- BUTTON testing:
- <main className="p-8 space-y-6">
-      <h1 className="text-2xl font-bold mb-4">Button Component Test</h1>
-
-      <Button
-        caption="Normal Button"
-        onClick={() => console.log("Normal clicked")}
-        size={Sizes.Normal}
-      />
-
-      <Button
-        caption="Big Button"
-        onClick={() => console.log("Big clicked")}
-        size={Sizes.Big}
-      />
-
-      <Button
-        caption="Bigger Button"
-        onClick={() => console.log("Bigger clicked")}
-        size={Sizes.Bigger}
-      />
-
-      <Button
-        caption="Styled Button"
-        onClick={() => console.log("Styled clicked")}
-        size={Sizes.Bigger}
-        style={{
-          backgroundColor: "#fbbf24", // Tailwind amber-400
-          color: "#1f2937", // Tailwind gray-800
-          border: "2px solid #1f2937",
-        }}
-      />
-    </main>
-*/
-
 export default Button;

@@ -44,7 +44,6 @@ const CreateJobModal = ({refetch}: Props) => {
     const fetchSkills = async () => {
       try {
         const skills = await getAllSkills();
-        //console.log(skills);
         setAllSkills(skills);
         setFilteredSkills(skills);
       } catch (err) {
@@ -141,7 +140,6 @@ const CreateJobModal = ({refetch}: Props) => {
       toast.error("Please select at least one skill");
       return;
     }
-    //console.log(skillAreaSkillMap);
 
     const job = {
       title,
@@ -157,7 +155,6 @@ const CreateJobModal = ({refetch}: Props) => {
       hasClientRated: false,
       hasFreelancerRated: false
     };
-    //console.log(job);
 
     // sanitize data
     let sanitizedJobData;

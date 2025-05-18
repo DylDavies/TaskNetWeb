@@ -2,13 +2,11 @@
 
 import { arrayUnion, doc, getDoc, setDoc } from "firebase/firestore"; 
 import { db } from "../../firebase";
-
 import { getMilestones } from "./MilestoneService";
 import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
-
 import PaymentStatus from "@/app/enums/PaymentStatus.enum";
 
-
+//adds a skill to an area
 async function AddSkill(SkillArea: string, skillName: string) {
     await setDoc(doc(db, "skills", SkillArea), {
         SkillArea: SkillArea,
@@ -16,14 +14,16 @@ async function AddSkill(SkillArea: string, skillName: string) {
       });    
 };
 
+//return skills in a skill area
 async function getSkillByID(SkillArea: string){
   const skillDoc = await getDoc(doc(db, "skills", SkillArea));
 
   if (!skillDoc.exists()) return null; 
 
-  return skillDoc.data() as []; // Is there an interface to return this as??
+  return skillDoc.data() as []; 
 }
 
+//This funciton will return the completion stats for a given job
 async function getCompletionStatsPerJob(JobID:string) {
   const milestones = await getMilestones(JobID);
   const TotalMilestones = milestones.length;
@@ -41,6 +41,7 @@ async function getCompletionStatsPerJob(JobID:string) {
   }
 }
 
+//This funciton will return payment stats for the given job id
 async function getPaymentStatsPerJob(JobID: string){
   const milestones = await getMilestones(JobID);
   let totalPaid = 0;

@@ -8,6 +8,7 @@ export interface AIJobRecommendation {
   reason: string;
 }
 
+//This function will recommend jobs to a user through a LLM prompt
 async function recommendJobs(
   user: ActiveUser,
   potentialJobs: ActiveJob[]
@@ -20,6 +21,7 @@ async function recommendJobs(
     return [];
   }
 
+  //will set up what we need for a successful prompt
   let jobDetailsForPrompt = relevantJobs.map(p => ({
     jobId: p.jobId,
     title: p.jobData.title,
@@ -40,6 +42,7 @@ async function recommendJobs(
     skills: Object.values(user.userData.skills ?? {}).flat()
   };
 
+  //Makes the prompt to send
   const prompt = `
     You are an expert job recommendation assistant.
     Based on the provided user profile and a list of available jobs, please select up to 5 jobs that would be a good fit for the user.
@@ -61,6 +64,7 @@ async function recommendJobs(
     ]
   `;
 
+  //Gets recommended jobs from the prompt
   try {
     const { response } = await AI.generateContent(prompt);
     const responseText = response.text()
