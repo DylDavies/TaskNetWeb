@@ -95,7 +95,7 @@ export default function Page() {
 
         <main className="flex-1 flex bg-[#cdd5f6] bg-color">
           <section className="w-64">
-            <SideBar items={links} myfunction={CreateJobModal({ refetch })} />
+            <SideBar items={links} buttons={[CreateJobModal({ refetch })]} />
           </section>
 
           <section className="flex-1 p-4 flex flex-col items-center gap-6 overflow-y-auto">

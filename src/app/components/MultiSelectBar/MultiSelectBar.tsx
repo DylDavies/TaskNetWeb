@@ -55,7 +55,6 @@ const MultiSelect: React.FC<MultiSelectProps> = ({ skills, onSelect }) => {
 
   return (
     <section className="w-full max-w-md">
-      {/* Tag input area with fixed height */}
       <section className="border border-gray-600 bg-gray-800 p-2 rounded-lg h-16 overflow-y-auto">
         <section className="flex flex-wrap gap-2 w-full">
           {selected.map((item) => (

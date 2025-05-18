@@ -1,4 +1,4 @@
-import { collection, doc, setDoc, getDocs, arrayUnion } from "firebase/firestore";
+import { collection, doc, setDoc, getDocs, arrayUnion, updateDoc } from "firebase/firestore";
 import { db } from "../../src/app/firebase";
 import { AddSkill, getSkillArray, getAllSkillIDs } from "../../src/app/server/services/SkillsService";
 
@@ -12,13 +12,14 @@ describe("SkillsService", () => {
   describe("AddSkill", () => {
     it("should add skill to specified area", async () => {
         (doc as jest.Mock).mockReturnValue("doc");
-        (arrayUnion as jest.Mock).mockReturnValue("name");
+        (arrayUnion as jest.Mock).mockReturnValue("TypeScript");
 
         await AddSkill("programming", "TypeScript");
         
-        expect(setDoc).toHaveBeenCalledWith(
+        expect(updateDoc).toHaveBeenCalledWith(
             "doc",
-            { SkillArea: "programming", name: "name" }
+            expect.objectContaining(
+              { names: "TypeScript" })
         );
     });
   });
