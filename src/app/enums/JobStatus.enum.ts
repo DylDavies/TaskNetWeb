@@ -5,7 +5,7 @@ enum JobStatus{
     Completed, //3
     InProgress, //4
 }
-// 0 -> 3
+// 0 -> 4
 
 
 export default JobStatus

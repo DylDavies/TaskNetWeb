@@ -5,8 +5,6 @@ import Image from "next/image";
 import { getUser } from "@/app/server/services/DatabaseService";
 import StarRatingDisplay from "../RatingStars/RatingStars";
 
-
-
 /*
 --- NOTE ON USE ---
 
@@ -34,8 +32,6 @@ example:
   -deadline: string;
   -skills: string[];
 />
-
-
 */
 
 interface JobCardProps {
@@ -66,7 +62,8 @@ const JobCard: React.FC<JobCardProps> = ({
     (async () => {
       const user = await getUser(clientId);
 
-      setName(user?.username || "Not found");
+      //Getting everything needed to show the clients rating on the job card
+      setName(user?.username || "Not found"); 
       setRating(user?.ratingAverage);
       setTotalRatings(user?.ratingCount);
       setAvatar(user?.avatar);
@@ -83,6 +80,7 @@ const JobCard: React.FC<JobCardProps> = ({
         <section className="col-span-12 flex justify-between items-center mb-2">
           {/* Icon and Job Title */}
           <section className="flex items-center space-x-3">
+      {/* Client avatar */}
       { avatar ?
       (
         <Image src={avatar} alt="Avatar" className="w-10 h-10 rounded-full" width={200} height={200}></Image>
@@ -141,7 +139,7 @@ const JobCard: React.FC<JobCardProps> = ({
             ))}
           </section>
 
-          {/* Company and Deadline inline at the bottom */}
+          {/* Company, Deadline and rating stars inline at the bottom */}
           <footer className="flex justify-between items-center text-sm text-gray-400 pt-1 border-t border-gray-700 mt-2">
             <address className="italic">{name}</address>
           {(aveRating !== undefined && totalRating !== undefined && aveRating && totalRating) && (

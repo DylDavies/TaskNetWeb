@@ -19,7 +19,6 @@ import {
 import { JobContext, JobContextType } from "@/app/JobContext";
 import { getJob } from "@/app/server/services/JobDatabaseService";
 import { createNotification } from "@/app/server/services/NotificationService";
-//import JobStatus from "@/app/enums/JobStatus.enum";
 
 interface Props {
   refetch: () => void;
@@ -38,12 +37,12 @@ const CreateMilestone = ({ refetch }: Props) => {
   useEffect(() => {
     Modal.setAppElement("#root");
 
-    // Fetch job data when jobID changes
+    // Fetch job data and job deadline when jobID changes 
     const fetchJobDeadline = async () => {
       if (!jobID) return;
 
       try {
-        const jobData = await getJob(jobID); // Use getJob directly
+        const jobData = await getJob(jobID); 
         if (jobData) {
           // Convert the numeric deadline to Date object
           setJobDeadline(jobData.deadline);
@@ -57,6 +56,7 @@ const CreateMilestone = ({ refetch }: Props) => {
     fetchJobDeadline();
   }, [jobID]);
 
+  //function to open the modal
   async function openModal() {
     if (!jobID) {
       toast.error("No job selected");
@@ -67,7 +67,8 @@ const CreateMilestone = ({ refetch }: Props) => {
       // Fetch existing milestones
       const milestones = await getMilestones(jobID);
       if (milestones.length > 0) {
-        // Find the latest milestone deadline
+
+        // Find the latest milestone deadline, the client cannot add a new milestone with a deadline that is sooner than the other milestones already created
         const latestDeadline = Math.max(...milestones.map((m) => m.deadline));
         setPrevMilestoneDeadline(latestDeadline);
       }
@@ -78,13 +79,14 @@ const CreateMilestone = ({ refetch }: Props) => {
     }
   }
 
+  //function to close the modal
   function closeModal() {
     setIsOpen(false);
   }
+
+  //function that validates the date entered for the deadline by the client
   const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-
-    // Parse the date
     const newDate = new Date(inputValue);
 
     // Check if date is valid
@@ -93,7 +95,6 @@ const CreateMilestone = ({ refetch }: Props) => {
       return;
     }
 
-    // If all checks pass
     setDeadline(newDate);
   };
 
@@ -102,22 +103,24 @@ const CreateMilestone = ({ refetch }: Props) => {
 
     const status = MilestoneStatus.OnHalt;
 
+    //validate that a title for the milestone is entered
     if (title === "") {
       toast("Please enter a title for the job");
       return;
     }
-    // Validate description
+    // Validate that a description for the milestone was entered
     if (description === "") {
       toast("Please enter a description for the job");
       return;
     }
 
-    // Basic check if input is empty
+    // Basic check if input for the deadline is empty
     if (!deadline) {
       toast.error("Please select a date");
       return;
     }
 
+    //Validating the payemnt amount is entered and not zero
     let pay = 0;
     try {
       pay = parseInt(payment);
@@ -135,12 +138,12 @@ const CreateMilestone = ({ refetch }: Props) => {
 
     const dateAsNumber = formatDateAsNumber(deadline);
 
-    // Check against job deadline if available
+    // Check against job deadline if available, clients cant create a milestone thats deadline is after the job deadline
     if (jobDeadline && dateAsNumber >= jobDeadline) {
       toast.error(`Milestone deadline must be before job deadline`);
       return;
     }
-    // Check against previous milestones (if any exist)
+    // Check against previous milestones (if any exist), clients cannot create a milestone whos deadline is before an existing milestones deadline
     if (prevMilestoneDeadline && dateAsNumber <= prevMilestoneDeadline) {
       toast.error(`Milestone deadline must be after existing milestones`);
       return;
@@ -152,7 +155,6 @@ const CreateMilestone = ({ refetch }: Props) => {
       return;
     }
 
-    //reportURL = "";
     const milestone = {
       title,
       description,
@@ -162,6 +164,7 @@ const CreateMilestone = ({ refetch }: Props) => {
       status,
     };
 
+    //sanitizing data
     let sanitizedMilestoneData;
     try {
       sanitizedMilestoneData = sanitizeMilestoneData(milestone);
@@ -177,8 +180,8 @@ const CreateMilestone = ({ refetch }: Props) => {
       return;
     }
     try {
+      //Adding the milestone to the job
       await addMilestone(jobID, sanitizedMilestoneData);
-      //await updateJobStatus(jobID, JobStatus.Employed);
       const jobData = await getJob(jobID);
       const hiredUID = jobData?.hiredUId;
 
@@ -186,6 +189,7 @@ const CreateMilestone = ({ refetch }: Props) => {
         throw new Error("Job does not have a hiredUId assigned.");
       }
 
+      //sending a notification to the freelancer that a new milestone has been created
       await createNotification({
         message: `New milestone "${milestone.title}" for job "${jobData.title}"`,
         seen: false,
