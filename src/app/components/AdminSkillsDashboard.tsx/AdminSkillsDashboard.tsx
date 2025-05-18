@@ -2,15 +2,15 @@
 import { useState, useEffect } from 'react';
 
 import { RefreshCw } from 'lucide-react';
-import CompletionStats from '@/app/interfaces/CompletionStatsInterface';
-import { getCompletionStats } from '@/app/server/services/statsService';
+import {  getSkillStats } from '@/app/server/services/statsService';
 import { EmptyState } from '../EmptyState/EmptyState';
 import { ErrorBoundary } from 'react-error-boundary';
-import CompletionInfo from '../CompletionRateInfo/CompletionRateInfo';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { isValidDateString } from '@/app/server/formatters/FormatDates';
-import { exportCompletionStatsToPDF } from '@/app/components/PDFBuilder/PDFBuilder';
+import SkillAreaAnalysis from '@/app/interfaces/SkillAreaAnalysis.interface';
+import SkillsInfo from '../SkillsInfo/SkillsInfo';
+import { exportSkillStatsToPDF } from '../PDFBuilder/PDFBuilder';
 
 function ErrorFallback({ error }: { error: Error }) {
   return (
@@ -21,10 +21,10 @@ function ErrorFallback({ error }: { error: Error }) {
   );
 }
 
-export default function AnalyticsPage() {
-  const [stats, setStats] = useState<CompletionStats | null>(null);
+export default function SkillsAnalyticsPage() {
+  const [stats, setStats] = useState<SkillAreaAnalysis[] | null>(null);
   const [loading, setLoading] = useState(true);
-  const [startDate, setStartDate] = useState(new Date(new Date().setMonth(new Date().getMonth() - 1)));
+  const [startDate, setStartDate] = useState(new Date(new Date().setMonth(new Date().getMonth() - 6)));
   const [endDate, setEndDate] = useState(new Date());
   const [startInput, setStartInput] = useState(startDate.toISOString().split('T')[0]);
   const [endInput, setEndInput] = useState(endDate.toISOString().split('T')[0]);
@@ -58,7 +58,7 @@ export default function AnalyticsPage() {
     async function loadStats() {
       setLoading(true);
       try {
-        const data = await getCompletionStats(startDate, endDate);
+        const data = await getSkillStats(startDate, endDate);
         setStats(data);
       } catch (error) {
         console.error('Failed to load stats:', error);
@@ -83,27 +83,10 @@ export default function AnalyticsPage() {
     
   }
 
-  async function HandleDownloadClick(){
-     if (stats) {
-    const loadingToast = toast.loading("Generating PDF"); 
-    try {
-      await exportCompletionStatsToPDF(stats, startDate, endDate);
-      toast.success("PDF ready for download");
-      toast.dismiss(loadingToast); 
-    } catch (error) {
-      toast.error("Failed to Generate PDF");
-      toast.dismiss(loadingToast); 
-      console.error(error);
-    }
-  } else {
-    toast.error("Failed to Generate PDF - No data available");
-  }
-  }
-
-  if (!stats || stats.totalProjects == 0) return (
+  if (!stats ) return (
     <EmptyState 
       title="No analytics data"
-      description="We couldn't find any project data for the selected date range. Try adjusting your filters."
+      description="We couldn't find any payment data for the selected date range. Try adjusting your filters."
       action={
         <button
           onClick={() => HandleErrorClick()}
@@ -115,6 +98,23 @@ export default function AnalyticsPage() {
       }
     />
   );
+
+  async function HandleDownloadClick(){
+     if (stats) {
+    const loadingToast = toast.loading("Generating PDF"); 
+    try {
+      await exportSkillStatsToPDF(stats, startDate, endDate);
+      toast.success("PDF ready for download");
+      toast.dismiss(loadingToast); 
+    } catch (error) {
+      toast.error("Failed to Generate PDF");
+      toast.dismiss(loadingToast);
+      console.error(error); 
+    }
+  } else {
+    toast.error("Failed to Generate PDF - No data available");
+  }
+  }
 
   return (
     <section className="p-6">
@@ -162,7 +162,7 @@ export default function AnalyticsPage() {
     </section>
 
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-        <CompletionInfo stats={stats} startDate={startDate} endDate={endDate} />
+        <SkillsInfo stats = {stats} startDate={startDate} endDate={endDate} />
     </ErrorBoundary>
   </section>
   );

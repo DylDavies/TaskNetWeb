@@ -154,6 +154,8 @@ const CreateJobModal = ({refetch}: Props) => {
       hiredUId: hiredUid,
       clientUId: clientUid,
       createdAt: currentDate,
+      hasClientRated: false,
+      hasFreelancerRated: false
     };
     //console.log(job);
 
@@ -192,6 +194,7 @@ const CreateJobModal = ({refetch}: Props) => {
     setMaxBudget("");
     setSelectedSkills([]);
     setSkillInput("");
+    
   };
 
   const handleSkillSelect = (skill: string) => {

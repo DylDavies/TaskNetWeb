@@ -2,15 +2,15 @@
 import { useState, useEffect } from 'react';
 
 import { RefreshCw } from 'lucide-react';
-import CompletionStats from '@/app/interfaces/CompletionStatsInterface';
-import { getCompletionStats } from '@/app/server/services/statsService';
+import { getPaymentStats } from '@/app/server/services/statsService';
 import { EmptyState } from '../EmptyState/EmptyState';
 import { ErrorBoundary } from 'react-error-boundary';
-import CompletionInfo from '../CompletionRateInfo/CompletionRateInfo';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { isValidDateString } from '@/app/server/formatters/FormatDates';
-import { exportCompletionStatsToPDF } from '@/app/components/PDFBuilder/PDFBuilder';
+import { exportPaymentStatsToPDF } from '@/app/components/PDFBuilder/PDFBuilder';
+import PaymentStats from '@/app/interfaces/PaymentStats.interface';
+import PaymentInfo from '../PaymentInfo/PaymentInfo';
 
 function ErrorFallback({ error }: { error: Error }) {
   return (
@@ -21,14 +21,17 @@ function ErrorFallback({ error }: { error: Error }) {
   );
 }
 
-export default function AnalyticsPage() {
-  const [stats, setStats] = useState<CompletionStats | null>(null);
+
+//This funciton displays an analytics page to the admin 
+export default function PaymentAnalyticsPage() {
+  const [stats, setStats] = useState<PaymentStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [startDate, setStartDate] = useState(new Date(new Date().setMonth(new Date().getMonth() - 1)));
+  const [startDate, setStartDate] = useState(new Date(new Date().setMonth(new Date().getMonth() - 6)));
   const [endDate, setEndDate] = useState(new Date());
   const [startInput, setStartInput] = useState(startDate.toISOString().split('T')[0]);
   const [endInput, setEndInput] = useState(endDate.toISOString().split('T')[0]);
 
+  //when the date filters change
   const handleChangeFilters = () => {
     if (!isValidDateString(startInput)) {
       toast.error("Please enter a valid start date.");
@@ -52,13 +55,12 @@ export default function AnalyticsPage() {
       }
   };
 
+  //Will show loading and load payment stats onto the page when the dates change
   useEffect(() => {
-
-
     async function loadStats() {
       setLoading(true);
       try {
-        const data = await getCompletionStats(startDate, endDate);
+        const data = await getPaymentStats(startDate, endDate);
         setStats(data);
       } catch (error) {
         console.error('Failed to load stats:', error);
@@ -71,39 +73,27 @@ export default function AnalyticsPage() {
     loadStats();
   }, [startDate, endDate]);
 
+
+  //Loading icon
   if (loading) return (
     <section className="flex justify-center items-center h-64">
       <section className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></section>
     </section>
   );
 
+  //Resets the dats if something goes wrong and user clicks retry
   function HandleErrorClick(){
     setStartDate(new Date(new Date().setMonth(new Date().getMonth() - 1)));
     setEndDate(new Date())
     
   }
 
-  async function HandleDownloadClick(){
-     if (stats) {
-    const loadingToast = toast.loading("Generating PDF"); 
-    try {
-      await exportCompletionStatsToPDF(stats, startDate, endDate);
-      toast.success("PDF ready for download");
-      toast.dismiss(loadingToast); 
-    } catch (error) {
-      toast.error("Failed to Generate PDF");
-      toast.dismiss(loadingToast); 
-      console.error(error);
-    }
-  } else {
-    toast.error("Failed to Generate PDF - No data available");
-  }
-  }
 
-  if (!stats || stats.totalProjects == 0) return (
+  //No stats = displays a message to the user
+  if (!stats || stats.totalESCROW + stats.totalPayed + stats.totalUnpaid == 0) return (
     <EmptyState 
       title="No analytics data"
-      description="We couldn't find any project data for the selected date range. Try adjusting your filters."
+      description="We couldn't find any payment data for the selected date range. Try adjusting your filters."
       action={
         <button
           onClick={() => HandleErrorClick()}
@@ -116,9 +106,28 @@ export default function AnalyticsPage() {
     />
   );
 
+  //Allow the user to download report
+  async function HandleDownloadClick(){
+     if (stats) {
+    const loadingToast = toast.loading("Generating PDF"); 
+    try {
+      await exportPaymentStatsToPDF(stats, startDate, endDate);
+      toast.success("PDF ready for download");
+      toast.dismiss(loadingToast); 
+    } catch (error) {
+      toast.error("Failed to Generate PDF");
+      toast.dismiss(loadingToast);
+      console.error(error); 
+    }
+  } else {
+    toast.error("Failed to Generate PDF - No data available");
+  }
+  }
+
   return (
     <section className="p-6">
     <section className="mb-6 flex flex-wrap sm:flex-nowrap gap-4 items-end">
+
       {/* Start Date */}
       <section className="flex flex-col w-full sm:w-64">
         <label className="block text-sm font-medium text-gray-300 mb-1">Start Date</label>
@@ -143,7 +152,7 @@ export default function AnalyticsPage() {
         />
       </section>
   
-      {/* Button aligned right */}
+      {/* Buttons*/}
       <section className="ml-auto flex gap-4">
         <button
           onClick={handleChangeFilters}
@@ -161,8 +170,9 @@ export default function AnalyticsPage() {
       </section>
     </section>
 
+    {/*Error boundary where info is loaded*/ }
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-        <CompletionInfo stats={stats} startDate={startDate} endDate={endDate} />
+        <PaymentInfo stats = {stats} startDate={startDate} endDate={endDate} />
     </ErrorBoundary>
   </section>
   );

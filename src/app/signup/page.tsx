@@ -33,6 +33,8 @@ export default function Page() {
 
   const handleSignupClick = async () => {
     try {
+      console.log(user)
+
       if (user) {
         const userEmail = user.authUser.email;
         const userName = user.authUser.displayName;

@@ -3,33 +3,43 @@ import React, { useEffect, useState } from "react";
 import AdminTable from "../AdminTable/AdminTable";
 import { getPendingUsers } from "@/app/server/services/DatabaseService";
 import InputBar from "../inputbar/InputBar";
+import PendingUser from "@/app/interfaces/PendingUser.interface";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "@/app/firebase";
 
-interface User {
-  uid: string;
-  username: string;
-  status: number;
-  type: number;
-  date: number;
-}
 
 
 
   export default function DashboardContent() {
 
-    const [pendingUsers, setPendingUsers] = useState<User[]>([]);
+    const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
     const [SearchQuery, setSearchQuery] = useState<string>("");
-    const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+    const [filteredUsers, setFilteredUsers] = useState<PendingUser[]>([]);
+
+
 
   // To update the admin table after the Admin approves or denies user
     useEffect(() => {
     async function fetchPendingUsers() {
       const pendingUsers = await getPendingUsers();
-      //console.log("Pending users: ", pendingUsers);
       setPendingUsers(pendingUsers);
     }
 
     fetchPendingUsers();
   }, []);
+
+
+  useEffect(() => {
+    const usersRef = collection(db, "users");
+  
+    const unsubscribe = onSnapshot(usersRef, async () => {
+      const updated = await getPendingUsers();
+      setPendingUsers([...updated]);
+    });
+  
+    return () => unsubscribe();
+  }, []);
+  
 
 useEffect(() => {
   let filtered = pendingUsers;

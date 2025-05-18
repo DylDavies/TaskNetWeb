@@ -43,4 +43,28 @@ async function AddRating(uid: string, newRating: number) {
   }
 };
 
-  export {SetRatingAverage, SetRatingCount, AddRating}
+//This function sets the hasFreelancerRated field to be true, indicating that the freelancer has rated the client
+async function setFreelancerHasRated(jobID: string){
+  try{
+    const userRef = doc(db, "Jobs", jobID)
+    await updateDoc(userRef, {
+      hasFreelancerRated: true
+    });
+  }catch (error) {
+    console.error("Could not set freelancer rating to be true", error);
+  };
+}
+
+//This function sets the hasClientRated field to be true, indicating that the client has rated the freelancer
+async function setClientHasRated(jobID: string){
+  try{
+    const userRef = doc(db, "Jobs", jobID)
+    await updateDoc(userRef, {
+      hasClientRated: true
+    });
+  }catch (error) {
+    console.error("Could not set client rating to be true", error);
+  };
+}
+
+  export {SetRatingAverage, SetRatingCount, AddRating, setFreelancerHasRated,setClientHasRated}

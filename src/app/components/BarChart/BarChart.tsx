@@ -14,25 +14,35 @@ interface BarChartComponentProps {
   data: { name: string; value: number }[];
   colors: string[];
   title: string;
+  angle?: number;
+  position?: 'middle' | 'start' | 'end';
+  height?: number;
+  bottom?: number;
 }
 
-const BarChartComponent: React.FC<BarChartComponentProps> = ({ data, colors, title }) => {
+const BarChartComponent: React.FC<BarChartComponentProps> = ({ data, colors, title, angle = 0, position =  'middle', height = 256, bottom = 10}) => {
+
+  
   return (
     <section className="bg-gray-800 p-4 rounded-lg border border-gray-700 group">
       <h3 className="text-lg font-semibold mb-4 text-center text-white">
         {title}
       </h3>
-      <section className="h-64">
+      <section style={{ height: `${height}px` }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
-            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            margin={{ top: 5, right: 30, left: 20, bottom: bottom }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
             <XAxis
               dataKey="name"
               stroke="#9ca3af"
-              tick={{ fill: '#ffffff' }}
+              tick={{fill: '#ffffff'}}
+              angle={angle}
+              textAnchor={position}
+              interval={0}
+              
             />
             <YAxis stroke="#9ca3af" tick={{ fill: '#ffffff' }} />
             <Tooltip

@@ -7,10 +7,10 @@ import { useRouter } from "next/navigation";
 
 type SideBarProps = {
   items?: { name: string; href: string; selected: boolean }[];
-  myfunction?: React.ReactNode;
+  buttons?: React.ReactNode[];
 };
 
-const SideBar = ({ items, myfunction }: SideBarProps) => {
+const SideBar = ({ items, buttons }: SideBarProps) => {
   const router = useRouter();
 
   function signoutClick() {
@@ -47,12 +47,13 @@ const SideBar = ({ items, myfunction }: SideBarProps) => {
               )}
             </li>
           ))}
-              
-          {myfunction && (
-            <li className="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded hover-effect">
-              {myfunction}
+
+          {buttons?.map((button, index) => (
+            <li key={`button-${index}`} className="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded hover-effect ">
+              {button}
             </li>
-          )}
+          ))}
+
         </ul>
         
         <section className="absolute bottom-0 mb-4">

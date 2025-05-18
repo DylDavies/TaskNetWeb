@@ -11,36 +11,39 @@ import React, { useContext, useState } from "react";
 import { AuthContext, AuthContextType } from "../AuthContext";
 import AnalyticsPage from "../components/AdminStatsDashboard/StatsDashboard";
 import DashboardContent from "../components/AdminDashboard/AdminDashboard";
-
+import PaymentAnalyticsPage from "../components/AdminPaymentStatsDashboard/PaymentDashboard";
+import SkillsAnalyticsPage from "../components/AdminSkillsDashboard.tsx/AdminSkillsDashboard";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
+  const router = useRouter();
 
-  function handleViewChange(){
-    if (buttonName == "View Analytics"){
-      setbuttonName("View Pending Users");
-      setCurrentView('analytics');
-    }
-    else{
-      setbuttonName("View Analytics");
-      setCurrentView('dashboard');
-
-    }
-
+  //functions to change between views
+  function handleViewPendingUsers(){
+    setCurrentView('Pending')
   }
-   
-  const [buttonName, setbuttonName] = useState<"View Analytics" | "View Pending Users">("View Analytics");
-  const [currentView, setCurrentView] = useState<'dashboard' | 'analytics'>('dashboard');
 
-  //This will allow the admin to change between pending users and analytics
-  const ChangeViewButton = () => {
-    return(
-      <section>
-      <button onClick={() => handleViewChange()} > {buttonName}</button>
-      </section>
-    );
-  };
+  function handleViewCompletionStats(){
+    setCurrentView('Completion')
+  }
+  function handleViewPaymentStats(){
+    setCurrentView('Payment')
+  }
+  function handleViewSkillStats(){
+    setCurrentView('Skills')
+  }
 
+  //heighlights active page button
+  const buttonClasses = (isActive: boolean) => 
+  `w-full text-left px-4 py-2 rounded-md transition-colors ${
+    isActive
+      ? 'bg-gray-700 text-white cursor-not-allowed' 
+      : 'text-gray-300 hover:text-white hover:bg-gray-700'
+  }`;
+
+  //current view of user  
+  const [currentView, setCurrentView] = useState<'Pending' | 'Completion' | 'Payment' | 'Skills'>('Pending');
 
   return (
     <>
@@ -53,17 +56,22 @@ export default function Page() {
 
           <aside className="w-64">
             <SideBar
-              myfunction={ChangeViewButton()} />
+              buttons={[
+                <button key="1" onClick={() => handleViewPendingUsers()} disabled={currentView === 'Pending'}  className={buttonClasses(currentView === 'Pending')}> Pending Users</button>,
+                <button key="2" onClick={() => handleViewCompletionStats()} disabled={currentView === 'Completion'}  className={buttonClasses(currentView === 'Completion')}> Completion Stats</button>,
+                <button key="3" onClick={() => handleViewPaymentStats()} disabled={currentView === 'Payment'}  className={buttonClasses(currentView === 'Payment')}> Payment Stats</button>,
+                <button key="4" onClick={() => handleViewSkillStats()} disabled={currentView === 'Skills'}  className={buttonClasses(currentView === 'Skills')}> Skill Stats</button>,
+                <button key="5" onClick={() => router.push("/skills")} className={buttonClasses(false)}> Skills Management</button>
+              ]}
+              />
           </aside>
           <section className="flex-1 p-4">
-          {currentView === 'dashboard' ? (
-            <DashboardContent
-          />
-          ):(
-            <AnalyticsPage />
-          )}
-         
+            {currentView === 'Pending' && <DashboardContent />}
+            {currentView === 'Completion' && <AnalyticsPage />}
+            {currentView === 'Payment' && <PaymentAnalyticsPage />}
+            {currentView === 'Skills' && <SkillsAnalyticsPage />}
           </section>
+          
         </main>
 
         <footer className="bg-[#f75509] py-4 flex justify-center bg-gray-900 box-footer">

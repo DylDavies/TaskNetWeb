@@ -39,6 +39,25 @@ async function getSkillArray(): Promise<SkillData[]>{
 
 }
 
+//This function will return the skills for the given JobID
+async function getSkillsForJob(jid: string): Promise<SkillData[] | null> { 
+    const jobData = await getJob(jid);
+    if (jobData) {
+        const skillDataArray: SkillData[] = [];
+        for (const skillArea in jobData.skills) {
+            if (jobData.skills.hasOwnProperty(skillArea)) { 
+                skillDataArray.push({
+                    id: skillArea,
+                    skills: jobData.skills[skillArea],
+                });
+            }
+        }
+        return skillDataArray;
+    } else {
+        return null; 
+    }
+}
+
 // Helper to get all skills 
 async function getAllSkills(): Promise<string[]> {
   const skillArray = await getSkillArray();
@@ -82,4 +101,4 @@ async function mapSkillsToAreas(skillNames: string[]): Promise<{ [skillArea: str
   }
 }
 
-export {AddSkill, getSkillArray, getAllSkillIDs, getAllSkills, mapSkillsToAreas};
+export {AddSkill, getSkillArray, getAllSkillIDs, getAllSkills, mapSkillsToAreas, getSkillsForJob};

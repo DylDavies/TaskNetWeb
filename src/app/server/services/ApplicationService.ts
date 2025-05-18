@@ -1,14 +1,5 @@
 import { uploadFile } from './DatabaseService';
-
-function getCurrentDateAsNumber() {
-    const now = new Date();
-  
-    const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    const day = now.getDate().toString().padStart(2, '0');
-  
-    return Number(`${year}${month}${day}`);
-  }
+import { getCurrentDateAsNumber } from '../formatters/FormatDates';
 
   async function uploadCV(file: File, ApplicationID: string){
     if(file.type !== "application/pdf"){
