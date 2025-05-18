@@ -1,6 +1,6 @@
 import JobData from "./JobData.interface";
 
-// For UID of the job you are on aswell as the data
+// Job data with id of job aswell
 interface ActiveJob {
     jobId: string; 
     jobData: JobData;

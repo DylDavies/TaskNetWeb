@@ -23,6 +23,7 @@ export const useChatStore = create<ChatStore>((set) => ({
   listenerInitialized: false,
   conversationWasManuallySet: false,
 
+  // fetch jobs associated with teh active user and other person contracted to that job
   fetchJobsWithUsers: async (uid: string, userType: UserType) => {
     set({ isLoadingJobs: true });
 
@@ -48,7 +49,7 @@ export const useChatStore = create<ChatStore>((set) => ({
 
           const messagesRef = collection(db, "Jobs", job.jobId, "messages");
 
-          // Get latest message for preview
+          // Get latesst message for chat previews
           const previewQuery = query(messagesRef, orderBy("DateTimeSent", "desc"), limit(1));
           const previewSnap = await getDocs(previewQuery);
 
@@ -57,13 +58,14 @@ export const useChatStore = create<ChatStore>((set) => ({
             latestMessage = previewSnap.docs[0].data() as MessageData;
           }
 
-          // Count unread messages
+          // Unread counter for incomming unread messages 
           const fullSnap = await getDocs(query(messagesRef, orderBy("DateTimeSent")));
           const unreadCount = fullSnap.docs.filter(doc => {
             const msg = doc.data() as MessageData;
             return msg.senderUId !== uid && msg.status !== MessageStatus.Read;
           }).length;
 
+          // Update chat preview
           if (latestMessage) {
             useChatStore.getState().setChatPreview(job.jobId, latestMessage, uid, unreadCount);
           }
@@ -87,6 +89,7 @@ export const useChatStore = create<ChatStore>((set) => ({
     }
   },
 
+  // set the conversation that the user is on and listening to for any new messages comming through on that conversation
   setActiveConversation: async (jobWithUser: JobWithUser | null, currentUserUId: string) => {
     const currentUnsubscribe = useChatStore.getState().unsubscribe;
     if (currentUnsubscribe) currentUnsubscribe();
@@ -101,6 +104,7 @@ export const useChatStore = create<ChatStore>((set) => ({
     const messagesRef = collection(db, "Jobs", jobWithUser.job.jobId, "messages");
     const q = query(messagesRef, orderBy("DateTimeSent"));
 
+    // Subscribe to listen for updates in that conversation
     const unsubscribe = onSnapshot(q, async (snapshot) => {
       const msgs = snapshot.docs.map((doc) => ({
         MessageID: doc.id,
@@ -126,6 +130,7 @@ export const useChatStore = create<ChatStore>((set) => ({
         }
       }
 
+      // update messages in chatstore
       set({ messages: msgs, isLoadingMessages: false });
 
       const lastMsg = msgs[msgs.length - 1];
@@ -134,7 +139,7 @@ export const useChatStore = create<ChatStore>((set) => ({
           jobWithUser.job.jobId,
           lastMsg.messageData,
           currentUserUId,
-          0 // Clear unread count when viewing
+          0  // clear unread messages for that conversation when you go on that chat  
         );
       }
 
@@ -146,6 +151,7 @@ export const useChatStore = create<ChatStore>((set) => ({
 
   clearMessages: () => set({ messages: [] }),
 
+  // update unread messages and unread counts for chats you are apart of
   setChatPreview: (jobId: string, message: MessageData, currentUserUId: string, unreadCountOverride?: number) =>
     set((state) => {
       const existing = state.chatPreviews[jobId] || {
@@ -184,6 +190,7 @@ export const useChatStore = create<ChatStore>((set) => ({
       },
     })),
 
+  // listen to db for any messages comming in across all chats/jobs in the background so the messages can be received, unread and chat preview can all be updated
   setupGlobalMessageListener: (uid: string) => {
     const state = useChatStore.getState();
     const { jobMap, globalUnsubscribe, listenerInitialized } = state;
@@ -202,10 +209,10 @@ export const useChatStore = create<ChatStore>((set) => ({
           const newDoc = snapshot.docs[0];
           const newMessage = newDoc.data() as MessageData;
 
-          // Skip if the message was sent by current user
+          // meesages sent by current user should be skipped
           if (newMessage.senderUId === uid) return;
 
-          // Skip if the message is already marked as Read
+          // if message is alread read then skip
           
           if (newMessage.status === MessageStatus.Read) return;
           
