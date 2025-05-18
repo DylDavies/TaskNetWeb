@@ -22,6 +22,7 @@ const COLORS = [
   '#ec4899'  // pink-500
 ];
 
+//This funciton retuns competion rate info in a visually pleasing way
 const CompletionInfo: React.FC<CompletionInfoProps> = ({ stats, startDate, endDate }) => {
   const projectData = [
     { name: 'Completed', value: stats.completedProjects },

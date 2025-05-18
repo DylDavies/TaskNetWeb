@@ -20,6 +20,7 @@ interface BarChartComponentProps {
   bottom?: number;
 }
 
+//This component will return a bar chart with the given specifications
 const BarChartComponent: React.FC<BarChartComponentProps> = ({ data, colors, title, angle = 0, position =  'middle', height = 256, bottom = 10}) => {
 
   

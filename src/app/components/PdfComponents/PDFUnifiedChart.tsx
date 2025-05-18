@@ -68,6 +68,7 @@ export const PDFUnifiedChart: React.FC<UnifiedChartProps> = ({
     };
   });
 
+  //prepare data for the charts
   const data = {
     labels: axisLabels,
     datasets,

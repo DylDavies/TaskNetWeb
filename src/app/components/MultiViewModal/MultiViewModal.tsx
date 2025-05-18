@@ -17,6 +17,7 @@ type Props = {
   onClose: () => void;
 };
 
+//This modal will switch between 2 modals depending on input
 const MultiViewModal: React.FC<Props> = ({ job, modalIsOpen, onClose }) => {
   const [view, setView] = useState<"viewA" | "viewB">("viewA");
   const [formData, setFormData] = useState<JobFormData>();

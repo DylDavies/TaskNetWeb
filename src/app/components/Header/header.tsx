@@ -12,7 +12,7 @@ type Props = {
   name: string; // name displayed in message
 };
 
-// Dynamic, enter a usertype and name to create
+// enter a usertype and name to create this header
 const Header: React.FC<Props> = ({ usertype, name }) => {
   const { user } = useContext(AuthContext) as AuthContextType;
   const initial = name.charAt(0).toUpperCase();
