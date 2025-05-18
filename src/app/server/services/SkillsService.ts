@@ -4,6 +4,7 @@ import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from "../../firebase";
 import SkillData from "@/app/interfaces/SkillData.interface";
+import { getJob } from "./JobDatabaseService";
 
 
 async function AddSkill(SkillArea: string, skillName: string) {
@@ -23,9 +24,28 @@ async function getSkillArray(): Promise<SkillData[]>{
     const data = doc.data();
     return {
       id: doc.id,
-      skills: data.names || []  // assuming 'skills' exists in document
+      skills: data.names || [] 
     };
   });
+}
+
+//This function will return the skills for the given JobID
+async function getSkillsForJob(jid: string): Promise<SkillData[] | null> { 
+    const jobData = await getJob(jid);
+    if (jobData) {
+        const skillDataArray: SkillData[] = [];
+        for (const skillArea in jobData.skills) {
+            if (jobData.skills.hasOwnProperty(skillArea)) { 
+                skillDataArray.push({
+                    id: skillArea,
+                    skills: jobData.skills[skillArea],
+                });
+            }
+        }
+        return skillDataArray;
+    } else {
+        return null; 
+    }
 }
 
 // Helper to get all skills 
@@ -72,4 +92,4 @@ async function mapSkillsToAreas(skillNames: string[]): Promise<{ [skillArea: str
   return skillMap;
 }
 
-export {AddSkill, getSkillArray, getAllSkillIDs, getAllSkills, mapSkillsToAreas};
+export {AddSkill, getSkillArray, getAllSkillIDs, getAllSkills, mapSkillsToAreas, getSkillsForJob};

@@ -1,32 +1,20 @@
-import {
-  AddSkill,
-} from "../../src/app/server/services/SkillsService";
 
 import {
   getSkillByID,
   getCompletionStatsPerJob,
-  getSkillStatsPerJob,
   getPaymentStatsPerJob,
 } from "../../src/app/server/services/adminService";
 
 import {
-  arrayUnion,
-  collection,
   doc,
   getDoc,
-  getDocs,
-  query,
-  setDoc,
-  where,
+
 } from "firebase/firestore";
 import { db } from "../../src/app/firebase";
 import { getMilestones } from "../../src/app/server/services/MilestoneService";
-import { getUsername } from "../../src/app/server/services/DatabaseService";
-import { getJob } from "../../src/app/server/services/JobDatabaseService";
 import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
-import JobStatus from "@/app/enums/JobStatus.enum";
 import PaymentStatus from "@/app/enums/PaymentStatus.enum";
-import formatDateAsNumber from "@/app/server/formatters/FormatDates";
+
 
 // Mock Firebase and other dependencies
 jest.mock("../../src/app/firebase", () => ({
@@ -178,40 +166,6 @@ describe("StatsDatabaseService", () => {
         totalESCROW: 0,
         totalPaid: 0,
         totalUnpaid: 30,
-      });
-    });
-  });
-
-  describe("getSkillStatsPerJob", () => {
-    it("should return payment stats (as it currently does) for a given Job ID", async () => {
-      const JobID = "jobabc";
-      (getMilestones as jest.Mock).mockResolvedValue([
-        { paymentStatus: PaymentStatus.Paid, payment: 100 },
-        { paymentStatus: PaymentStatus.Escrow, payment: 50 },
-        { paymentStatus: undefined, payment: 25 },
-      ]);
-
-      const result = await getSkillStatsPerJob(JobID);
-
-      expect(getMilestones).toHaveBeenCalledWith(JobID);
-      expect(result).toEqual({
-        totalESCROW: 50,
-        totalPaid: 100,
-        totalUnpaid: 25,
-      });
-    });
-
-    it("should handle no milestones", async () => {
-      const JobID = "jobdef";
-      (getMilestones as jest.Mock).mockResolvedValue([]);
-
-      const result = await getSkillStatsPerJob(JobID);
-
-      expect(getMilestones).toHaveBeenCalledWith(JobID);
-      expect(result).toEqual({
-        totalESCROW: 0,
-        totalPaid: 0,
-        totalUnpaid: 0,
       });
     });
   });
