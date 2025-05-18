@@ -21,7 +21,7 @@ async function getPendingApplicants(JobID: string): Promise<ApplicantData[]>{
 
     const snapshot = await getDocs(pending);
 
-    const pendingApplicants = snapshot.docs.map(doc => ({
+    const pendingApplicants = snapshot.docs.map(async doc => ({
         
         ApplicationID: doc.id,
         ApplicantID: doc.data().ApplicantID,
@@ -31,12 +31,12 @@ async function getPendingApplicants(JobID: string): Promise<ApplicantData[]>{
         EstimatedTimeline: doc.data().EstimatedTimeline,
         JobID: doc.data().JobID,
         Status: doc.data().Status,
-        username:getUsername(doc.data().ApplicantID)
+        username: await getUsername(doc.data().ApplicantID)
         
         
     }));
 
-    return pendingApplicants;
+    return Promise.all(pendingApplicants);
 };  
 
 // Accept applicant Endpoint - Sets applicant status in database to 1 (permission granted)

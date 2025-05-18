@@ -14,7 +14,7 @@ interface Applicants {
   BidAmount: number;
   EstimatedTimeline: number;
   Status: number;
-  username: Promise<string>;
+  username: string;
 }
 
 interface Props {

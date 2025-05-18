@@ -9,7 +9,7 @@ interface ApplicationData {
     EstimatedTimeline: number;
     JobID: string;
     Status: ApplicationStatus;
-    username: Promise<string>;
+    username: string;
 }
 
 export default ApplicationData;
