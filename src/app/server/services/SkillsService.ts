@@ -1,31 +1,62 @@
-'use server';
-
-import { arrayUnion, doc, updateDoc } from "firebase/firestore"; 
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from "../../firebase";
 import SkillData from "@/app/interfaces/SkillData.interface";
-
+import { getJob } from "./JobDatabaseService";
 
 async function AddSkill(SkillArea: string, skillName: string) {
-  try{
-    await updateDoc(doc(db, "skills", SkillArea), {
-      names: arrayUnion(skillName)
+  try {
+    const response = await fetch(`/api/skills/add`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ SkillArea, skillName })
     });
-  } catch (error){
-    console.error("Error adding skill;", error)
-  }   
-};
+
+    if (!response.ok) {
+      throw new Error('Failed to add skill');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error adding skill:", error);
+    throw error;
+  }
+}
 
 //This function will return an array of maps each containing the skill area id and an array of skills that fall into that category
 async function getSkillArray(): Promise<SkillData[]>{
-  const snapShot = await getDocs(collection(db,"skills"));
-  return snapShot.docs.map(doc => {
-    const data = doc.data();
-    return {
-      id: doc.id,
-      skills: data.names || []  // assuming 'skills' exists in document
-    };
+
+  try{
+  const response = await fetch(`/api/skills/all`, {
+    method: "GET",
+    headers: { 'Content-Type': 'application/json'},
   });
+
+  if(!response.ok) console.error("Failed to fetch all the jobs");
+    
+  return (await response.json()).results;
+  }
+  catch(error){
+    console.error("Error getting all the skills", error);
+    return [];
+  }
+
+}
+
+//This function will return the skills for the given JobID
+async function getSkillsForJob(jid: string): Promise<SkillData[] | null> { 
+    const jobData = await getJob(jid);
+    if (jobData) {
+        const skillDataArray: SkillData[] = [];
+        for (const skillArea in jobData.skills) {
+            if (jobData.skills.hasOwnProperty(skillArea)) { 
+                skillDataArray.push({
+                    id: skillArea,
+                    skills: jobData.skills[skillArea],
+                });
+            }
+        }
+        return skillDataArray;
+    } else {
+        return null; 
+    }
 }
 
 // Helper to get all skills 
@@ -39,14 +70,13 @@ async function getAllSkills(): Promise<string[]> {
 // Endpoint to get all Ids
 async function getAllSkillIDs(): Promise<string[]> {
   try {
-    const skillDoc = await getDocs(collection(db, "skills"));
-    const skillIDs: string[] = [];
-    
-    skillDoc.forEach((doc) => {
-      skillIDs.push(doc.id); // Only store the document ID
+    const response = await fetch(`/api/skills/ids`, {
+      method: "GET",
+      headers: { 'Content-Type': 'application/json'},
     });
-    
-    return skillIDs;
+
+    if(!response.ok) console.error("Failed to get skill ids");
+    return (await response.json()).results;
   } catch (error) {
     console.error("Error fetching job IDs:", error);
     return [];
@@ -55,21 +85,21 @@ async function getAllSkillIDs(): Promise<string[]> {
 
 // Endpoint to get skill area mapping from given skill names
 async function mapSkillsToAreas(skillNames: string[]): Promise<{ [skillArea: string]: string[] }> {
-  const snapshot = await getDocs(collection(db, "skills"));
-  const skillMap: { [skillArea: string]: string[] } = {};
+  try{
+    const response = await fetch(`/api/skills/map`, {
+      method: "POST",
+      headers:  { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ skillNames })
+    });
 
-  snapshot.forEach((docSnap) => {
-    const data = docSnap.data();
-    const area = data.SkillArea;
-    const names: string[] = data.names || [];
+    if(!response.ok) console.error("Failed to map skills to areas");
 
-    const matchedSkills = names.filter(skill => skillNames.includes(skill));
-    if (matchedSkills.length > 0) {
-      skillMap[area] = matchedSkills;
-    }
-  });
-
-  return skillMap;
+    return (await response.json()).results;
+  }
+  catch(error){
+    console.error("Error mapping skills to ares", error);
+    return {};
+  }
 }
 
-export {AddSkill, getSkillArray, getAllSkillIDs, getAllSkills, mapSkillsToAreas};
+export {AddSkill, getSkillArray, getAllSkillIDs, getAllSkills, mapSkillsToAreas, getSkillsForJob};

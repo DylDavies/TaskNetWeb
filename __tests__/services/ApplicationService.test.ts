@@ -58,9 +58,6 @@ describe('ApplicationService', () => {
       const EstimatedTimeline = 7;
       const JobID = 'job789';
       const ApplicantionID = 'job789user456'; // Expected Application ID
-      const mockSetDoc = jest.fn().mockResolvedValue(undefined);
-      (setDoc as jest.Mock).mockImplementation(mockSetDoc);
-      (doc as jest.Mock).mockReturnValue({}); // Mock doc return
 
       // Mock getCurrentDateAsNumber directly
       const mockApplicationDate = 1678886400; // Example timestamp (March 15, 2023)
@@ -68,18 +65,12 @@ describe('ApplicationService', () => {
 
       await AddApplication(ApplicantID, BidAmount, CVURL, EstimatedTimeline, JobID);
 
-      expect(setDoc).toHaveBeenCalledWith(
-        {}, // Mocked doc reference
-        {
-          ApplicantID: ApplicantID,
-          ApplicationDate: mockApplicationDate,
-          BidAmount: BidAmount,
-          CVURL: CVURL,
-          EstimatedTimeline: EstimatedTimeline,
-          JobID: JobID,
-          Status: ApplicationStatus.Pending,
-        }
-      );
+      expect(fetch).toHaveBeenCalledWith(`/api/application/add`, {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ApplicantID, BidAmount, CVURL, EstimatedTimeline, JobID, ApplicantionID, ApplicationDate: mockApplicationDate})
+      });
+
       expect(getCurrentDateAsNumber).toHaveBeenCalled();
     });
   });
@@ -88,24 +79,32 @@ describe('ApplicationService', () => {
     it('should return true if the application exists', async () => {
       const AID = 'user111';
       const JobID = 'job222';
-      (getDoc as jest.Mock).mockResolvedValue({ exists: () => true });
-      (doc as jest.Mock).mockReturnValue({});
 
-      const result = await hasApplied(AID, JobID);
+      (fetch as jest.Mock).mockResolvedValue({json: async () => ({result: true})});
 
-      expect(getDoc).toHaveBeenCalledWith({});
+      let result = await hasApplied(AID, JobID);
+
+      expect(fetch).toHaveBeenCalledWith(`/api/application/applied/${JobID}/${AID}`, {
+        method: "GET",
+        headers: { 'Content-Type': 'application/json' }
+      })
+
       expect(result).toBe(true);
     });
 
     it('should return false if the application does not exist', async () => {
       const AID = 'user111';
       const JobID = 'job222';
-      (getDoc as jest.Mock).mockResolvedValue({ exists: () => false });
-      (doc as jest.Mock).mockReturnValue({});
 
-      const result = await hasApplied(AID, JobID);
+      (fetch as jest.Mock).mockResolvedValue({json: async () => ({result: false})});
 
-      expect(getDoc).toHaveBeenCalledWith({});
+      let result = await hasApplied(AID, JobID);
+
+      expect(fetch).toHaveBeenCalledWith(`/api/application/applied/${JobID}/${AID}`, {
+        method: "GET",
+        headers: { 'Content-Type': 'application/json' }
+      });
+
       expect(result).toBe(false);
     });
   });

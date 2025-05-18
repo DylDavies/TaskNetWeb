@@ -66,43 +66,6 @@ async function getPaymentStatsPerJob(JobID: string){
   })
 
   return{
-
-   totalESCROW,
-   totalPaid,
-   totalUnpaid
-  }
-}
-
-async function getSkillStatsPerJob(JobID: string){
-  const milestones = await getMilestones(JobID);
-  let totalPaid = 0;
-  let totalUnpaid = 0;
-  let totalESCROW = 0;
-
-  //const jobData = await getJob(JobID);
-  //const skills = jobData?.skills;
-  
-
-  milestones.forEach((item)=> {
-    if(item.paymentStatus){
-      if (item.paymentStatus == PaymentStatus.Paid){
-        totalPaid += item.payment;
-      }
-      else if(item.paymentStatus === PaymentStatus.Escrow){
-        totalESCROW += item.payment;
-      }  
-      else {
-        totalESCROW += item.payment;;
-      }  
-    }
-    else{
-      totalUnpaid += item.payment;
-    }
-    
-  })
-
-  return{
-
    totalESCROW,
    totalPaid,
    totalUnpaid
@@ -110,4 +73,6 @@ async function getSkillStatsPerJob(JobID: string){
 }
 
 
-export {AddSkill, getSkillByID, getCompletionStatsPerJob,getSkillStatsPerJob, getPaymentStatsPerJob };
+
+
+export {AddSkill, getSkillByID, getCompletionStatsPerJob, getPaymentStatsPerJob };

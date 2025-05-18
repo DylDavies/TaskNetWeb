@@ -24,11 +24,11 @@ export default function StarRatingDisplay({
           const isPartial = i === filledStars && hasPartial;
 
           return (
-            <article key={i} className="relative w-6 h-6">
-              <Star className="w-6 h-6 text-gray-400" />
+            <article key={i} className="relative w-4 h-4">
+              <Star className="w-4 h-4 text-gray-400" />
               {(isFull || isPartial) && (
                 <Star
-                  className="w-6 h-6 text-yellow-400 absolute top-0 left-0"
+                  className="w-4 h-4 text-yellow-400 absolute top-0 left-0"
                   style={{
                     clipPath: isPartial
                       ? `inset(0 ${100 - (averageRating - filledStars) * 100}% 0 0)`
@@ -40,7 +40,7 @@ export default function StarRatingDisplay({
           );
         })}
       </section>
-      <p className="text-sm text-gray-300">{totalRatings} ratings</p>
+      <p className="text-sm text-gray-300">{totalRatings}</p>
     </section>
   );
 }

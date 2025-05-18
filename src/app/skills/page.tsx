@@ -8,8 +8,6 @@ import "../components/sidebar/sidebar.css";
 import Button from "../components/button/Button";
 import "../components/button/Button.css";
 import React, { useContext, useEffect, useState } from "react";
-import AuthService from "../services/AuthService";
-import { useRouter } from "next/navigation";
 import { AuthContext, AuthContextType } from "../AuthContext";
 import { AddSkill, getSkillArray } from "../server/services/SkillsService";
 import SkillData from "../interfaces/SkillData.interface";
@@ -20,22 +18,16 @@ import toast from "react-hot-toast";
 
 
 const links = [
-  { name: "Back", href: "/" , selected: false},
+  { name: "Admin", href: "/admin" , selected: false},
+  { name: "Skills Management", href: "/skills", selected: true }
   ];
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
 
-  const router = useRouter();
   const [skills, setSkills] = useState<SkillData[]>();
   const[inputValue, setInputValue] = useState("");
   const [selectedSkillArea, setSelectedSkillArea] = useState<string>();
-  
-  //signs the user out of google
-  function signoutClick() {
-      AuthService.googleSignout();
-     router.push("/");
-  }
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -63,7 +55,6 @@ export default function Page() {
     }
     else{
         AddSkill(selectedSkillArea, inputValue);
-        setSelectedSkillArea(undefined);
         setInputValue("");
         toast.success("Skill Successfully added")
     }
@@ -102,14 +93,10 @@ export default function Page() {
           </section>
         </main>
 
-        <footer className="bg-gray-900 box-footer px-6 py-4">
-
-            <section className="flex justify-end">
-              <Button caption={"Log out"} 
-              onClick={() => signoutClick() } />
-            </section>
-          
-        </footer>
+      {/* Footer */}
+      <footer className="bg-[#f75509] py-4 flex justify-center bg-gray-900 box-footer">
+        <p>© {new Date().getFullYear()} tasknet.tech</p>
+      </footer>
       </section>
     </>
   );

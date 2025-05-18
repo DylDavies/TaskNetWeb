@@ -1,271 +1,131 @@
-'use server'
 import JobStatus from "@/app/enums/JobStatus.enum";
 import UserType from "@/app/enums/UserType.enum";
-import { db } from "@/app/firebase";
 import ActiveJob from "@/app/interfaces/ActiveJob.interface";
 import JobData from "@/app/interfaces/JobData.interface";
-import { addDoc, and, collection, doc, getDoc, getDocs, or, query, updateDoc, where } from "firebase/firestore";
 
 // Endpoint to get the Job by its JobID
-async function getJob(uid: string): Promise<JobData | null> {
-  const jobDoc = await getDoc(doc(db, "Jobs", uid));
-
-  if (!jobDoc.exists()) return null; 
-
-  return jobDoc.data() as JobData;
+async function getJob(jid: string): Promise<JobData | null> {
+  const response = await fetch(`/api/jobs/${jid}`, {
+    method: "GET",
+    headers: { 'Content-Type': 'application/json' }
+  });
+  
+  if (!response.ok) console.error("Failed to get job");
+  return (await response.json()).result;
 }
 
 // Endpoint to create a new Job:
 async function createJob(jobData: JobData): Promise<string> {
-  try {
-    const docRef = await addDoc(collection(db, "Jobs"), jobData);
-    console.log("Job successfully created with ID:", docRef.id); // find out why this doesn't get displayed
-    return docRef.id;
-  } catch (error) {
-    console.error("Error adding job:", error);
-    throw new Error("Failed to create job");
-  }
+  const response = await fetch(`/api/jobs/create`, {
+    method: "POST",
+    headers: { 'Content-Type': 'application/json'},
+    body: JSON.stringify(jobData)
+  });
+
+  if (response.status == 500) console.error(await response.json());
+  return (await response.json()).id;
 }
 
 // Endpoint to get all jobs
 async function getAllJobs(): Promise<ActiveJob[]>{
-  try {
-    const jobDocs = await getDocs(collection(db, "Jobs"));
-    const activeJobs: ActiveJob[] = [];
-    
-    jobDocs.forEach((doc) => {
-      const data = doc.data() as JobData;
-      activeJobs.push({
-        jobId: doc.id,
-        jobData:data
-      })
-    });
-    return activeJobs;
-      
-  } catch (error) {
-    console.error("Error getting jobs:", error);
-    throw new Error("Failed to get jobs");
-  }
+  const response = await fetch(`/api/jobs/all`, {
+    method: "GET",
+    headers: { 'Content-Type': 'application/json'},
+  });
+
+  if (!response.ok) console.error("Failed to get all jobs");
+  return (await response.json()).results;
 }
 
 
 // Endpoint to Update job status
 async function updateJobStatus(jobID: string,  status : JobStatus) {
-  try{
-    await updateDoc(doc(collection(db,"Jobs"),jobID),{
-      status: status
-    });
-  } 
-  catch(error){
-    console.error("Error occurred when trying to update status: ", error);
-  } 
+  const response = await fetch("/api/jobs/status", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ jobID, status })
+  });
+
+  if (!response.ok) console.error("Failed to update the job status");
 }
 
 
 // Endpoint to Update hiredUId
-async function updateHiredUId(jobID: string, hiredUId:string){
-  try{
-    await updateDoc(doc(collection(db,"Jobs"),jobID),{
-      hiredUId: hiredUId
-    });
-  } catch(error){
-    console.error("Error occurred when trying to update hiredUId: ", error)
-  }
+async function updateHiredUId(jobID: string, hiredUId: string) {
+  const response = await fetch('/api/jobs/hired', {
+    method: "PATCH",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ jobID, hiredUId })
+  });
+
+  if (!response.ok) console.error("Failed to update hiredUId");
 }
 
 //Endpoint to Search Jobs by title:
 async function searchByTitle(title: string): Promise<JobData[]> {
-  try {
+  const response = await fetch(`/api/jobs/search/title?title=${encodeURIComponent(title)}`, {
+    method: "GET",
+    headers: { 'Content-Type': 'application/json' }
+  });
 
-    const Query = query(collection(db,"Jobs"), where("title","==",title));
-    const jobDocs = await getDocs(Query);
-
-    const jobs: JobData[] = [];
-
-    jobDocs.forEach((doc) => {
-      jobs.push(doc.data() as JobData);
-    });
-
-    return jobs;
-    
-    }  catch (error) {
-    console.error("Error searching jobs by title:", error);
-    throw error;
-  }
+  if (!response.ok) throw new Error("Failed to search jobs by title");
+  return (await response.json()).results;
 }
 
-// There must be another way to do this (for now leave it as it works): (This may not be needed but keep it here for now)
-  // Endpoint to get jobs that have those skills (needs skillID or skillArea to be passed in to work)
-  async function searchJobsBySkills(skills: string[], skillIds: string[]): Promise<JobData[]> {
-    try {
-      if (!skills || skills.length === 0 || !skillIds || skillIds.length === 0) {
-        throw new Error("Skills and skillIds must be provided");
-      }
 
-      const jobDocs = await getDocs(collection(db, "Jobs"));
-      const matchingJobs: JobData[] = [];
+// Endpoint to get jobs that have those skills (needs skillID or skillArea to be passed in to work)
+async function searchJobsBySkills(skills: string[], skillIds: string[]): Promise<JobData[]> {
+  const response = await fetch('/api/jobs/search/skills', {
+    method: "POST",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ skills, skillIds })
+  });
 
-      jobDocs.forEach((doc) => {
-        const job = doc.data() as JobData;
-
-        const jobSkillsMap = job.skills || {};
-
-        const relevantSkillArrays = skillIds
-          .filter((id) => jobSkillsMap[id]) 
-          .map((id) => jobSkillsMap[id]);
-
-        const relevantSkills = relevantSkillArrays.flat();
-
-        const hasMatch = skills.some(skill => relevantSkills.includes(skill));
-        if (hasMatch) {
-          matchingJobs.push(job);
-        }
-      });
-
-      return matchingJobs;
-    } catch (error) {
-      console.error("Error searching jobs by skills:", error);
-      throw error;
-    }
-  }
+  if (!response.ok) throw new Error("Failed to search jobs by skills");
+  return (await response.json()).results;
+}
 
 // Endpoint to get jobs for a given clientID
 async function getJobsByClientID(clientID: string): Promise<ActiveJob[]> {
-  try {
-    const Query = query(
-      collection(db, "Jobs"),
-      where("clientUId", "==", clientID)  
-    );
-    const jobDocs = await getDocs(Query);
+  const response = await fetch(`/api/jobs/client/${clientID}`, {
+    method: "GET",
+    headers: { 'Content-Type': 'application/json' }
+  });
 
-    const jobs: ActiveJob[] = [];
-
-    jobDocs.forEach((doc) => {
-      const jobData = doc.data() as JobData;
-      const activeJob: ActiveJob = {
-        jobId: doc.id,
-        jobData,
-      };
-      jobs.push(activeJob);
-    });
-
-    return jobs;
-    
-  } catch (error) {
-    console.error("Error getting jobs by client ID:", error);
-    throw error;
-  }
+  if (!response.ok) throw new Error("Failed to get jobs by client ID");
+  return (await response.json()).results;
 }
 
 // Endpoint to get clients and freelancers who matched on the same job/s
 async function getJobByClientIdAndHiredId(clientID: string, hiredID: string): Promise<JobData[]> {
-  try {
-    if (!clientID || !hiredID) {
-      throw new Error("Both clientID and hiredID must be provided");
-    }
+  const response = await fetch(`/api/jobs/client/${clientID}?hiredId=${hiredID}`, {
+    method: "GET",
+    headers: { 'Content-Type': 'application/json' }
+  });
 
-    const Query = query(
-      collection(db, "Jobs"),
-      and(
-        where("clientUId", "==", clientID),
-        where("hiredUId", "==", hiredID)
-      )
-    );
-
-    const jobDocs = await getDocs(Query);
-    const jobs: JobData[] = [];
-
-    jobDocs.forEach((doc) => {
-      jobs.push(doc.data() as JobData);
-    });
-
-    return jobs;
-  } catch (error) {
-    console.error("Error fetching jobs by client and hired ID:", error);
-    throw error;
-  }
+  if (!response.ok) throw new Error("Failed to get jobs by client and hired ID");
+  return (await response.json()).results;
 }
 
 // Endpoint to get ActiveJobData for clients and freelancers who are working together on the same job
-async function getContracted(userID: string, userType:UserType): Promise<ActiveJob[]> {
-  try {
-    if (!userID) {
-      throw new Error("Valid userID has not been given");
-    }
+async function getContracted(userID: string, userType: UserType): Promise<ActiveJob[]> {
+  const response = await fetch(`/api/jobs/contracted?userId=${userID}&userType=${userType}`, {
+    method: "GET",
+    headers: { 'Content-Type': 'application/json' }
+  });
 
-    let Query;
-    if(userType == UserType.Client || userType == UserType.Admin){
-      Query = query(
-        collection(db, "Jobs"),
-        and(
-          where("clientUId", "==", userID),   
-          or(                                 
-            where("status", "==", JobStatus.Employed),
-            where("status", "==", JobStatus.Completed)
-          )
-        )
-      );
-    }
-    
-    if(userType == UserType.Freelancer || userType == UserType.Admin){
-      Query = query(
-        collection(db, "Jobs"),
-        and(
-          where("hiredUId", "==", userID),   
-          or(                                 
-            where("status", "==", JobStatus.Employed),
-            where("status", "==", JobStatus.Completed)
-          )
-        )
-      );
-    }
-
-    const jobs: ActiveJob[] = [];
-    if(Query){
-      const jobDocs = await getDocs(Query);
-
-      jobDocs.forEach((doc) => {
-        const jobData = doc.data() as JobData;
-        const activeJob: ActiveJob = {
-          jobId: doc.id,
-          jobData,
-        };
-        jobs.push(activeJob);
-      });
-    }
-
-    return jobs;
-  } catch (error) {
-    console.error("Error fetching jobs by client and hired ID:", error);
-    throw error;
-  }
+  if (!response.ok) throw new Error("Failed to get contracted jobs");
+  return (await response.json()).results;
 }
 
 async function getJobsByFreelancerID(FreelancerID: string): Promise<ActiveJob[]> {
-  try {
-    const Query = query(
-      collection(db, "Jobs"),
-      where("hiredUId", "==", FreelancerID)
-    );
-    const jobDocs = await getDocs(Query);
+  const response = await fetch(`/api/jobs/freelancer/${FreelancerID}`, {
+    method: "GET",
+    headers: { 'Content-Type': 'application/json' }
+  });
 
-    const jobs: ActiveJob[] = [];
-
-    jobDocs.forEach((doc) => {
-      const jobData = doc.data() as JobData;
-      const activeJob: ActiveJob = {
-        jobId: doc.id,
-        jobData,
-      };
-      jobs.push(activeJob);
-    });
-
-    return jobs;
-    
-  } catch (error) {
-    console.error("Error getting jobs by freelancer ID:", error);
-    throw error;
-  }
+  if (!response.ok) throw new Error("Failed to get jobs by freelancer ID");
+  return (await response.json()).results;
 }
 
 export { getJob, createJob, getAllJobs, searchByTitle, updateHiredUId, updateJobStatus, searchJobsBySkills, getJobsByClientID, getJobByClientIdAndHiredId, getContracted, getJobsByFreelancerID };
