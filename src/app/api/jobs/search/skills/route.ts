@@ -3,6 +3,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 import JobData from "@/app/interfaces/JobData.interface";
 
+// get jobs based on if they have these skills and skill areas
 export async function POST(req: NextRequest) {
   try {
     const { skills, skillIds }: { skills: string[]; skillIds: string[] } = await req.json();

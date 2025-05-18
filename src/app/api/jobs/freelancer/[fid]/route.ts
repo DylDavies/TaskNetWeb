@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import ActiveJob from "@/app/interfaces/ActiveJob.interface";
 import JobData from "@/app/interfaces/JobData.interface";
 
+// Get array of active jobs by freelancer id
 export async function GET(req: NextRequest, { params }: { params: Promise<{ fid: string }> }) {
   try {
     const Query = query(collection(db, "Jobs"), where("hiredUId", "==", (await params).fid));

@@ -29,7 +29,7 @@ const Chat = () => {
     setActiveConversation,
   } = useChatStore();
 
-  // Auto scroll to latest message
+  // Auto scroll effect to latest message in the chat
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -39,6 +39,7 @@ const Chat = () => {
     const fetchActiveConversation = async () => {
       const chatState = useChatStore.getState();
 
+      // check for active user info and if active conversation has already been set
       if (
         !user?.authUser?.uid ||
         chatState.activeConversation ||
@@ -62,6 +63,7 @@ const Chat = () => {
 
       try {
         const jobs = await getContracted(user.authUser.uid, user.userData.type);
+        // default to set the active conversation you see to the first conversation
         if (jobs?.[0]) {
           const userData = await getUser(jobs[0].jobData.hiredUId);
           setActiveConversation({ job: jobs[0], userData }, user.authUser.uid);
@@ -87,21 +89,21 @@ const Chat = () => {
     };
   }, [pathname, user, setActiveConversation]);
 
-  // ----------------------
-
   interface EmojiData {
     emoji: string;
   }
 
+  // select an emoji and place it in input bar and then close emoji selector
   const handleEmoji = (e: EmojiData) => {
     setText((prev) => prev + e.emoji);
     setOpen(false);
   };
 
+  // sent non empty messages
   async function handleSendMessage() {
     if (!text.trim() || !activeConversation || !user?.authUser?.uid) return;
 
-    setSelectedType(MessageType.Standard); // Reset pill to Standard
+    setSelectedType(MessageType.Standard); // Reset pill to Standard message type
 
     try {
       await sendMessage(activeConversation.job.jobId, {
@@ -185,6 +187,7 @@ const Chat = () => {
           <section className="message-type-pills">
             <h4>Message Type</h4>
             <section className="pills">
+              {/* pills for message type selection */}
               <button
                 className={`pill feedback ${
                   selectedType === MessageType.Feedback ? "active" : ""

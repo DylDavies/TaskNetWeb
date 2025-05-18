@@ -2,6 +2,7 @@ import { db } from "@/app/firebase";
 import { getDoc, doc } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 
+// Get all jobs from db by given uid
 export async function GET(req: NextRequest, { params }: { params: Promise<{jid: string}> }) {
     const jobDoc = await getDoc(doc(db, "Jobs", (await params).jid));
 

@@ -7,6 +7,7 @@ import JobStatus from "@/app/enums/JobStatus.enum";
 import JobData from "@/app/interfaces/JobData.interface";
 import UserType from "@/app/enums/UserType.enum";
 
+// Gets jobs that curretn user is contracted to and returns Active Jobs array
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);

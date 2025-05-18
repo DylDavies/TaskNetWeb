@@ -5,6 +5,7 @@ import MessageType from "@/app/enums/MessageType.enum";
 import MessageStatus from "@/app/enums/MessageStatus.enum";
 import MessageData from "@/app/interfaces/MessageData.interface";
 
+// Create a chat as  a subcollection for jobs (creates a chat between 2 users for that job)
 export async function POST(req: NextRequest) {
     try{
         const { jobID, jobName }: { jobID: string; jobName: string } = await req.json();

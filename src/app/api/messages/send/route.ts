@@ -3,6 +3,7 @@ import MessageData from "@/app/interfaces/MessageData.interface";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 
+// send message tot that chat
 export async function POST(req: NextRequest){
     try{
         const { jobID, message }: { jobID: string; message: Omit<MessageData, 'DateTimeSent'> } = await req.json();

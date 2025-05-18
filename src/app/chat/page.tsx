@@ -10,6 +10,7 @@ export default function Page() {
   const { isLoadingJobs, isLoadingMessages } = useChatStore();
   const loading = isLoadingJobs || isLoadingMessages;
 
+  // Set up chat page  as 3 differnt vertical sections
   return (
     <>
       <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans body outer-background">

@@ -8,6 +8,7 @@ interface Params {
   cid: string;
 }
 
+// get al jobs for clietn by client UID
 export async function GET(req: NextRequest, { params }: { params: Promise<Params> }) {
   try {
     const clientId = (await params).cid;
@@ -16,7 +17,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<Params
       return NextResponse.json({ error: "Missing client ID" }, { status: 400 });
     }
 
-    const Query = query(collection(db, "Jobs"), where("clientUId", "==", clientId)); // Use clientId here
+    const Query = query(collection(db, "Jobs"), where("clientUId", "==", clientId)); 
     const jobDocs = await getDocs(Query);
 
     const jobs: ActiveJob[] = [];

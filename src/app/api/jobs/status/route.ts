@@ -3,6 +3,7 @@ import { db } from "@/app/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 
+// Update job status of job to hired
 export async function PATCH(req: NextRequest){
     try{
         const { jobID, status }: { jobID: string; status: JobStatus} = await req.json();

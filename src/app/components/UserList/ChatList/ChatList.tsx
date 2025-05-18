@@ -1,7 +1,6 @@
 import { useContext, useMemo, useState } from "react";
 import InputBar from "../../inputbar/InputBar";
 import "./ChatList.css";
-
 import { AuthContext, AuthContextType } from "@/app/AuthContext";
 import { useChatStore } from "@/app/stores/chatStore";
 import { truncateText } from "@/app/server/formatters/MessagePreview";
@@ -13,17 +12,7 @@ const ChatList = () => {
   const { jobsWithUsers, isLoadingJobs, setActiveConversation, chatPreviews } =
     useChatStore();
 
-  // useEffect(() => {
-  //   if (!user) return;
-
-  //   const setup = async () => {
-  //     await fetchJobsWithUsers(user.authUser.uid, user.userData.type);
-  //   };
-
-  //   setup();
-  // }, [user, fetchJobsWithUsers]);
-
-  // Search Chats
+  // Search Chats to filter by user input
   const filteredJobs = useMemo(() => {
     if (!text.trim()) return jobsWithUsers;
     return jobsWithUsers.filter((item) =>
@@ -31,7 +20,7 @@ const ChatList = () => {
     );
   }, [text, jobsWithUsers]);
 
-  // Change this
+  // display loader to let information load from backend
   if (isLoadingJobs) {
     return <section>Loading Chats...</section>;
   }

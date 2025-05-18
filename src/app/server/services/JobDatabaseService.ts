@@ -118,6 +118,7 @@ async function getContracted(userID: string, userType: UserType): Promise<Active
   return (await response.json()).results;
 }
 
+// Get all jobs for this freelancers ID
 async function getJobsByFreelancerID(FreelancerID: string): Promise<ActiveJob[]> {
   const response = await fetch(`/api/jobs/freelancer/${FreelancerID}`, {
     method: "GET",

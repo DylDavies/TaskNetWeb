@@ -3,6 +3,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 import JobData from "@/app/interfaces/JobData.interface";
 
+// Get jobs that have this title
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);

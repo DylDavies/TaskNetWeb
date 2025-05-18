@@ -2,6 +2,7 @@ import { db } from "@/app/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 
+//  Update the status of a job when a freelancer is hired, to have id of freelancer
 export async function PATCH(req: NextRequest) {
   try {
     const { jobID, hiredUId }: { jobID: string; hiredUId: string } = await req.json();

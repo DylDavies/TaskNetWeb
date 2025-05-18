@@ -4,6 +4,7 @@ import JobData from "@/app/interfaces/JobData.interface";
 import { collection, getDocs } from "firebase/firestore";
 import { NextResponse } from "next/server";
 
+// Get all jobs as an array of active job objecst
 export async function GET() {
     try{
         const jobDocs = await getDocs(collection(db, "Jobs"));
