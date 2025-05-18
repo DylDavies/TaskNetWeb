@@ -3,17 +3,18 @@
 import { Star } from "lucide-react";
 import React from "react";
 
+
 interface StarRatingDisplayProps {
-  averageRating: number;  
-  totalRatings: number;  
+  averageRating: number;  //fetch ave
+  totalRatings: number;  //fetch total 
 }
 
 export default function StarRatingDisplay({
   averageRating,
   totalRatings,
 }: StarRatingDisplayProps) {
-  const filledStars = Math.floor(averageRating); 
-  const hasPartial = averageRating - filledStars > 0; 
+  const filledStars = Math.floor(averageRating); // Number of completely filled stars
+  const hasPartial = averageRating - filledStars > 0; // True if there’s a partially filled star
   const MAX_STARS = 5;
 
   return (

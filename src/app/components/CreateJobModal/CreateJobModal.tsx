@@ -35,6 +35,7 @@ const CreateJobModal = ({refetch}: Props) => {
 
   const [modalIsOpen, setIsOpen] = useState(false);
 
+  //get current user
   const { user } = useContext(AuthContext) as AuthContextType;
 
   useEffect(() => {
