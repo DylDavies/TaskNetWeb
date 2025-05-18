@@ -33,7 +33,7 @@ const TooltipWrapper: React.FC<TooltipWrapperProps> = ({ tooltipText, children, 
   const tooltipPositionClasses = "bottom-full left-0 mb-2";
 
   return (
-    <div
+    <section
       ref={wrapperRef}
       onMouseEnter={showTooltip}
       onMouseLeave={hideTooltip}
@@ -41,16 +41,16 @@ const TooltipWrapper: React.FC<TooltipWrapperProps> = ({ tooltipText, children, 
     >
       {children}
       {isVisible && tooltipText && (
-        <div
+        <section
           ref={tooltipRef}
           role="tooltip"
           className={`absolute ${tooltipPositionClasses} z-20 w-max max-w-xs p-2 text-xs font-normal text-white bg-gray-900 rounded-md shadow-lg transition-opacity duration-300 dark:bg-gray-700`}
         >
           {tooltipText}
-          <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-gray-900 dark:border-t-gray-700"></div>
-        </div>
+          <section className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-gray-900 dark:border-t-gray-700"></section>
+        </section>
       )}
-    </div>
+    </section>
   );
 };
 
@@ -168,23 +168,23 @@ const JobCard: React.FC<JobCardProps> = ({
 
         <footer className="flex justify-between items-center text-sm text-gray-400 pt-2 border-t border-gray-700 mt-3">
 
-          <div className="flex items-center space-x-3">
+          <section className="flex items-center space-x-3">
             {isAIRcommended && aiRecommendationReason && ( 
               <TooltipWrapper tooltipText={aiRecommendationReason} className="cursor-help">
-                <div className="flex items-center text-xs text-yellow-400 font-semibold">
+                <section className="flex items-center text-xs text-yellow-400 font-semibold">
                   <StarIcon />
                   AI Pick
-                </div>
+                </section>
               </TooltipWrapper>
             )}
             {isAIRcommended && !aiRecommendationReason && (
-                 <div className="flex items-center text-xs text-yellow-400 font-semibold">
+                 <section className="flex items-center text-xs text-yellow-400 font-semibold">
                     <StarIcon />
                     AI Pick
-                 </div>
+                 </section>
             )}
             <address className="not-italic font-medium text-gray-300">{name}</address>
-          </div>
+          </section>
 
           {hired === JobStatus.Posted && (
             <output className="font-medium text-orange-400">Open to applicants</output>
