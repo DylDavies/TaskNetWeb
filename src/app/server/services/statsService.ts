@@ -7,6 +7,7 @@ import JobStatus from "@/app/enums/JobStatus.enum";
 import { getJob } from "./JobDatabaseService";
 import { getUsername } from "./DatabaseService";
 import { getCompletionStatsPerJob, getPaymentStatsPerJob } from "./adminService";
+import SkillAreaAnalysis from "@/app/interfaces/SkillAreaAnalysis.interface";
 
 async function getCompletionStats(StartDate: Date, EndDate: Date) {
   // Calculate date range
@@ -99,4 +100,65 @@ async function getPaymentStats(StartDate: Date, EndDate: Date) {
   };
 }
 
-export {getPaymentStats, getCompletionStats}
+async function getSkillStats(StartDate: Date, EndDate: Date) {
+  // Calculate date range
+  const startDateNum = formatDateAsNumber(StartDate);
+  const endDateNum = formatDateAsNumber(EndDate);
+
+  // Query projects
+  const dbRef = collection(db,'Jobs');
+  const InTimeFrame = query(dbRef,where('createdAt', '>=',startDateNum), where('createdAt', '<=',endDateNum));
+  const snapshot = await getDocs(InTimeFrame);
+
+  const skillAreaMap: { [skillArea: string]: SkillAreaAnalysis } = {};
+  
+  for(const doc of snapshot.docs){
+    const job = doc.data();
+    for (const skillArea in job.skills) {
+            if (job.skills.hasOwnProperty(skillArea)) {
+                // Initialize skill area data if it doesn't exist
+                if (!skillAreaMap[skillArea]) {
+                    skillAreaMap[skillArea] = {
+                        skillArea: skillArea,
+                        totalProjects: 0,
+                        hiredProjects: 0,
+                        completedProjects: 0,
+                        mostInDemandSkills: [],
+                    };
+                }
+
+                // Increment total projects for the skill area
+                skillAreaMap[skillArea].totalProjects++;
+
+                // Increment hired projects if the job is hired
+                if (job.status === JobStatus.Employed ) {
+                    skillAreaMap[skillArea].hiredProjects++;
+                }
+
+                if (job.status === JobStatus.Completed ) {
+                    skillAreaMap[skillArea].completedProjects++;
+                }
+
+
+
+                // Count skill occurrences for "most in demand"
+                const skills = job.skills[skillArea];
+                const skillCounts: { [skill: string]: number } = {};
+                for (const skill of skills) {
+                    skillCounts[skill] = (skillCounts[skill] || 0) + 1;
+                }
+
+                // Convert skill counts to sorted array for "most in demand"
+                const sortedSkills = Object.entries(skillCounts)
+                    .map(([skill, count]) => ({ skill, count }))
+                    .sort((a, b) => b.count - a.count);  // Sort descending by count
+
+                skillAreaMap[skillArea].mostInDemandSkills = sortedSkills;
+            }
+        }
+}
+  
+  return Object.values(skillAreaMap);
+}
+
+export {getPaymentStats, getCompletionStats, getSkillStats}

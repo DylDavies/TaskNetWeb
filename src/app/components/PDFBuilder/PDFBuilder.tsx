@@ -7,6 +7,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import PaymentStats from '../../interfaces/PaymentStats.interface';
 import { PDFUnifiedChart } from '../PdfComponents/PDFUnifiedChart';
+import SkillAreaAnalysis from '@/app/interfaces/SkillAreaAnalysis.interface';
   
 type ChartType = 'pie' | 'bar';
 
@@ -334,7 +335,7 @@ type ChartType = 'pie' | 'bar';
     
       //metadata 
       doc.setProperties({
-        title: 'Project Completion Report',
+        title: 'Project Payment Report',
         subject: 'Generated project metrics and charts',
         author: 'ProjectTracker',
         keywords: 'project, report, stats, pdf',
@@ -378,6 +379,225 @@ type ChartType = 'pie' | 'bar';
             reject(err);
           }
         });
+  }
+
+  export async function exportSkillStatsToPDF(
+      //initialization
+      stats: SkillAreaAnalysis[],
+      startDate: Date,
+      endDate: Date,
+      filename = 'Skill-stats.pdf'
+    ) {
+      const doc = new jsPDF();
+      const margin = 15;
+      let y = margin;
+    
+      try {
+
+        //header of the file: containing the task net logo
+        const logoResponse = await fetch('/images/Logo.png');
+        const logoBlob = await logoResponse.blob();
+        const logoUrl = URL.createObjectURL(logoBlob);
+    
+        const img = new Image();
+        img.src = logoUrl;
+        await new Promise(resolve => (img.onload = resolve));
+    
+        doc.addImage(img, 'PNG', 70, y, 70, 40);
+        y += 50;
+      } catch (error) {
+        console.warn('Logo not found or failed to load:', error);
+        y += 20;
+      }
+    
+      //Title
+      doc.setFontSize(18);
+      doc.setTextColor(40, 40, 40);
+      doc.text('Payment Report', 105, y, { align: 'center' });
+      y += 10;
+    
+      //Date
+      doc.setFontSize(11);
+      doc.text(`Date Range: ${startDate.toDateString()} - ${endDate.toDateString()}`, 105, y, { align: 'center' });
+      y += 20;
+    
+      //Table
+      interface AutoTableFinalYDoc extends jsPDF {
+        lastAutoTable?: {
+          finalY?: number;
+        };
+      }
+      // Summary Table (Total, Hired, Completed Projects per Skill Area)
+      autoTable(doc, {
+        startY: y,
+        head: [['Skill Area', 'Total Projects', 'Hired Projects', 'Completed Projects']],
+        body: stats.map(area => [
+          area.skillArea,
+          area.totalProjects.toString(),
+          area.hiredProjects.toString(),
+          area.completedProjects.toString(),
+        ]),
+        styles: {
+          fontSize: 10,
+          halign: 'center',
+        },
+        headStyles: {
+          fillColor: [99, 102, 241],
+          textColor: [255, 255, 255],
+        },
+        alternateRowStyles: {
+          fillColor: [245, 245, 245],
+        },
+      });
+      
+      // Fixes for the lint so we dont use any
+      const safeDoc = doc as AutoTableFinalYDoc;
+      y = (safeDoc.lastAutoTable?.finalY ?? y) + 15;
+
+       // Section title
+      doc.setFontSize(14);
+      doc.setTextColor(33, 33, 33);
+      doc.text('Most In-Demand Skills', 105, y, { align: 'center' });
+      y += 6;
+
+      // Horizontal divider
+      doc.setDrawColor(180);
+      doc.line(margin, y, doc.internal.pageSize.getWidth() - margin, y);
+      y += 6;
+
+      // Table per skill area for most in-demand skills
+      for (const area of stats) {
+      if (y + 40 > 280) {
+        doc.addPage();
+        y = margin;
+      }
+
+      // Table of skills
+      autoTable(doc, {
+        startY: y,
+       head: [
+      // First row: custom section heading
+      [{ content: `${area.skillArea}`, colSpan: 2, styles: { halign: 'center', fontSize: 12, textColor: [33, 33, 33], fillColor: [230, 230, 250] } }],
+      // Second row: column headers
+      ['Skill', 'Count'],
+    ],
+        body: area.mostInDemandSkills.map(skill => [skill.skill, skill.count.toString()]),
+        styles: {
+          fontSize: 10,
+          halign: 'center',
+        },
+        headStyles: {
+          fillColor: [59, 130, 246],
+          textColor: [255, 255, 255],
+        },
+        alternateRowStyles: {
+          fillColor: [245, 245, 245],
+        },
+        margin: { left: margin, right: margin },
+      });
+
+      y = (safeDoc.lastAutoTable?.finalY ?? y) + 20;
+    }
+    
+      // Piechart - Projects per Skill Area
+      const PiedataValues: number[][] = [stats.map(area => area.totalProjects)];
+      const PiedataLabels: string[] = stats.map(area => area.skillArea);
+      const PieaxisLabels: string[] = stats.map(area => area.skillArea);
+      const PiechartTitle: string = "Projects per Skill Area";
+
+      try {
+        const pieCanvas = await renderChartToImage(PDFUnifiedChart, {
+          chartType: 'pie',
+          dataValues: PiedataValues,
+          dataLabels: PiedataLabels,
+          axisLabels: PieaxisLabels,
+          chartTitle: PiechartTitle,
+          width: 600,
+          height: 300,
+        });
+
+        const imgWidth = 180;
+        const imgHeight = (pieCanvas.height * imgWidth) / pieCanvas.width;
+
+        if (y + imgHeight > 280) {
+          doc.addPage();
+          y = 20;
+        }
+
+        const pieImg = pieCanvas.toDataURL('image/png');
+        doc.addImage(pieImg, 'PNG', 15, y, imgWidth, imgHeight);
+        y += imgHeight + 40;
+      } catch {
+        doc.setFontSize(10);
+        doc.text('Error rendering Skill Area Pie Chart.', 15, y);
+        y += 10;
+      }
+
+    
+      // Barchart - Projects per Skill Area
+      const BardataValues: number[][] = stats.map(area => [area.totalProjects]);
+      const BardataLabels: string[] = stats.map(area => area.skillArea);
+      const BaraxisLabels: string[] = ['Skill Areas'];
+      const BarchartTitle: string = 'Projects per Skill Area';
+
+      try {
+        const barCanvas = await renderChartToImage(PDFUnifiedChart, {
+          chartType: 'bar',
+          dataValues: BardataValues,
+          dataLabels: BardataLabels,
+          axisLabels: BaraxisLabels,
+          chartTitle: BarchartTitle,
+          width: 600,
+          height: 300,
+        });
+
+        const imgWidth = 180;
+        const imgHeight = (barCanvas.height * imgWidth) / barCanvas.width;
+
+        if (y + imgHeight > 280) {
+          doc.addPage();
+          y = 20;
+        }
+
+        const barImg = barCanvas.toDataURL('image/png');
+        doc.addImage(barImg, 'PNG', 15, y, imgWidth, imgHeight);
+        y += imgHeight + 40;
+      } catch {
+        doc.setFontSize(10);
+        doc.text('Error rendering Skill Area Bar Chart.', 15, y);
+        y += 10;
+      }
+
+
+
+      //Footers for each page
+      const pageCount = doc.getNumberOfPages();
+      const generatedDate = new Date().toLocaleDateString();
+
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(9);
+        doc.setTextColor(150);
+
+        const footerText = `Page ${i} of ${pageCount}`;
+        const dateText = `Generated on: ${generatedDate}`;
+
+        doc.text(dateText, margin, 290);
+
+        doc.text(footerText, doc.internal.pageSize.getWidth() - margin, 290, {
+          align: 'right',
+        });
+      }
+    
+      //metadata 
+      doc.setProperties({
+        title: 'Project Skills Report',
+        subject: 'Generated project metrics and charts',
+        author: 'ProjectTracker',
+        keywords: 'project, report, stats, pdf',
+      });
+      
+      doc.save(filename);
   }
     
  

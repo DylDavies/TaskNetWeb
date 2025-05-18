@@ -12,11 +12,12 @@ import { AuthContext, AuthContextType } from "../AuthContext";
 import AnalyticsPage from "../components/AdminStatsDashboard/StatsDashboard";
 import DashboardContent from "../components/AdminDashboard/AdminDashboard";
 import PaymentAnalyticsPage from "../components/AdminPaymentStatsDashboard/PaymentDashboard";
+import SkillsAnalyticsPage from "../components/AdminSkillsDashboard.tsx/AdminSkillsDashboard";
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
 
-
+  //functions to change between views
   function handleViewPendingUsers(){
     setCurrentView('Pending')
   }
@@ -27,7 +28,11 @@ export default function Page() {
   function handleViewPaymentStats(){
     setCurrentView('Payment')
   }
+  function handleViewSkillStats(){
+    setCurrentView('Skills')
+  }
 
+  //heighlights active page button
   const buttonClasses = (isActive: boolean) => 
   `w-full text-left px-4 py-2 rounded-md transition-colors ${
     isActive
@@ -35,8 +40,8 @@ export default function Page() {
       : 'text-gray-300 hover:text-white hover:bg-gray-700'
   }`;
 
-   
-  const [currentView, setCurrentView] = useState<'Pending' | 'Completion' | 'Payment'>('Pending');
+  //current view of user  
+  const [currentView, setCurrentView] = useState<'Pending' | 'Completion' | 'Payment' | 'Skills'>('Pending');
 
   return (
     <>
@@ -52,13 +57,15 @@ export default function Page() {
               buttons={[
                 <button key="1" onClick={() => handleViewPendingUsers()} disabled={currentView === 'Pending'}  className={buttonClasses(currentView === 'Pending')}> Pending Users</button>,
                 <button key="2" onClick={() => handleViewCompletionStats()} disabled={currentView === 'Completion'}  className={buttonClasses(currentView === 'Completion')}> Completion Stats</button>,
-                <button key="3" onClick={() => handleViewPaymentStats()} disabled={currentView === 'Payment'}  className={buttonClasses(currentView === 'Payment')}> Payment Stats</button>
+                <button key="3" onClick={() => handleViewPaymentStats()} disabled={currentView === 'Payment'}  className={buttonClasses(currentView === 'Payment')}> Payment Stats</button>,
+                <button key="4" onClick={() => handleViewSkillStats()} disabled={currentView === 'Skills'}  className={buttonClasses(currentView === 'Skills')}> Skill Stats</button>
               ]} />
           </aside>
           <section className="flex-1 p-4">
             {currentView === 'Pending' && <DashboardContent />}
             {currentView === 'Completion' && <AnalyticsPage />}
             {currentView === 'Payment' && <PaymentAnalyticsPage />}
+            {currentView === 'Skills' && <SkillsAnalyticsPage />}
           </section>
           
         </main>

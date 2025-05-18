@@ -2,15 +2,15 @@
 import { useState, useEffect } from 'react';
 
 import { RefreshCw } from 'lucide-react';
-import { getPaymentStats } from '@/app/server/services/statsService';
+import {  getSkillStats } from '@/app/server/services/statsService';
 import { EmptyState } from '../EmptyState/EmptyState';
 import { ErrorBoundary } from 'react-error-boundary';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { isValidDateString } from '@/app/server/formatters/FormatDates';
-import { exportPaymentStatsToPDF } from '@/app/components/PDFBuilder/PDFBuilder';
-import PaymentStats from '@/app/interfaces/PaymentStats.interface';
-import PaymentInfo from '../PaymentInfo/PaymentInfo';
+import SkillAreaAnalysis from '@/app/interfaces/SkillAreaAnalysis.interface';
+import SkillsInfo from '../SkillsInfo/SkillsInfo';
+import { exportSkillStatsToPDF } from '../PDFBuilder/PDFBuilder';
 
 function ErrorFallback({ error }: { error: Error }) {
   return (
@@ -21,17 +21,14 @@ function ErrorFallback({ error }: { error: Error }) {
   );
 }
 
-
-//This funciton displays an analytics page to the admin 
-export default function PaymentAnalyticsPage() {
-  const [stats, setStats] = useState<PaymentStats | null>(null);
+export default function SkillsAnalyticsPage() {
+  const [stats, setStats] = useState<SkillAreaAnalysis[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [startDate, setStartDate] = useState(new Date(new Date().setMonth(new Date().getMonth() - 6)));
   const [endDate, setEndDate] = useState(new Date());
   const [startInput, setStartInput] = useState(startDate.toISOString().split('T')[0]);
   const [endInput, setEndInput] = useState(endDate.toISOString().split('T')[0]);
 
-  //when the date filters change
   const handleChangeFilters = () => {
     if (!isValidDateString(startInput)) {
       toast.error("Please enter a valid start date.");
@@ -55,12 +52,13 @@ export default function PaymentAnalyticsPage() {
       }
   };
 
-  //Will show loading and load payment stats onto the page when the dates change
   useEffect(() => {
+
+
     async function loadStats() {
       setLoading(true);
       try {
-        const data = await getPaymentStats(startDate, endDate);
+        const data = await getSkillStats(startDate, endDate);
         setStats(data);
       } catch (error) {
         console.error('Failed to load stats:', error);
@@ -73,24 +71,19 @@ export default function PaymentAnalyticsPage() {
     loadStats();
   }, [startDate, endDate]);
 
-
-  //Loading icon
   if (loading) return (
     <section className="flex justify-center items-center h-64">
       <section className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></section>
     </section>
   );
 
-  //Resets the dats if something goes wrong and user clicks retry
   function HandleErrorClick(){
     setStartDate(new Date(new Date().setMonth(new Date().getMonth() - 1)));
     setEndDate(new Date())
     
   }
 
-
-  //No stats = displays a message to the user
-  if (!stats || stats.totalESCROW + stats.totalPayed + stats.totalUnpaid == 0) return (
+  if (!stats ) return (
     <EmptyState 
       title="No analytics data"
       description="We couldn't find any payment data for the selected date range. Try adjusting your filters."
@@ -106,12 +99,11 @@ export default function PaymentAnalyticsPage() {
     />
   );
 
-  //Allow the user to download report
   async function HandleDownloadClick(){
      if (stats) {
     const loadingToast = toast.loading("Generating PDF"); 
     try {
-      await exportPaymentStatsToPDF(stats, startDate, endDate);
+      await exportSkillStatsToPDF(stats, startDate, endDate);
       toast.success("PDF ready for download");
       toast.dismiss(loadingToast); 
     } catch (error) {
@@ -127,7 +119,6 @@ export default function PaymentAnalyticsPage() {
   return (
     <section className="p-6">
     <section className="mb-6 flex flex-wrap sm:flex-nowrap gap-4 items-end">
-
       {/* Start Date */}
       <section className="flex flex-col w-full sm:w-64">
         <label className="block text-sm font-medium text-gray-300 mb-1">Start Date</label>
@@ -152,7 +143,7 @@ export default function PaymentAnalyticsPage() {
         />
       </section>
   
-      {/* Buttons*/}
+      {/* Button aligned right */}
       <section className="ml-auto flex gap-4">
         <button
           onClick={handleChangeFilters}
@@ -170,9 +161,8 @@ export default function PaymentAnalyticsPage() {
       </section>
     </section>
 
-    {/*Error boundary where info is loaded*/ }
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-        <PaymentInfo stats = {stats} startDate={startDate} endDate={endDate} />
+        <SkillsInfo stats = {stats} startDate={startDate} endDate={endDate} />
     </ErrorBoundary>
   </section>
   );
