@@ -1,6 +1,5 @@
 "use client";
 import React, { useState} from "react";
-
 import Modal from "react-modal";
 import { AiFillStar } from "react-icons/ai";
 import Button from "../button/Button";
@@ -15,6 +14,8 @@ import { useContext } from "react";
 import { JobContext, JobContextType } from "@/app/JobContext";
 import { AuthContext, AuthContextType } from "@/app/AuthContext";
 
+/*This modal pops up when a job is completed for both freelancer and client to be able to rate eachother, they can select stars out of 5 and submit the rating*/
+
 interface RateUserModalProps {
   data: UserData;
   uid: string;
@@ -23,9 +24,6 @@ interface RateUserModalProps {
 
 }
 
-
-
-
 const RateUserModal = ({ data, uid,ratedName,isOpen }: RateUserModalProps) => {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -33,16 +31,17 @@ const RateUserModal = ({ data, uid,ratedName,isOpen }: RateUserModalProps) => {
   const { user } = useContext(AuthContext) as AuthContextType;
   const { jobID } = useContext(JobContext) as JobContextType;
 
+  //Close the modal
   const CloseModal = () =>{
     setModalisOpen(false);
   }
   
   if (typeof window !== "undefined") {
-      Modal.setAppElement(document.body); // You can also use "#__next" if your layout root uses that
+      Modal.setAppElement(document.body); 
     }
 
   
-
+    //When the client or freelancer submits the rating, the person who they rated ratings will be updated
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (rating === 0 )  return; // Don't submit if no rating is selected
@@ -51,13 +50,13 @@ const RateUserModal = ({ data, uid,ratedName,isOpen }: RateUserModalProps) => {
       if(jobID){
         await AddRating(uid, rating);
      
-      const newAverage = newRatingCalculation(data, rating);
+      const newAverage = newRatingCalculation(data, rating); //Calculate the new average rating given the new rating
       await SetRatingAverage(uid, newAverage);
       
-      const newCount = (data.ratingCount || 0) + 1;
+      const newCount = (data.ratingCount || 0) + 1; //Update the total number of ratings 
       await SetRatingCount(uid, newCount);
 
-      if (user?.userData.type === UserType.Freelancer) {
+      if (user?.userData.type === UserType.Freelancer) { //Set if the client or freelancer has already rated for that job so that they won't be prompted to rate more than once
         await setFreelancerHasRated(jobID);
       } else {
         await setClientHasRated(jobID);

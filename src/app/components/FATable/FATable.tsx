@@ -36,6 +36,7 @@ const FATable = ({ jobName }: Props) => {
   const [applicantsWithRatings, setApplicantsWithRatings] = useState<ApplicantWithRating[]>([]);
   const [pendingApplicants, setPendingApplicants] = useState<ApplicationData[]>([]);
 
+  //Get all pending applicants for the job to populate the applicants table
   async function fetchPendingApplicants() {
     const pendingApplicants = await getPendingApplicants(jobID as string);
     setPendingApplicants(pendingApplicants);
@@ -56,27 +57,30 @@ const FATable = ({ jobName }: Props) => {
     fetchPendingApplicants();
   }, [jobID]);
 
-  const [selectedApplicant, setSelectedApplicant] =
-    useState<ApplicationData | null>(null);
+  const [selectedApplicant, setSelectedApplicant] = useState<ApplicationData | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  //Opens the modal displaying the applicants full application to the client
   const handleApplicationView = (ApplicantID: ApplicationData) => {
     setSelectedApplicant(ApplicantID);
     setModalOpen(true);
   };
 
+  //Closes the application modal
   const closeModal = () => {
     setModalOpen(false);
     setSelectedApplicant(null);
   };
 
+  //If a client accepts a freelancers application for a job, then that freelancer is accepted and is hired and all the other applicants are rejected
   const handleAccept = async (aid: string, uid: string, jid: string) => {
     try {
-      await acceptApplicant(aid);
-      await updateHiredUId(jid, uid);
-      await updateJobStatus(jid, JobStatus.Employed);
+      await acceptApplicant(aid); // accept the freelancers applicaion
+      await updateHiredUId(jid, uid); //Hire the freelancer
+      await updateJobStatus(jid, JobStatus.Employed); //change the status of the job to having someone employed
       await createChat(jid, jobName); // Create a chat for this job
 
+      //Reject all applicants that were not accepted and send them a notification
       for await (const applicant of pendingApplicants) {
         if (applicant.ApplicantID == uid) continue;
         await rejectApplicant(applicant.ApplicationID);
@@ -88,6 +92,7 @@ const FATable = ({ jobName }: Props) => {
         });
       }
 
+      //Send the freelancer that was accepted for the job a notification
       await createNotification({
         message: `${jobName} - Your application has been accepted`,
         seen: false,
@@ -114,6 +119,7 @@ const FATable = ({ jobName }: Props) => {
     }
   };
 
+  //If a client physically rejects the freelancers application by clicking reject on the table, that freelancers application status changes to rejected and the yrecieve a notification that they have been rejected
   const handleReject = async (aid: string, uid: string) => {
     try {
       await rejectApplicant(aid);
@@ -143,7 +149,6 @@ const FATable = ({ jobName }: Props) => {
                 <th className="px-4 py-3">Applicant</th>
                 <th className="px-4 py-3">Rating</th>
                 <th className="px-4 py-3">Status</th>
-                {/*<th className="px-4 py-3">Date</th>*/}
                 <th className="px-4 py-3">Actions</th>
               </tr>
             </thead>
@@ -207,6 +212,7 @@ const FATable = ({ jobName }: Props) => {
                         onClose={closeModal}
                       />
                     )}
+                    {/*Button to accept a freelancers application*/}
                     <button
                       onClick={() =>
                         handleAccept(
@@ -219,6 +225,7 @@ const FATable = ({ jobName }: Props) => {
                     >
                       Accept
                     </button>
+                    {/*Button to reject a freelancers application*/}
                     <button
                       onClick={() =>
                         handleReject(item.ApplicationID, item.ApplicantID)

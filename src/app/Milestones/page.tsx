@@ -30,6 +30,8 @@ import { getMilestones } from "../server/services/MilestoneService";
 import { getApplicant } from "../server/services/ApplicationDatabaseServices";
 import toast from "react-hot-toast";
 
+/*This page shows the milestones for a job and is viewed by both the freelancer and client, however both interact differently with the page*/
+
 const linksClient = [
   { name: "Home", href: "/client", selected: false },
   { name: "Chat", href: "/chat", selected: false },
@@ -90,7 +92,7 @@ export default function Page() {
     fetchUsername();
   }, [userToRate, job, user]);
 
-  //This function converts the usetype to a string to be displayed in the header
+  //This function converts the user type to a string to be displayed in the header
   function userTypeToString(value: UserType | undefined): string {
     if (value === undefined) return "Unknown";
     return UserType[value] || "...";
@@ -98,6 +100,7 @@ export default function Page() {
   const userTypeNum = user?.userData.type;
   const userTypeString = userTypeToString(userTypeNum);
 
+  //depending on the usertype, the links on the sidebar will be different
   const links =
     user?.userData.type === UserType.Client ? linksClient : linksFreelancer;
 
@@ -138,6 +141,7 @@ export default function Page() {
     setSelectedMilestone(milestone);
   }
 
+  //This function updates the milestones page when the client is finished adding milestones so the freelancer can begin working
   async function handleProceedJob() {
     if (jobID && job?.hiredUId ) {
       try {
@@ -149,6 +153,7 @@ export default function Page() {
           return sum + (milestone.payment || 0);
         }, 0);
 
+        //Making sure the total amount the freelancer is getting paid is equal to or greater than the freelancers bid on their application
         if(freelancerApplication){
           if(totalPayment < freelancerApplication?.BidAmount){
             toast.error(`The total payment should be equal to or more than the freelancers bid amount of ${freelancerApplication.BidAmount}`)
@@ -194,6 +199,7 @@ export default function Page() {
     }
   }, [job, jobID, user, refreshFlag]);
 
+  //If the progress bar is full, that means the job is completed and so the job status changes to completed and client is sent a notification
   useEffect(() => {
     if (
       progress === 100 &&
@@ -236,6 +242,7 @@ export default function Page() {
     <>
       <section className="min-h-screen flex flex-col bg-[#27274b] text-white font-sans">
         <header className="w-full">
+          {/*Header depending on the user type*/}
           <Header
             name={user?.userData.username || "..."}
             usertype={userTypeString}
@@ -256,6 +263,8 @@ export default function Page() {
                 </h1>
               </section>
               <section className="mt-4 w-full flex flex-col items-center ">
+                
+                {/*Progress bar display*/}
                 <p className="text-gray-300 mb-2 max-w-4xl flex justify-center ">
                   Progress: {progress}% ({completedCount}/{milestones.length}{" "}
                   milestones)
@@ -263,6 +272,7 @@ export default function Page() {
                 <MilestoneProgressBar progress={progress} />
               </section>
               <section>
+                {/*Instruction on the page is different depending on user type*/}
                 <h2 className="text-xl font-semibold text-gray-300">
                   {user?.userData.type === UserType.Client
                     ? "Click on a milestone to see more information and review progress"
@@ -273,6 +283,7 @@ export default function Page() {
               </section>
 
               <section className="w-full max-w-8xl flex justify-start mb-4 cursor-pointer ">
+                {/*Rating modal is different depending on the user type*/}
               {
                 userToRate && 
                 ((user?.userData.type === UserType.Freelancer && job?.clientUId &&!job.hasFreelancerRated  )) && (
@@ -299,6 +310,7 @@ export default function Page() {
               </section>
 
       <section className="w-full max-w-8xl flex justify-start mb-4 cursor-pointer flex-col space-y-4">
+        {/*Only Clients and or admins can create milestones*/}
         {((user?.userData.type === UserType.Client || user?.userData.type === UserType.Admin) && (job && job.status === JobStatus.Employed)) && (
           <>
             <CreateMilestone refetch={refetch} />

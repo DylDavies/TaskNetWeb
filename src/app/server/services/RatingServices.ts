@@ -42,6 +42,7 @@ async function AddRating(uid: string, newRating: number) {
     console.error("Failed to add rating:", error);
   }
 };
+
 //This function sets the hasFreelancerRated field to be true, indicating that the freelancer has rated the client
 async function setFreelancerHasRated(jobID: string){
   try{

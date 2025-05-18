@@ -28,6 +28,8 @@ interface Props {
   milestones: MilestoneData[];
   setMilestones: React.Dispatch<React.SetStateAction<MilestoneData[]>>;
 }
+//This table contains all the milestones that a client has created for a job
+
 const MilestonesTable = ({
   data,
   onMilestoneClick,
@@ -44,6 +46,7 @@ const MilestonesTable = ({
   useEffect(() => {
     let unsub: Unsubscribe;
 
+    //Fetches milestones to populate the milestones table
     async function fetchMilestones() {
       if (!jobID || !hiredID) return;
 
@@ -73,6 +76,8 @@ const MilestonesTable = ({
     }
   }, [jobID, hiredID, refresh]);
 
+
+  //Sends a notification to the freelancer if a milestones deadline has passed and that freelancer has not yet completed the job
   useEffect(() => {
     async function handleNotifications() {
       if (!milestones.length || sentRef.current) return;
@@ -114,11 +119,13 @@ const MilestonesTable = ({
     handleNotifications();
   }, [milestones, currentDate, hiredID, jobTitle]);
 
+  //Converts the status of a milestone to a string to be displayed in the table
   function MilestoneStatusToString(value: MilestoneStatus | undefined): string {
     if (value === undefined) return "Unknown";
     return MilestoneStatus[value] || "...";
   }
 
+  //Converts the payment status of a milestone to a string to be displayed in the table
   function PaymentStatusToString(value: PaymentStatus | undefined): string {
     if (value == undefined) return "Unpaid";
     return PaymentStatus[value] || "...";
@@ -162,6 +169,7 @@ const MilestonesTable = ({
                           <p className="text-xs text-gray-400">
                             Deadline: {formatDateAsString(item.deadline)}
                           </p>
+                          {/*Displayes in red if a deadline has passed*/}
                           {item.deadline < currentDate &&
                               item.status !== MilestoneStatus.Completed &&
                               item.status !== MilestoneStatus.Approved && (
@@ -180,10 +188,10 @@ const MilestonesTable = ({
                       item.status === MilestoneStatus.OnHalt
                         ? "bg-red-500" // Red if on halt
                         : item.status === MilestoneStatus.Completed
-                        ? "bg-yellow-600" // Green if Completed
+                        ? "bg-yellow-600" // Yellow if Completed
                         : item.status === MilestoneStatus.InProgress
-                        ? "bg-orange-600" // Default: Orange if in progress
-                        : "bg-green-600"
+                        ? "bg-orange-600" // Orange if in progress
+                        : "bg-green-600" //Green if approves
                     }`}
                       >
                         {MilestoneStatusToString(item.status)}
