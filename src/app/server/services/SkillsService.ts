@@ -1,4 +1,5 @@
 import SkillData from "@/app/interfaces/SkillData.interface";
+import { getJob } from "./JobDatabaseService";
 
 async function AddSkill(SkillArea: string, skillName: string) {
   try {
