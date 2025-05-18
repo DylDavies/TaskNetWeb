@@ -14,6 +14,7 @@ interface JobCardProps {
   onClick?: () => void;
   isAIRcommended?: boolean;
   aiRecommendationReason?: string;
+  redactRating?: boolean;
 }
 
 // Simple Tooltip Wrapper Component
@@ -66,6 +67,7 @@ const JobCard: React.FC<JobCardProps> = ({
   clientId,
   isAIRcommended,
   aiRecommendationReason,
+  redactRating = false
 }) => {
   const[aveRating, setRating] = useState<number |null>();
   const[totalRating,setTotalRatings]= useState<number | null>();
@@ -171,7 +173,7 @@ const JobCard: React.FC<JobCardProps> = ({
           ))}
         </section>
 
-        <footer className="flex justify-between items-center text-sm text-gray-400 pt-2 border-t border-gray-700 mt-3">
+        <footer className="flex justify-between space-between items-center text-sm text-gray-400 pt-2 border-t border-gray-700 mt-3">
 
           <section className="flex items-center space-x-3">
             {isAIRcommended && aiRecommendationReason && ( 
@@ -190,9 +192,9 @@ const JobCard: React.FC<JobCardProps> = ({
             )}
             <address className="not-italic font-medium text-gray-300">{name}</address>
 
-            {(aveRating !== undefined && totalRating !== undefined && aveRating && totalRating) && (
+            {!redactRating && (aveRating !== undefined && totalRating !== undefined && aveRating && totalRating) && (
                   <StarRatingDisplay averageRating={aveRating} totalRatings={totalRating} />
-              )}
+            )}
           </section>
 
           {hired === JobStatus.Posted && (

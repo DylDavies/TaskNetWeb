@@ -13,9 +13,11 @@ import AnalyticsPage from "../components/AdminStatsDashboard/StatsDashboard";
 import DashboardContent from "../components/AdminDashboard/AdminDashboard";
 import PaymentAnalyticsPage from "../components/AdminPaymentStatsDashboard/PaymentDashboard";
 import SkillsAnalyticsPage from "../components/AdminSkillsDashboard.tsx/AdminSkillsDashboard";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
+  const router = useRouter();
 
   //functions to change between views
   function handleViewPendingUsers(){
@@ -58,8 +60,10 @@ export default function Page() {
                 <button key="1" onClick={() => handleViewPendingUsers()} disabled={currentView === 'Pending'}  className={buttonClasses(currentView === 'Pending')}> Pending Users</button>,
                 <button key="2" onClick={() => handleViewCompletionStats()} disabled={currentView === 'Completion'}  className={buttonClasses(currentView === 'Completion')}> Completion Stats</button>,
                 <button key="3" onClick={() => handleViewPaymentStats()} disabled={currentView === 'Payment'}  className={buttonClasses(currentView === 'Payment')}> Payment Stats</button>,
-                <button key="4" onClick={() => handleViewSkillStats()} disabled={currentView === 'Skills'}  className={buttonClasses(currentView === 'Skills')}> Skill Stats</button>
-              ]} />
+                <button key="4" onClick={() => handleViewSkillStats()} disabled={currentView === 'Skills'}  className={buttonClasses(currentView === 'Skills')}> Skill Stats</button>,
+                <button key="5" onClick={() => router.push("/skills")} className={buttonClasses(false)}> Skills Management</button>
+              ]}
+              />
           </aside>
           <section className="flex-1 p-4">
             {currentView === 'Pending' && <DashboardContent />}

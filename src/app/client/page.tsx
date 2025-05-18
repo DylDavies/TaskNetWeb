@@ -126,6 +126,7 @@ export default function Page() {
                       skills={Object.values(job.jobData.skills).flat()}
                       onClick={() => handleCardClick(job)}
                       hired={job.jobData.status}
+                      redactRating={true}
                     />
                   ))
                 ) : (

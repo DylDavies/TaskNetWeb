@@ -5,7 +5,7 @@ import ActiveUser from "./interfaces/ActiveUser.interface";
 import { getAuth, onAuthStateChanged, Unsubscribe } from "firebase/auth";
 import { app, db } from "./firebase";
 import { getUser, setAvatar } from "./server/services/DatabaseService";
-import { doc, onSnapshot } from "firebase/firestore";
+import { collection, doc, getDoc, onSnapshot, setDoc } from "firebase/firestore";
 import UserData from "./interfaces/UserData.interface";
 import { usePathname, useRouter } from "next/navigation";
 import UserType from "./enums/UserType.enum";
@@ -51,10 +51,22 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
           return;
         }
 
-        const dbUser = await getUser(currentUser.uid);
+        let dbUser = await getUser(currentUser.uid);
         if (!dbUser) {
-          setUser(null);
-          return;
+          
+          const dc = await getDoc(doc(collection(db, "users"), currentUser.uid));
+
+          if (!dc.exists()) {
+            await setDoc(doc(collection(db, "users"), currentUser.uid), {
+              type: UserType.None,
+              status: UserStatus.Pending
+            });
+          }
+
+          dbUser = {
+            type: UserType.None,
+            status: UserStatus.Pending
+          } as unknown as UserData;
         }
 
         if ((!dbUser.avatar && currentUser.photoURL) || (dbUser.avatar !== currentUser.photoURL)) {
