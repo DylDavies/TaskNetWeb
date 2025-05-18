@@ -74,6 +74,7 @@ const JobCard: React.FC<JobCardProps> = ({
   const [name, setName] = useState("Loading...");
   const [avatar, setAvatar] = useState<string | undefined>();
 
+  //Gets user information to display the rating
   useEffect(() => {
     (async () => {
       try {
@@ -107,9 +108,9 @@ const JobCard: React.FC<JobCardProps> = ({
     <article
       onClick={onClick}
       aria-label={`${jobTitle} by ${name}${isAIRcommended ? `, AI Recommended. Reason: ${aiRecommendationReason || 'General recommendation'}` : ''}`}
-      className={`job-card bg-gray-800 group grid w-[450px] grid-cols-12 space-x-1 overflow-hidden rounded-lg border ${
+      className={`job-card bg-gray-800 group grid w-[450px] grid-cols-12 space-x-1 overflow-hidden rounded-lg border cursor-pointer hover:-translate-y-1 hover:border-opacity-100  ${
         isAIRcommended ? 'border-yellow-500 shadow-lg shadow-yellow-500/30' : 'border-blue-900'
-      } py-4 px-4 text-gray-300 shadow transition hover:shadow-lg relative`}
+      } py-4 px-4 text-gray-300 shadow transition hover:shadow-lg relative `}
     >
       <section className="col-span-12 flex justify-between items-start mb-2">
         <section className="flex items-center space-x-3">
