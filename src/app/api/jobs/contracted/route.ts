@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
           where("clientUId", "==", userID),
           or(
             where("status", "==", JobStatus.Employed),
+            where("status", "==", JobStatus.InProgress),
             where("status", "==", JobStatus.Completed)
           )
         )
