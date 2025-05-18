@@ -59,18 +59,13 @@ async function getPaymentStatsPerJob(JobID: string){
         totalESCROW += item.payment;;
       }  
     }
-
-    if(doc.data().status == JobStatus.Employed || doc.data().status == JobStatus.InProgress){
-      hiredProjects++;
     else{
       totalUnpaid += item.payment;
-
     }
     
   })
 
   return{
-
    totalESCROW,
    totalPaid,
    totalUnpaid
