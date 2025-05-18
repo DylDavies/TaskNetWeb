@@ -1,5 +1,7 @@
 import React from "react";
 
+/*This component is a progression bar for the milestones page, it fills up as the job gets completed*/
+
 interface ProgressBarProps {
   progress: number; // Percentage (0-100)
   label?: string;   // Optional accessible label

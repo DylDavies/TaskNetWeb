@@ -33,6 +33,7 @@ export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
   const [openModal, setModalOpen] = useState(false);
   const [data, setData] = useState<ActiveJob>();
+  
 
   const closeModal = () => {
     setModalOpen(false);        
@@ -43,7 +44,6 @@ export default function Page() {
     async function fetchSkills() {
       try {
         const skillData = await getAllSkills(); // gets all skills as an array
-        //console.log(skillData);
         setSkills(skillData);
       } catch (err) {
         console.error("could not fetch skillData: ", err);
@@ -53,29 +53,6 @@ export default function Page() {
     fetchSkills();
   }, []);
 
-  // Gets ActiveJob data to populate cards - can change to JobData if JobID isn't needed
-  // useEffect(() => {
-  //   async function filterJobsBySkills() {
-  //     try {
-  //       const activeJobs = await getAllJobs();
-
-  //       const filtered = activeJobs.filter((job) => {
-  //         const flattenedSkills = Object.values(job.jobData.skills).flat(); // Get all skills from all skill areas
-  //         return selectedSkills.every((selected) =>
-  //           flattenedSkills.some(
-  //             (skill) => skill.toLowerCase() === selected.toLowerCase()
-  //           )
-  //         );
-  //       });
-
-  //       setJobCards(filtered);
-  //     } catch (error) {
-  //       console.error("Error occurred when trying to fetch Jobs: ", error);
-  //     }
-  //   }
-
-  //   filterJobsBySkills();
-  // }, [selectedSkills]);
 
   useEffect(() => {
     async function filterJobs() {

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import JobStatus from "@/app/enums/JobStatus.enum";
 import Image from "next/image";
 import { getUser } from "@/app/server/services/DatabaseService";
+import StarRatingDisplay from "../RatingStars/RatingStars";
 
 interface JobCardProps {
   clientId: string;
@@ -66,6 +67,8 @@ const JobCard: React.FC<JobCardProps> = ({
   isAIRcommended,
   aiRecommendationReason,
 }) => {
+  const[aveRating, setRating] = useState<number |null>();
+  const[totalRating,setTotalRatings]= useState<number | null>();
   const [name, setName] = useState("Loading...");
   const [avatar, setAvatar] = useState<string | undefined>();
 
@@ -74,6 +77,8 @@ const JobCard: React.FC<JobCardProps> = ({
       try {
         const user = await getUser(clientId);
         setName(user?.username || "User Not Found");
+        setRating(user?.ratingAverage);
+        setTotalRatings(user?.ratingCount);
         setAvatar(user?.avatar || undefined);
       } catch (error)
       {
@@ -184,6 +189,10 @@ const JobCard: React.FC<JobCardProps> = ({
                  </section>
             )}
             <address className="not-italic font-medium text-gray-300">{name}</address>
+
+            {(aveRating !== undefined && totalRating !== undefined && aveRating && totalRating) && (
+                  <StarRatingDisplay averageRating={aveRating} totalRatings={totalRating} />
+              )}
           </section>
 
           {hired === JobStatus.Posted && (
@@ -192,6 +201,11 @@ const JobCard: React.FC<JobCardProps> = ({
           {hired === JobStatus.Employed && (
             <output className="font-medium text-yellow-400">Hired</output>
           )}
+
+          {hired === JobStatus.InProgress && (
+            <output className="font-medium text-yellow-400">In Progress</output>
+          )}
+
           {hired === JobStatus.Completed && (
             <output className="font-medium text-green-400">Completed</output>
           )}

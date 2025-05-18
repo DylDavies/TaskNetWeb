@@ -8,6 +8,10 @@ import nodemailer from 'nodemailer';
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 async function getUser(uid: string): Promise<UserData | null> {
+   if (!uid || typeof uid !== 'string' || uid.trim() === '') {
+    console.warn('Invalid UID provided to getUser:', uid);
+    return null;
+  }
     const userDoc = await getDoc(doc(db, "users", uid));
 
     if (!userDoc.exists()) return null;
