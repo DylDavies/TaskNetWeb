@@ -1,29 +1,30 @@
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import ApplicationStatus from '@/app/enums/ApplicationStatus.enum'; // Adjust the path if needed
-import { AddApplication, makeApplicationID, uploadCV, hasApplied } from '../../src/app/server/services/ApplicationService'; // Adjust the path
-import { uploadFile } from '../../src/app/server/services/DatabaseService'; // Adjust the path
+import { AddApplication, makeApplicationID, uploadCV, hasApplied } from '../../src/app/server/services/ApplicationService'; 
+import { uploadFile } from '../../src/app/server/services/DatabaseService'; 
 import { getCurrentDateAsNumber } from '../../src/app/server/formatters/FormatDates';
+
 // Mock Firebase and other dependencies
 jest.mock('firebase/firestore', () => ({
   doc: jest.fn(),
   getDoc: jest.fn(),
   setDoc: jest.fn(),
 }));
-jest.mock('../../src/app/firebase', () => ({ // Corrected path
+jest.mock('../../src/app/firebase', () => ({ 
   db: {},
 }));
-jest.mock('../../src/app/server/services/DatabaseService', () => ({ // Corrected path
+jest.mock('../../src/app/server/services/DatabaseService', () => ({ 
   uploadFile: jest.fn(),
 }));
 jest.mock('../../src/app/server/formatters/FormatDates', () => ({
   getCurrentDateAsNumber: jest.fn(),
 }));
 
+//What the test suite will be called
 describe('ApplicationService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
+  //The upload CV function
   describe('uploadCV', () => {
     it('should upload a PDF file and return the URL', async () => {
       const mockFile = { type: 'application/pdf' } as File;
@@ -50,6 +51,7 @@ describe('ApplicationService', () => {
     });
   });
 
+  //Test for adding an application to the databae
   describe('AddApplication', () => {
     it('should add a new application to the database', async () => {
       const ApplicantID = 'user456';

@@ -1,7 +1,6 @@
 import { getAuth, signInWithPopup, signInWithCustomToken, getIdToken } from "firebase/auth";
 import AuthService from "@/app/services/AuthService";
 import ApiService from "@/app/services/ApiService";
-import { redirect } from "next/navigation";
 
 jest.mock("firebase/auth");
 jest.mock("../../src/app/services/ApiService");

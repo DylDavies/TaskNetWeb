@@ -52,11 +52,13 @@ jest.mock("../../src/app/server/services/JobDatabaseService", () => ({
   getJob: jest.fn(),
 }));
 
+//what the test will be called
 describe("StatsDatabaseService", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
+  //Tests for getSkillByID
   describe("getSkillByID", () => {
     it("should return skill data if the document exists", async () => {
       const SkillArea = "Design";
@@ -84,6 +86,7 @@ describe("StatsDatabaseService", () => {
     });
   });
 
+  //Tests for get Completion Stats per job
   describe("getCompletionStatsPerJob", () => {
     it("should return completion stats for a given Job ID", async () => {
       const JobID = "job123";
@@ -119,6 +122,7 @@ describe("StatsDatabaseService", () => {
     });
   });
 
+  //Tests for get payment stats per job
   describe("getPaymentStatsPerJob", () => {
     it("should return payment stats for a given Job ID", async () => {
       const JobID = "job789";

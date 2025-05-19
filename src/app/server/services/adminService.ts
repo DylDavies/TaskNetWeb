@@ -1,5 +1,3 @@
-'use server';
-
 import { arrayUnion, doc, getDoc, setDoc } from "firebase/firestore"; 
 import { db } from "../../firebase";
 import { getMilestones } from "./MilestoneService";

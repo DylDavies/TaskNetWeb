@@ -1,5 +1,3 @@
-'use server';
-
 import { collection, getDocs, query,  where } from "firebase/firestore"; 
 import { db } from "../../firebase";
 import formatDateAsNumber from "../formatters/FormatDates";
