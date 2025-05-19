@@ -24,7 +24,7 @@ const links = [
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
-  const [skills, setSkills] = useState<SkillData[]>();
+  const [skills, setSkills] = useState<SkillData[]>([]);
   const[inputValue, setInputValue] = useState("");
   const [selectedSkillArea, setSelectedSkillArea] = useState<string>();
 
@@ -33,22 +33,23 @@ export default function Page() {
     setInputValue(e.target.value);
   };
 
+  const fetchSkills = async () => {
+    try{
+        const fetchSkills = await getSkillArray();
+        setSkills(fetchSkills)
+        setSelectedSkillArea(fetchSkills[0].id)
+    } catch (error){
+        console.error("Error fetching skills:", error);
+    }
+};
+
   //Fetched all the skills 
   useEffect(() => {
-    const fetchSkills = async () => {
-        try{
-            const fetchSkills = await getSkillArray();
-            setSkills(fetchSkills)
-        } catch (error){
-            console.error("Error fetching skills:", error);
-        }
-    };
-
-    fetchSkills();
+    if (skills.length == 0) fetchSkills();
   },[skills, selectedSkillArea]);
 
   //Adds a new skill to the database
-  const addSkills = () => {
+  const addSkills = async () => {
     if(selectedSkillArea == undefined){
         toast.error("No Skills Area Selected");
     }
@@ -56,9 +57,22 @@ export default function Page() {
         toast.error("No Skill Entered");
     }
     else{
-        AddSkill(selectedSkillArea, inputValue);
-        setInputValue("");
-        toast.success("Skill Successfully added")
+      let found = false;
+
+      for (const sa of skills) {
+        if (sa.skills.map(v => v.toLowerCase()).includes(inputValue.toLowerCase())) found = true;
+      }
+
+      if (found) {
+        return toast.error("This skill already exists!")
+      }
+
+      await AddSkill(selectedSkillArea, inputValue);
+      setInputValue("");
+
+      await fetchSkills();
+
+      toast.success("Skill Successfully added")
     }
   }
 
