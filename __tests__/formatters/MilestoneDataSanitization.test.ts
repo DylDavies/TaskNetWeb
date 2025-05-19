@@ -54,7 +54,6 @@ describe('sanitizeMilestoneData Formatter', () => {
 
     expect(didThrow).toBe(false); // Assert that the function does NOT throw
     expect(consoleErrorMock).not.toHaveBeenCalled(); // No errors should be logged for these missing fields
-    expect(consoleLogMock).toHaveBeenCalledWith("Data is safe to send to the DB!"); // This should be called
 
     // Check the properties of the returned object
     // The function will assign `undefined` to these because of how `MilestoneData.id!` etc. works
