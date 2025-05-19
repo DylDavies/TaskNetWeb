@@ -322,7 +322,7 @@ describe('API Routes: Skills and PayPal', () => {
       expect(firestore.doc).toHaveBeenCalledWith(db, "skills", skillArea);
       expect(firestore.setDoc).toHaveBeenCalledWith(
         mockDocRef,
-        { SkillArea: skillArea, name: { type: 'arrayUnion', value: skillName } }, 
+        { SkillArea: skillArea, names: { type: 'arrayUnion', value: skillName } }, 
         { merge: true }
       );
       expect(firestore.arrayUnion).toHaveBeenCalledWith(skillName);
