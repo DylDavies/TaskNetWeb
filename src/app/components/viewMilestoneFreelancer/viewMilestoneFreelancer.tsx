@@ -99,7 +99,7 @@ const ViewMilestones: React.FC<Props> = ({
     return MilestoneStatus[value] || "...";
   }
 
-  //Handles when a client pays a freelancer
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function handleSuccessfulPayment(details: any) {
     if (details.status == "COMPLETED") {
       updateMilestonePaymentStatus(
