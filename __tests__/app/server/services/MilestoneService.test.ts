@@ -1,233 +1,327 @@
+// __tests__/app/server/services/MilestoneService.test.ts
 import {
-    getMilestones,
-    addMilestone,
-    updateMilestoneStatus,
-    setMilestone,
-    addReportURL,
-    updateMilestonePaymentStatus,
-  } from '@/app/server/services/MilestoneService';
-  import {
-    doc,
-    setDoc,
-    getDocs,
-    addDoc,
-    collection,
-    updateDoc,
-  } from 'firebase/firestore';
-  import { db } from '@/app/firebase'; // For type context
-  import MilestoneData from '@/app/interfaces/Milestones.interface';
-  import PaymentStatus from '@/app/enums/PaymentStatus.enum';
-  import MilestoneStatus from '@/app/enums/MilestoneStatus.enum';
-  
-  // --- Mocks ---
-  jest.mock('firebase/firestore', () => ({
-    doc: jest.fn(),
-    setDoc: jest.fn(),
-    getDocs: jest.fn(),
-    addDoc: jest.fn(),
-    collection: jest.fn(),
-    updateDoc: jest.fn(),
-  }));
-  
-  // Relative path for mocking @/app/firebase
-  jest.mock('../../../../src/app/firebase.ts', () => ({
-    db: {}, // Mock db instance
-  }));
-  // --- End Mocks ---
-  
-  describe('MilestoneService', () => {
-    const mockJobId = 'jobTest123';
-    const mockMilestoneId = 'milestoneTest456';
-    const mockGenericDocRef = { id: 'mockDocRef' };
-    const mockGenericCollRef = { id: 'mockCollRef' };
-  
-    // Typed mocks
-    const mockedDoc = doc as jest.Mock;
-    const mockedSetDoc = setDoc as jest.Mock;
-    const mockedGetDocs = getDocs as jest.Mock;
-    const mockedAddDoc = addDoc as jest.Mock;
-    const mockedCollection = collection as jest.Mock;
-    const mockedUpdateDoc = updateDoc as jest.Mock;
-  
-    let consoleErrorMock: jest.SpyInstance;
-  
-    beforeEach(() => {
-      jest.clearAllMocks();
-      consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
-  
-      // Default mock implementations
-      mockedDoc.mockReturnValue(mockGenericDocRef);
-      mockedCollection.mockReturnValue(mockGenericCollRef);
-  
-      // Corrected default mock for getDocs
-      mockedGetDocs.mockResolvedValue({
-        docs: [], // Default to empty array of docs
-        forEach: function(callback: (doc: any) => void) {
-          // Ensure 'this.docs' refers to the 'docs' array in this object
-          (this.docs as any[]).forEach(callback);
-        }
+  getMilestones,
+  addMilestone,
+  updateMilestoneStatus,
+  setMilestone,
+  addReportURL,
+  updateMilestonePaymentStatus,
+} from '@/app/server/services/MilestoneService';
+import MilestoneData from '@/app/interfaces/Milestones.interface';
+import PaymentStatus from '@/app/enums/PaymentStatus.enum';
+import MilestoneStatus from '@/app/enums/MilestoneStatus.enum';
+
+// Mock the global fetch
+global.fetch = jest.fn();
+
+// Mock console.error to spy on its calls
+let consoleErrorMock: jest.SpyInstance;
+
+describe('MilestoneService', () => {
+  const mockJobId = 'jobTest123';
+  const mockMilestoneId = 'milestoneTest456';
+
+  beforeEach(() => {
+    // Reset mocks before each test
+    (global.fetch as jest.Mock).mockClear();
+    consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    // Restore console.error mock
+    consoleErrorMock.mockRestore();
+  });
+
+  // --- getMilestones ---
+  describe('getMilestones', () => {
+    const mockMilestoneDataArray: MilestoneData[] = [
+      { id: 'm1', title: 'Milestone 1', description: 'First one', status: MilestoneStatus.OnHalt, deadline: 20250101, payment: 100, reportURL: '', paymentStatus: PaymentStatus.Unpaid }, // Changed Upcoming to OnHalt
+      { id: 'm2', title: 'Milestone 2', description: 'Second one', status: MilestoneStatus.InProgress, deadline: 20250201, payment: 200, reportURL: 'url', paymentStatus: PaymentStatus.Escrow },
+    ];
+
+    it('should fetch and return milestones on successful API call', async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ results: mockMilestoneDataArray }),
       });
-  
-      mockedAddDoc.mockResolvedValue({ id: mockMilestoneId });
-      mockedUpdateDoc.mockResolvedValue(undefined);
-      mockedSetDoc.mockResolvedValue(undefined);
+
+      const result = await getMilestones(mockJobId);
+
+      expect(global.fetch).toHaveBeenCalledWith(`/api/milestones/get/${mockJobId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      expect(result).toEqual(mockMilestoneDataArray);
+      expect(consoleErrorMock).not.toHaveBeenCalled();
     });
-  
-    afterEach(() => {
-      consoleErrorMock.mockRestore();
-    });
-  
-    describe('getMilestones', () => {
-      it('should fetch and return milestones for a jobID', async () => {
-        const milestoneData1: Omit<MilestoneData, "id"> = { title: 'M1', description: 'D1', status: MilestoneStatus.InProgress, deadline: 20250101, payment: 100, reportURL: '', paymentStatus: PaymentStatus.Unpaid };
-        const milestoneData2: Omit<MilestoneData, "id"> = { title: 'M2', description: 'D2', status: MilestoneStatus.Completed, deadline: 20250201, payment: 200, reportURL: 'url', paymentStatus: PaymentStatus.Paid };
-        const mockDocsArray = [
-          { id: 'id1', data: () => milestoneData1 },
-          { id: 'id2', data: () => milestoneData2 },
-        ];
-        
-        // Specific mock for getDocs for this test case
-        mockedGetDocs.mockResolvedValue({
-          docs: mockDocsArray,
-          forEach: function(callback: (doc: any) => void) {
-            (this.docs as any[]).forEach(callback);
-          }
+
+    it('should return an empty array if API call is successful but results are empty', async () => {
+        (global.fetch as jest.Mock).mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: async () => ({ results: [] }),
         });
   
-        const result = await getMilestones(mockJobId);
-  
-        expect(mockedCollection).toHaveBeenCalledWith(db, "Jobs", mockJobId, "milestones");
-        expect(mockedGetDocs).toHaveBeenCalledWith(mockGenericCollRef);
-        expect(result).toHaveLength(2);
-        expect(result[0]).toEqual({ id: 'id1', ...milestoneData1 });
-        expect(result[1]).toEqual({ id: 'id2', ...milestoneData2 });
-        expect(consoleErrorMock).not.toHaveBeenCalled();
-      });
-  
-      it('should return an empty array if no milestones are found', async () => {
-        // beforeEach already sets up getDocs to resolve with an empty docs array
-        // and a working forEach.
-        mockedGetDocs.mockResolvedValue({
-          docs: [],
-          forEach: function(callback: (doc: any) => void) {
-            (this.docs as any[]).forEach(callback);
-          }
-        });
         const result = await getMilestones(mockJobId);
         expect(result).toEqual([]);
         expect(consoleErrorMock).not.toHaveBeenCalled();
       });
-  
-      it('should throw error and log if getDocs fails', async () => {
-        const mockError = new Error('Failed to fetch milestones');
-        mockedGetDocs.mockRejectedValue(mockError); // This mock doesn't need the forEach structure
-  
-        await expect(getMilestones(mockJobId)).rejects.toThrow(mockError);
-        expect(consoleErrorMock).toHaveBeenCalledWith("Error fetching milestones:", mockError);
+
+    it('should call console.error and return undefined for results on API error (500)', async () => {
+      const errorResponse = { message: 'Error fetching milestones', error: { detail: 'DB down' } };
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: async () => errorResponse,
       });
+
+      const result = await getMilestones(mockJobId);
+
+      expect(global.fetch).toHaveBeenCalledWith(`/api/milestones/get/${mockJobId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      expect(consoleErrorMock).toHaveBeenCalledWith(errorResponse);
+      expect(result).toBeUndefined(); 
     });
-  
-    describe('addMilestone', () => {
-      const milestonePayload: MilestoneData = { id: 'newId', title: 'New M', description: 'New D', status: MilestoneStatus.OnHalt, deadline: 20250301, payment: 150, reportURL: '', paymentStatus: PaymentStatus.Unpaid };
-  
-      it('should add a new milestone and return its ID', async () => {
-        const newId = 'generatedId123';
-        mockedAddDoc.mockResolvedValue({ id: newId });
-  
-        const result = await addMilestone(mockJobId, milestonePayload);
-  
-        expect(mockedCollection).toHaveBeenCalledWith(db, "Jobs", mockJobId, "milestones");
-        expect(mockedAddDoc).toHaveBeenCalledWith(mockGenericCollRef, milestonePayload);
-        expect(result).toBe(newId);
-        expect(consoleErrorMock).not.toHaveBeenCalled();
-      });
-  
-      it('should throw error and log if addDoc fails', async () => {
-        const mockError = new Error('Failed to add milestone');
-        mockedAddDoc.mockRejectedValue(mockError);
-  
-        await expect(addMilestone(mockJobId, milestonePayload)).rejects.toThrow(mockError);
-        expect(consoleErrorMock).toHaveBeenCalledWith("Error adding milestone:", mockError);
-      });
-    });
-  
-    describe('updateMilestoneStatus', () => {
-      const newStatus = MilestoneStatus.Completed; // Assuming status is a number as per function signature
-  
-      it('should update the status of a specific milestone', async () => {
-        await updateMilestoneStatus(mockJobId, mockMilestoneId, newStatus);
-  
-        expect(mockedDoc).toHaveBeenCalledWith(db, "Jobs", mockJobId, "milestones", mockMilestoneId);
-        expect(mockedUpdateDoc).toHaveBeenCalledWith(mockGenericDocRef, { status: newStatus });
-        expect(consoleErrorMock).not.toHaveBeenCalled();
-      });
-  
-      it('should throw error and log if updateDoc fails', async () => {
-        const mockError = new Error('Failed to update status');
-        mockedUpdateDoc.mockRejectedValue(mockError);
-  
-        await expect(updateMilestoneStatus(mockJobId, mockMilestoneId, newStatus)).rejects.toThrow(mockError);
-        expect(consoleErrorMock).toHaveBeenCalledWith("Error updating milestone status:", mockError);
-      });
-    });
-  
-    describe('setMilestone', () => {
-      const milestoneDataToSet: MilestoneData = { id: mockMilestoneId, title: 'Set M', description: 'Set D', status: MilestoneStatus.OnHalt, deadline: 20250401, payment: 300, reportURL: 'set.url', paymentStatus: PaymentStatus.Escrow };
-  
-      it('should set (overwrite) a specific milestone', async () => {
-        await setMilestone(mockJobId, mockMilestoneId, milestoneDataToSet);
-  
-        expect(mockedDoc).toHaveBeenCalledWith(db, "Jobs", mockJobId, "milestones", mockMilestoneId);
-        expect(mockedSetDoc).toHaveBeenCalledWith(mockGenericDocRef, milestoneDataToSet);
-        expect(consoleErrorMock).not.toHaveBeenCalled();
-      });
-  
-      it('should throw error and log if setDoc fails', async () => {
-        const mockError = new Error('Failed to set milestone');
-        mockedSetDoc.mockRejectedValue(mockError);
-  
-        await expect(setMilestone(mockJobId, mockMilestoneId, milestoneDataToSet)).rejects.toThrow(mockError);
-        expect(consoleErrorMock).toHaveBeenCalledWith("Error setting milestone:", mockError);
-      });
-    });
-  
-    describe('addReportURL', () => {
-      const reportUrl = 'http://example.com/new_report.pdf';
-  
-      it('should update the reportURL of a specific milestone', async () => {
-        await addReportURL(mockJobId, mockMilestoneId, reportUrl);
-  
-        expect(mockedDoc).toHaveBeenCalledWith(db, "Jobs", mockJobId, "milestones", mockMilestoneId);
-        expect(mockedUpdateDoc).toHaveBeenCalledWith(mockGenericDocRef, { reportURL: reportUrl });
-        expect(consoleErrorMock).not.toHaveBeenCalled();
-      });
-  
-      it('should throw error and log if updateDoc fails', async () => {
-        const mockError = new Error('Failed to add report URL');
-        mockedUpdateDoc.mockRejectedValue(mockError);
-  
-        await expect(addReportURL(mockJobId, mockMilestoneId, reportUrl)).rejects.toThrow(mockError);
-        expect(consoleErrorMock).toHaveBeenCalledWith("Error adding milestone report url:", mockError);
-      });
-    });
-  
-    describe('updateMilestonePaymentStatus', () => {
-      const newPaymentStatus = PaymentStatus.Paid;
-  
-      it('should update the paymentStatus of a specific milestone', async () => {
-        await updateMilestonePaymentStatus(mockJobId, mockMilestoneId, newPaymentStatus);
-  
-        expect(mockedDoc).toHaveBeenCalledWith(db, "Jobs", mockJobId, "milestones", mockMilestoneId);
-        expect(mockedUpdateDoc).toHaveBeenCalledWith(mockGenericDocRef, { paymentStatus: newPaymentStatus });
-        expect(consoleErrorMock).not.toHaveBeenCalled();
-      });
-  
-      it('should throw error and log if updateDoc fails', async () => {
-        const mockError = new Error('Failed to update payment status');
-        mockedUpdateDoc.mockRejectedValue(mockError);
-  
-        await expect(updateMilestonePaymentStatus(mockJobId, mockMilestoneId, newPaymentStatus)).rejects.toThrow(mockError);
-        expect(consoleErrorMock).toHaveBeenCalledWith("Error setting milestone:", mockError);
-      });
+
+    it('should propagate error on fetch network failure', async () => {
+      const networkError = new Error('Network failure');
+      (global.fetch as jest.Mock).mockRejectedValue(networkError);
+
+      await expect(getMilestones(mockJobId)).rejects.toThrow(networkError);
+      expect(consoleErrorMock).not.toHaveBeenCalled();
     });
   });
+
+  // --- addMilestone ---
+  describe('addMilestone', () => {
+    const milestonePayload: MilestoneData = { id: 'newId', title: 'New M', description: 'New D', status: MilestoneStatus.OnHalt, deadline: 20250301, payment: 150, reportURL: '', paymentStatus: PaymentStatus.Unpaid };
+    const mockNewMilestoneId = 'newMilestoneGeneratedId';
+
+    it('should add a new milestone and return its ID on successful API call', async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ result: mockNewMilestoneId }),
+      });
+
+      const result = await addMilestone(mockJobId, milestonePayload);
+
+      expect(global.fetch).toHaveBeenCalledWith('/api/milestones/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobID: mockJobId, milestoneData: milestonePayload }),
+      });
+      expect(result).toBe(mockNewMilestoneId);
+      expect(consoleErrorMock).not.toHaveBeenCalled();
+    });
+
+    it('should call console.error and return undefined for result on API error (500)', async () => {
+      const errorResponse = { message: 'Error adding milestone', error: {} };
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: async () => errorResponse,
+      });
+
+      const result = await addMilestone(mockJobId, milestonePayload);
+
+      expect(global.fetch).toHaveBeenCalledWith('/api/milestones/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobID: mockJobId, milestoneData: milestonePayload }),
+      });
+      expect(consoleErrorMock).toHaveBeenCalledWith(errorResponse);
+      expect(result).toBeUndefined(); 
+    });
+
+    it('should propagate error on fetch network failure', async () => {
+      const networkError = new Error('Network failure');
+      (global.fetch as jest.Mock).mockRejectedValue(networkError);
+
+      await expect(addMilestone(mockJobId, milestonePayload)).rejects.toThrow(networkError);
+      expect(consoleErrorMock).not.toHaveBeenCalled();
+    });
+  });
+
+  // --- updateMilestoneStatus ---
+  describe('updateMilestoneStatus', () => {
+    const newStatus = MilestoneStatus.Completed;
+
+    it('should update milestone status on successful API call', async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({}), 
+      });
+
+      await updateMilestoneStatus(mockJobId, mockMilestoneId, newStatus);
+
+      expect(global.fetch).toHaveBeenCalledWith('/api/milestones/status', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobID: mockJobId, milestoneID: mockMilestoneId, status: newStatus }),
+      });
+      expect(consoleErrorMock).not.toHaveBeenCalled();
+    });
+
+    it('should call console.error on API error (500)', async () => {
+      const errorResponse = { message: 'Error updating milestone status', error: {} };
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: async () => errorResponse,
+      });
+
+      await updateMilestoneStatus(mockJobId, mockMilestoneId, newStatus);
+
+      expect(global.fetch).toHaveBeenCalledWith('/api/milestones/status', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobID: mockJobId, milestoneID: mockMilestoneId, status: newStatus }),
+      });
+      expect(consoleErrorMock).toHaveBeenCalledWith(errorResponse);
+    });
+
+    it('should propagate error on fetch network failure', async () => {
+      const networkError = new Error('Network failure');
+      (global.fetch as jest.Mock).mockRejectedValue(networkError);
+
+      await expect(updateMilestoneStatus(mockJobId, mockMilestoneId, newStatus)).rejects.toThrow(networkError);
+      expect(consoleErrorMock).not.toHaveBeenCalled();
+    });
+  });
+
+  // --- setMilestone ---
+  describe('setMilestone', () => {
+    const milestoneDataToSet: MilestoneData = { id: mockMilestoneId, title: 'Set M', description: 'Set D', status: MilestoneStatus.OnHalt, deadline: 20250401, payment: 300, reportURL: 'set.url', paymentStatus: PaymentStatus.Escrow };
+
+    it('should set milestone data on successful API call', async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({}),
+      });
+
+      await setMilestone(mockJobId, mockMilestoneId, milestoneDataToSet);
+
+      expect(global.fetch).toHaveBeenCalledWith('/api/milestones/set', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobID: mockJobId, milestoneID: mockMilestoneId, milestoneData: milestoneDataToSet }),
+      });
+      expect(consoleErrorMock).not.toHaveBeenCalled();
+    });
+
+    it('should call console.error on API error (500)', async () => {
+      const errorResponse = { message: 'Error setting milestone', error: {} };
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: async () => errorResponse,
+      });
+
+      await setMilestone(mockJobId, mockMilestoneId, milestoneDataToSet);
+      expect(consoleErrorMock).toHaveBeenCalledWith(errorResponse);
+    });
+
+    it('should propagate error on fetch network failure', async () => {
+      const networkError = new Error('Network failure');
+      (global.fetch as jest.Mock).mockRejectedValue(networkError);
+
+      await expect(setMilestone(mockJobId, mockMilestoneId, milestoneDataToSet)).rejects.toThrow(networkError);
+      expect(consoleErrorMock).not.toHaveBeenCalled();
+    });
+  });
+
+  // --- addReportURL ---
+  describe('addReportURL', () => {
+    const reportUrl = 'http://example.com/new_report.pdf';
+
+    it('should add report URL on successful API call', async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({}),
+      });
+
+      await addReportURL(mockJobId, mockMilestoneId, reportUrl);
+
+      expect(global.fetch).toHaveBeenCalledWith('/api/milestones/report/add', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobID: mockJobId, milestoneID: mockMilestoneId, reportURL: reportUrl }),
+      });
+      expect(consoleErrorMock).not.toHaveBeenCalled();
+    });
+
+    it('should call console.error on API error (500)', async () => {
+      const errorResponse = { message: 'Error adding milestone report url', error: {} };
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: async () => errorResponse,
+      });
+
+      await addReportURL(mockJobId, mockMilestoneId, reportUrl);
+      expect(consoleErrorMock).toHaveBeenCalledWith(errorResponse);
+    });
+
+    it('should propagate error on fetch network failure', async () => {
+      const networkError = new Error('Network failure');
+      (global.fetch as jest.Mock).mockRejectedValue(networkError);
+
+      await expect(addReportURL(mockJobId, mockMilestoneId, reportUrl)).rejects.toThrow(networkError);
+      expect(consoleErrorMock).not.toHaveBeenCalled();
+    });
+  });
+
+  // --- updateMilestonePaymentStatus ---
+  describe('updateMilestonePaymentStatus', () => {
+    const newPaymentStatus = PaymentStatus.Paid;
+
+    it('should update milestone payment status on successful API call', async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({}),
+      });
+
+      await updateMilestonePaymentStatus(mockJobId, mockMilestoneId, newPaymentStatus);
+
+      expect(global.fetch).toHaveBeenCalledWith('/api/milestones/payment', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobID: mockJobId, milestoneID: mockMilestoneId, status: newPaymentStatus }),
+      });
+      expect(consoleErrorMock).not.toHaveBeenCalled();
+    });
+
+    it('should call console.error on API error (500)', async () => {
+      const errorResponse = { message: 'Error setting milestone payment status', error: {} }; // Matched API error message
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: async () => errorResponse,
+      });
+
+      await updateMilestonePaymentStatus(mockJobId, mockMilestoneId, newPaymentStatus);
+      // The service code for updateMilestonePaymentStatus actually logs "Error setting milestone:" on 500
+      // If the actual error message from the API is "Error setting milestone payment status"
+      // then the consoleErrorMock should be checked against that.
+      // The API route src/app/api/milestones/payment/route.ts does return:
+      // NextResponse.json({message: "Error setting milestone payment status", error}, {status: 500});
+      expect(consoleErrorMock).toHaveBeenCalledWith(errorResponse);
+    });
+
+    it('should propagate error on fetch network failure', async () => {
+      const networkError = new Error('Network failure');
+      (global.fetch as jest.Mock).mockRejectedValue(networkError);
+
+      await expect(updateMilestonePaymentStatus(mockJobId, mockMilestoneId, newPaymentStatus)).rejects.toThrow(networkError);
+      expect(consoleErrorMock).not.toHaveBeenCalled();
+    });
+  });
+});

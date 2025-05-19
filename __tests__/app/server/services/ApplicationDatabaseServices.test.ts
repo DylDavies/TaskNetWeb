@@ -1,172 +1,245 @@
+// __tests__/app/server/services/ApplicationDatabaseServices.test.ts
 import {
   getApplicant,
   getPendingApplicants,
   acceptApplicant,
   rejectApplicant,
 } from '@/app/server/services/ApplicationDatabaseServices';
-import {
-  doc,
-  getDoc,
-  collection,
-  query,
-  where,
-  getDocs,
-  updateDoc,
-} from 'firebase/firestore';
-import { db } from '@/app/firebase'; // For type context
-import { getUsername } from '@/app/server/services/DatabaseService'; // For type context
-import ApplicationStatus from '@/app/enums/ApplicationStatus.enum';
 import ApplicantData from '@/app/interfaces/ApplicationData.interface';
+import ApplicationStatus from '@/app/enums/ApplicationStatus.enum';
 
-// --- Mocks ---
-jest.mock('firebase/firestore', () => ({
-  doc: jest.fn(),
-  getDoc: jest.fn(),
-  collection: jest.fn(),
-  query: jest.fn(),
-  where: jest.fn(),
-  getDocs: jest.fn(),
-  updateDoc: jest.fn(),
-}));
+// Mock the global fetch
+global.fetch = jest.fn();
 
-// Corrected path based on user feedback
-jest.mock('../../../../src/app/firebase.ts', () => ({
-  db: {}, // Mock db instance, can be simple object
-}));
-
-// Corrected path based on user feedback
-jest.mock('../../../../src/app/server/services/DatabaseService.ts', () => ({
-  getUsername: jest.fn(),
-}));
-// --- End Mocks ---
+// Mock console.error to spy on its calls
+let consoleErrorMock: jest.SpyInstance;
 
 describe('ApplicationDatabaseServices', () => {
-  const mockApplicantId = 'applicant123';
+  const mockApplicantUserId = 'applicantUser123'; // Renamed to avoid confusion with application ID
   const mockJobId = 'job456';
-  const mockApplicationId = 'app789';
-  const mockDocRef = { id: 'mockDocRef' }; // Generic mock doc ref
-
-  // Typed mocks
-  const mockedDoc = doc as jest.Mock;
-  const mockedGetDoc = getDoc as jest.Mock;
-  const mockedCollection = collection as jest.Mock;
-  const mockedQuery = query as jest.Mock;
-  const mockedWhere = where as jest.Mock;
-  const mockedGetDocs = getDocs as jest.Mock;
-  const mockedUpdateDoc = updateDoc as jest.Mock;
-  const mockedGetUsernameFunc = getUsername as jest.Mock;
+  const mockApplicationId = 'app789'; 
 
   beforeEach(() => {
-    jest.clearAllMocks();
-
-    // Default implementations for mocks
-    mockedDoc.mockReturnValue(mockDocRef); // doc() returns our generic mockDocRef
-    mockedCollection.mockReturnValue({ id: 'mockCollRef' }); // collection() returns a mock collection ref
-    mockedQuery.mockReturnValue({ id: 'mockQueryRef' });    // query() returns a mock query ref
-    mockedWhere.mockImplementation((field, op, value) => ({ // where() returns a simplified constraint object
-        type: 'whereConstraint', field, op, value 
-    }));
-    mockedUpdateDoc.mockResolvedValue(undefined); // Default: updateDoc succeeds
-    mockedGetDoc.mockResolvedValue({ exists: () => false, data: () => undefined }); // Default: doc not found
-    mockedGetDocs.mockResolvedValue({ docs: [] }); // Default: no docs found
-    mockedGetUsernameFunc.mockResolvedValue('mocked-username'); // Default for getUsername
+    (global.fetch as jest.Mock).mockClear();
+    consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
+  afterEach(() => {
+    consoleErrorMock.mockRestore();
+  });
+
+  // --- getApplicant ---
   describe('getApplicant', () => {
-    it('should return applicant data if document exists', async () => {
-      const fakeData = { ApplicantID: mockApplicantId, JobID: mockJobId, Status: ApplicationStatus.Pending } as ApplicantData;
-      mockedGetDoc.mockResolvedValue({
-        exists: () => true,
-        data: () => fakeData,
+    const mockApplicantData: ApplicantData = {
+      ApplicationID: mockApplicationId, 
+      ApplicantID: mockApplicantUserId, 
+      JobID: mockJobId,
+      Status: ApplicationStatus.Pending,
+      ApplicationDate: new Date('2024-01-15T00:00:00.000Z').getTime(), // Corrected to number (timestamp)
+      BidAmount: 1000,
+      CVURL: 'cv.pdf',
+      EstimatedTimeline: 14, // Corrected to number (e.g., days)
+      username: 'applicantUser', 
+    };
+
+    it('should fetch and return applicant data on successful API call', async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ result: mockApplicantData }),
       });
 
       const result = await getApplicant(mockApplicationId);
 
-      expect(mockedDoc).toHaveBeenCalledWith(db, 'applications', mockApplicationId);
-      expect(mockedGetDoc).toHaveBeenCalledWith(mockDocRef);
-      expect(result).toEqual(fakeData);
+      expect(global.fetch).toHaveBeenCalledWith(`/api/application/get/${mockApplicationId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      expect(result).toEqual(mockApplicantData);
+      expect(consoleErrorMock).not.toHaveBeenCalled();
     });
 
-    it('should return null if document does not exist', async () => {
-      mockedGetDoc.mockResolvedValue({
-        exists: () => false,
-        data: () => undefined,
+    it('should return null if API call is successful but applicant not found (result is null)', async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ result: null }),
       });
+
       const result = await getApplicant(mockApplicationId);
       expect(result).toBeNull();
+      expect(consoleErrorMock).not.toHaveBeenCalled();
+    });
+    
+    it('should return undefined for result if API returns non-OK status and response.json().result is undefined (service has no 500 check)', async () => {
+        const errorFromApiRoute = { message: 'Internal Server Error from API' }; 
+        (global.fetch as jest.Mock).mockResolvedValue({
+          ok: false,
+          status: 500, 
+          json: async () => (errorFromApiRoute), 
+        });
+  
+        const result = await getApplicant(mockApplicationId);
+        // getApplicant service does NOT have `if (response.status == 500) console.error(...)`
+        expect(consoleErrorMock).not.toHaveBeenCalled();
+        expect(result).toBeUndefined(); // because errorFromApiRoute.result is undefined
+      });
+
+
+    it('should propagate error on fetch network failure', async () => {
+      const networkError = new Error('Network failure');
+      (global.fetch as jest.Mock).mockRejectedValue(networkError);
+
+      await expect(getApplicant(mockApplicationId)).rejects.toThrow(networkError);
+      expect(consoleErrorMock).not.toHaveBeenCalled();
     });
   });
 
+  // --- getPendingApplicants ---
   describe('getPendingApplicants', () => {
-    // THIS TEST ASSUMES THE SOURCE CODE OF getPendingApplicants HAS BEEN FIXED
-    // TO USE Promise.all and await getUsername for each applicant.
-    it('should return pending applicants for a job with resolved usernames', async () => {
-      const appData1 = { ApplicantID: 'app1', JobID: mockJobId, Status: ApplicationStatus.Pending, ApplicationDate: '2023-01-01', BidAmount: 100, CVURL: 'cv1.pdf', EstimatedTimeline: '1 week' };
-      const appData2 = { ApplicantID: 'app2', JobID: mockJobId, Status: ApplicationStatus.Pending, ApplicationDate: '2023-01-02', BidAmount: 150, CVURL: 'cv2.pdf', EstimatedTimeline: '2 weeks' };
-      const mockDocsArray = [
-        { id: 'docId1', data: () => appData1 },
-        { id: 'docId2', data: () => appData2 },
-      ];
-      mockedGetDocs.mockResolvedValue({ docs: mockDocsArray });
+    const mockPendingApplicantDataArray: ApplicantData[] = [ 
+      { ApplicationID: 'app1', ApplicantID: 'user1', JobID: mockJobId, Status: ApplicationStatus.Pending, ApplicationDate: new Date('2024-01-10T00:00:00.000Z').getTime(), BidAmount: 500, CVURL: 'cv1.pdf', EstimatedTimeline: 7, username: 'userOne' },
+      { ApplicationID: 'app2', ApplicantID: 'user2', JobID: mockJobId, Status: ApplicationStatus.Pending, ApplicationDate: new Date('2024-01-12T00:00:00.000Z').getTime(), BidAmount: 600, CVURL: 'cv2.pdf', EstimatedTimeline: 14, username: 'userTwo' },
+    ];
 
-      // Mock getUsername to return specific resolved usernames
-      mockedGetUsernameFunc
-        .mockImplementation(async (id: string) => `username-for-${id}`);
+    it('should fetch and return pending applicants on successful API call', async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ results: mockPendingApplicantDataArray }),
+      });
 
       const result = await getPendingApplicants(mockJobId);
 
-      expect(mockedCollection).toHaveBeenCalledWith(db, 'applications');
-      const whereConstraint1 = expect.objectContaining({ field: 'Status', op: '==', value: ApplicationStatus.Pending });
-      const whereConstraint2 = expect.objectContaining({ field: 'JobID', op: '==', value: mockJobId });
-      expect(mockedWhere).toHaveBeenCalledWith('Status', '==', ApplicationStatus.Pending);
-      expect(mockedWhere).toHaveBeenCalledWith('JobID', '==', mockJobId);
-      expect(mockedQuery).toHaveBeenCalledWith(expect.anything(), whereConstraint1, whereConstraint2);
-      expect(mockedGetDocs).toHaveBeenCalledWith(expect.anything());
-
-      expect(result).toHaveLength(2);
-      expect(result[0]).toEqual({ ...appData1, ApplicationID: 'docId1', username: 'username-for-app1' });
-      expect(result[1]).toEqual({ ...appData2, ApplicationID: 'docId2', username: 'username-for-app2' });
-      expect(mockedGetUsernameFunc).toHaveBeenCalledWith('app1');
-      expect(mockedGetUsernameFunc).toHaveBeenCalledWith('app2');
+      expect(global.fetch).toHaveBeenCalledWith(`/api/application/get/pending/${mockJobId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      expect(result).toEqual(mockPendingApplicantDataArray);
+      expect(consoleErrorMock).not.toHaveBeenCalled();
     });
+    
+    it('should return empty array if API call is successful but results are empty', async () => {
+        (global.fetch as jest.Mock).mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: async () => ({ results: [] }),
+        });
+  
+        const result = await getPendingApplicants(mockJobId);
+        expect(result).toEqual([]);
+        expect(consoleErrorMock).not.toHaveBeenCalled();
+      });
 
-    it('should return an empty array if no pending applicants found', async () => {
-      mockedGetDocs.mockResolvedValue({ docs: [] }); // No documents
-      const result = await getPendingApplicants(mockJobId);
-      expect(result).toEqual([]);
-      expect(mockedGetUsernameFunc).not.toHaveBeenCalled();
+    it('should return undefined for results if API returns non-OK status and response.json().results is undefined (service has no 500 check)', async () => {
+        const errorFromApiRoute = { message: 'Internal Server Error from API' };
+        (global.fetch as jest.Mock).mockResolvedValue({
+          ok: false,
+          status: 500,
+          json: async () => (errorFromApiRoute),
+        });
+  
+        const result = await getPendingApplicants(mockJobId);
+        // getPendingApplicants service does NOT have `if (response.status == 500) console.error(...)`
+        expect(consoleErrorMock).not.toHaveBeenCalled();
+        expect(result).toBeUndefined(); 
+      });
+
+    it('should propagate error on fetch network failure', async () => {
+      const networkError = new Error('Network failure');
+      (global.fetch as jest.Mock).mockRejectedValue(networkError);
+
+      await expect(getPendingApplicants(mockJobId)).rejects.toThrow(networkError);
+      expect(consoleErrorMock).not.toHaveBeenCalled();
     });
   });
 
+  // --- acceptApplicant ---
   describe('acceptApplicant', () => {
-    it('should update applicant status to Approved', async () => {
+    it('should accept applicant on successful API call', async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({}), 
+      });
+
       await acceptApplicant(mockApplicationId);
-      expect(mockedDoc).toHaveBeenCalledWith(db, 'applications', mockApplicationId);
-      expect(mockedUpdateDoc).toHaveBeenCalledWith(mockDocRef, { Status: ApplicationStatus.Approved });
+
+      expect(global.fetch).toHaveBeenCalledWith(`/api/application/accept/${mockApplicationId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      expect(consoleErrorMock).not.toHaveBeenCalled();
     });
 
-    it('should propagate error if updateDoc fails for acceptApplicant', async () => {
-      const specificError = new Error("Accepting Update Failed");
-      mockedUpdateDoc.mockRejectedValue(specificError);
-      // mockedDoc is already set in beforeEach to return mockDocRef
+    it('should call console.error on API error (500)', async () => {
+      const errorResponse = { message: 'Error accepting applicant', error: {} };
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: async () => errorResponse,
+      });
 
-      await expect(acceptApplicant(mockApplicationId)).rejects.toThrow("Accepting Update Failed");
+      await acceptApplicant(mockApplicationId);
+      expect(global.fetch).toHaveBeenCalledWith(`/api/application/accept/${mockApplicationId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      expect(consoleErrorMock).toHaveBeenCalledWith(errorResponse);
+    });
+
+    it('should propagate error on fetch network failure', async () => {
+      const networkError = new Error('Network failure');
+      (global.fetch as jest.Mock).mockRejectedValue(networkError);
+
+      await expect(acceptApplicant(mockApplicationId)).rejects.toThrow(networkError);
+      expect(consoleErrorMock).not.toHaveBeenCalled();
     });
   });
 
+  // --- rejectApplicant ---
   describe('rejectApplicant', () => {
-    it('should update applicant status to Denied', async () => {
+    it('should reject applicant on successful API call', async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({}),
+      });
+
       await rejectApplicant(mockApplicationId);
-      expect(mockedDoc).toHaveBeenCalledWith(db, 'applications', mockApplicationId);
-      expect(mockedUpdateDoc).toHaveBeenCalledWith(mockDocRef, { Status: ApplicationStatus.Denied });
+
+      expect(global.fetch).toHaveBeenCalledWith(`/api/application/deny/${mockApplicationId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      expect(consoleErrorMock).not.toHaveBeenCalled();
     });
 
-    it('should propagate error if updateDoc fails for rejectApplicant', async () => {
-      const specificError = new Error("Rejecting Update Failed");
-      mockedUpdateDoc.mockRejectedValue(specificError);
-      // mockedDoc is already set in beforeEach to return mockDocRef
+    it('should call console.error on API error (500)', async () => {
+      // The API route /api/application/deny/[aid]/route.ts has a slight copy-paste in its error message:
+      // it returns {message: "Error accepting applicant", error}
+      // The test should reflect what the API *actually* returns for the service to log.
+      const errorResponseFromApi = { message: 'Error accepting applicant', error: {} }; 
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: async () => errorResponseFromApi,
+      });
 
-      await expect(rejectApplicant(mockApplicationId)).rejects.toThrow("Rejecting Update Failed");
+      await rejectApplicant(mockApplicationId);
+      expect(global.fetch).toHaveBeenCalledWith(`/api/application/deny/${mockApplicationId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      expect(consoleErrorMock).toHaveBeenCalledWith(errorResponseFromApi);
+    });
+
+    it('should propagate error on fetch network failure', async () => {
+      const networkError = new Error('Network failure');
+      (global.fetch as jest.Mock).mockRejectedValue(networkError);
+
+      await expect(rejectApplicant(mockApplicationId)).rejects.toThrow(networkError);
+      expect(consoleErrorMock).not.toHaveBeenCalled();
     });
   });
 });
