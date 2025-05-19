@@ -89,7 +89,7 @@ async function getNotificationsForUser(uid: string): Promise<Notification[]> {
 
     if (response.status == 500) console.error(await response.json());
 
-    return (await response.json()).results;
+    return (await response.json()).results.map((v: FSNotification) => fromDB(v));
 }
 
 export { createNotification, setNotificationSeen, getNotificationsForUser, fromDB, deleteNotification, markAllNotificationsAsSeenForUser, toDB }
