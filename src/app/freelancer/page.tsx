@@ -35,9 +35,10 @@ export default function Page() {
   const { setJobID } = useContext(JobContext) as JobContextType;
   const { fetchJobsWithUsers } = useChatStore();
 
+  //Fetching the jobs the freelancer is working on to display on the freelancers page
   async function fetchUserJobs() {
     if (!FreelancerUId) {
-      console.warn("Client ID is undefined");
+      console.warn("Freelancer ID is undefined");
       return;
     }
     try {
@@ -52,6 +53,7 @@ export default function Page() {
     fetchUserJobs();
   }, [FreelancerUId]);
 
+  //When a job card is clicked on, the freelancer will be taken to the milestones page for that job
   function handleCardClick(job: ActiveJob): void {
     const currentJobStatus = job.jobData.status;
     if (currentJobStatus == JobStatus.Deleted) return;

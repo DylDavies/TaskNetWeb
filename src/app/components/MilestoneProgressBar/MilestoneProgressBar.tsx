@@ -10,7 +10,6 @@ interface ProgressBarProps {
 const MilestoneProgressBar: React.FC<ProgressBarProps> = ({ progress, label = "Progress" }) => {
   return (
     <section className="w-full max-w-6xl mx-auto flex justify-center">
-      {/* Accessible label (hidden visually but available to screen readers) */}
       <section id="progress-label" className="sr-only ">
         {label}: {progress}%
       </section>

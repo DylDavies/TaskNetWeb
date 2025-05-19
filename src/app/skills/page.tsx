@@ -24,15 +24,16 @@ const links = [
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
-
   const [skills, setSkills] = useState<SkillData[]>();
   const[inputValue, setInputValue] = useState("");
   const [selectedSkillArea, setSelectedSkillArea] = useState<string>();
 
+  //Takes in a skills as an input
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
 
+  //Fetched all the skills 
   useEffect(() => {
     const fetchSkills = async () => {
         try{
@@ -46,6 +47,7 @@ export default function Page() {
     fetchSkills();
   },[skills, selectedSkillArea]);
 
+  //Adds a new skill to the database
   const addSkills = () => {
     if(selectedSkillArea == undefined){
         toast.error("No Skills Area Selected");

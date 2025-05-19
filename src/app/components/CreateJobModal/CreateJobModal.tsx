@@ -194,6 +194,7 @@ const CreateJobModal = ({refetch}: Props) => {
     
   };
 
+  //Handles when the client selects wanted skills for the job
   const handleSkillSelect = (skill: string) => {
     if (!selectedSkills.includes(skill)) {
       const newSelected = [...selectedSkills, skill];
@@ -207,6 +208,7 @@ const CreateJobModal = ({refetch}: Props) => {
     }
   };
 
+  //The client can remove a skill if they dont want it anymore
   const handleSkillRemove = (skill: string) => {
     const updatedSelected = selectedSkills.filter((s) => s !== skill);
     const updatedAvailable = [
@@ -240,14 +242,17 @@ const CreateJobModal = ({refetch}: Props) => {
     setDeadline(newDate);
   };
 
+  //Opens the modal
   function openModal() {
     setIsOpen(true);
   }
 
+  //Closes the modal
   function closeModal() {
     setIsOpen(false);
   }
 
+  //fliters skills based on input
   const handleSkillInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSkillInput(value);

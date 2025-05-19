@@ -38,12 +38,6 @@ const Header: React.FC<Props> = ({ usertype, name }) => {
     <header className="sticky top-0 z-50 w-full bg-gray-900 border-b border-gray-800 box-header">
       <section className="flex items-center justify-between max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-3 lg:py-4">
         <section className="flex items-center gap-3 lg:gap-4">
-          {/*<img
-        src="/images/WhiteLogo.png"
-        alt="TaskNet Logo"
-        className="w-8 h-8 sm:w-9 sm:h-9"
-      />
-      */}
           <h1 className="text-xl sm:text-2xl font-bold text-white">TaskNet</h1>
         </section>
 

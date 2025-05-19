@@ -54,6 +54,7 @@ export default function Page() {
   }, []);
 
 
+  //Filters the jobs if the user is using the jobs filter, the AI will also recommend jobs to the freelancer that is best suited to them according to skills
   useEffect(() => {
     async function filterJobs() {
       try {
@@ -93,7 +94,7 @@ export default function Page() {
   }, [selectedSkills, jobNameFilter]);
   
 
-  // Click handler for clicking on a job card
+  // Click handler for clicking on a job card, opens the modal to read more information on the job and submit an application
   function handleCardClick(job: ActiveJob): void {
     if(job?.jobData && job.jobId){
       setData(job);
