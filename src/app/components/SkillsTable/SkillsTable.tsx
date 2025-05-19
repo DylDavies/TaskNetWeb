@@ -22,6 +22,7 @@ const SkillsTable: React.FC<Props> = ({ data }) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700 bg-gray-800">
+              {/*Populating the table with all the skills areas and the associated skills*/}
               {data.map((item, index) => (
                 <tr key={index} className="text-gray-400">
                   <td className="px-4 py-3">

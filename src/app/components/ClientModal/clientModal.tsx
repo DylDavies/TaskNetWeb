@@ -85,7 +85,7 @@ const ClientModal: React.FC<Props> = ({ data, isOpen, onClose }) => {
                 <p>{jobTitle || data.JobID}</p>
               </section>
 
-              {/*The following is taking in data from the modal*/}
+              {/*The following is taking data passed into the modal and displaying it*/}
               <section>
                 <h3 className="font-semibold">Estimated Timeline</h3>
                 <p>{formatDateAsString(data.EstimatedTimeline)}</p>
