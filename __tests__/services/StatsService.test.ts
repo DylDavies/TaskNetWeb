@@ -39,11 +39,13 @@ jest.mock("../../src/app/server/services/adminService", () => ({
   getPaymentStatsPerJob: jest.fn(),
 }));
 
+//Name for the testsuite
 describe("AdminService - Integration Tests", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
+  //testing getCompletionStats function
   describe("getCompletionStats", () => {
     it("should return correct completion stats for a given date range", async () => {
       const StartDate = new Date("2025-05-01");
@@ -55,7 +57,7 @@ describe("AdminService - Integration Tests", () => {
           { id: "job3", data: () => ({ status: JobStatus.Posted, createdAt: EndDate.getTime() }) },
           { id: "job4", data: () => ({ status: JobStatus.Deleted, createdAt: StartDate.getTime() }) },
         ],
-      };
+      };//mock snapshot that will be used to get stats
       (collection as jest.Mock).mockReturnValue({});
       (query as jest.Mock).mockReturnValue({});
       (where as jest.Mock).mockReturnValue({});
@@ -118,7 +120,7 @@ describe("AdminService - Integration Tests", () => {
           { id: "job2", data: () => ({ status: JobStatus.Completed, createdAt: new Date("2025-05-10").getTime(), clientUId: "client2", hiredUId: "freelancer2", title: "Project B" }) },
           { id: "job3", data: () => ({ status: JobStatus.Posted, createdAt: EndDate.getTime() }) },
         ],
-      };
+      };//mock data that will used to generate the stats
       (collection as jest.Mock).mockReturnValue({});
       (query as jest.Mock).mockReturnValue({});
       (where as jest.Mock).mockReturnValue({});

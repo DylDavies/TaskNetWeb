@@ -14,11 +14,14 @@ import nodemailer from "nodemailer";
 
 const { __mockTransporter } = nodemailer as any;
   
+//Mocking dependancies
   jest.mock("firebase/firestore");
   jest.mock("firebase/storage");
   jest.mock("nodemailer");
   
+  //what testsuite is called
   describe("DatabaseService", () => {
+    //makes a mock user doc to test
     const mockUserDoc = {
       id: "user123",
       data: () => ({ status: UserStatus.Pending })
@@ -29,6 +32,7 @@ const { __mockTransporter } = nodemailer as any;
       
     });
 
+    //test for getUser function
     describe("getUser", () => {
       it("should return null if no user", async () => {
         (doc as jest.Mock).mockReturnValue({});
@@ -49,6 +53,7 @@ const { __mockTransporter } = nodemailer as any;
       })
     });
 
+    //Test for approve user funciton
     describe("approveUser", () => {
       it("should run updateDoc", async () => {        
         await approveUser("mockUid");
@@ -57,6 +62,7 @@ const { __mockTransporter } = nodemailer as any;
       });
     })
 
+    //test for denyUser function
     describe("denyUser", () => {
       it("should run updateDoc", async () => {        
         await denyUser("mockUid");
@@ -65,6 +71,7 @@ const { __mockTransporter } = nodemailer as any;
       });
     });
 
+    //Test for setUserName
     describe("setUserName", () => {
       it("should succeeed", async () => {
         (updateDoc as jest.Mock).mockReturnValue("success");
@@ -85,6 +92,7 @@ const { __mockTransporter } = nodemailer as any;
       });
     });
   
+    //Test for getPendingUsers
     describe("getPendingUsers", () => {
       it("should return pending users", async () => {
         (collection as jest.Mock).mockReturnValue("users-collection");
@@ -102,6 +110,7 @@ const { __mockTransporter } = nodemailer as any;
       });
     });
   
+    //Test for setUserType
     describe("setUserType", () => {
       it("should update user type", async () => {
         (doc as jest.Mock).mockReturnValue("user-ref");
@@ -121,6 +130,7 @@ const { __mockTransporter } = nodemailer as any;
       });
     });
   
+    //Test for sendEmail
     describe("sendEmail", () => {
       const mockSendMail = __mockTransporter.sendMail;
 
@@ -156,6 +166,7 @@ const { __mockTransporter } = nodemailer as any;
       });
     });
   
+    //test for uploadFile
     describe("uploadFile", () => {
       it("should handle successful upload", async () => {
         (uploadBytesResumable as jest.Mock).mockReturnValue({
