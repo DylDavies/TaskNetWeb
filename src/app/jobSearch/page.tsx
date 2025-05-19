@@ -13,6 +13,8 @@ import ActiveJob from "../interfaces/ActiveJob.interface";
 import MultiViewModal from "../components/MultiViewModal/MultiViewModal";
 import JobStatus from "../enums/JobStatus.enum";
 import InputBar from "../components/inputbar/InputBar";
+import { recommendJobs } from "../server/services/RecommendationService";
+import ActiveUser from "../interfaces/ActiveUser.interface";
 
 //constant for links to other pages
 const links = [
@@ -24,12 +26,14 @@ const links = [
 
 export default function Page() {
   const [jobCards, setJobCards] = useState<ActiveJob[]>([]);
+  const [recommended, setRecommended] = useState<{jobId: string, reason: string}[]>([]);
   const [skills, setSkills] = useState<string[]>([]); // all skills from all skills areas
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]); // Selected skills from filter
   const [jobNameFilter, setJobNameFilter] = useState("");
   const { user } = useContext(AuthContext) as AuthContextType;
   const [openModal, setModalOpen] = useState(false);
   const [data, setData] = useState<ActiveJob>();
+  
 
   const closeModal = () => {
     setModalOpen(false);        
@@ -40,7 +44,6 @@ export default function Page() {
     async function fetchSkills() {
       try {
         const skillData = await getAllSkills(); // gets all skills as an array
-        //console.log(skillData);
         setSkills(skillData);
       } catch (err) {
         console.error("could not fetch skillData: ", err);
@@ -50,34 +53,16 @@ export default function Page() {
     fetchSkills();
   }, []);
 
-  // Gets ActiveJob data to populate cards - can change to JobData if JobID isn't needed
-  // useEffect(() => {
-  //   async function filterJobsBySkills() {
-  //     try {
-  //       const activeJobs = await getAllJobs();
 
-  //       const filtered = activeJobs.filter((job) => {
-  //         const flattenedSkills = Object.values(job.jobData.skills).flat(); // Get all skills from all skill areas
-  //         return selectedSkills.every((selected) =>
-  //           flattenedSkills.some(
-  //             (skill) => skill.toLowerCase() === selected.toLowerCase()
-  //           )
-  //         );
-  //       });
-
-  //       setJobCards(filtered);
-  //     } catch (error) {
-  //       console.error("Error occurred when trying to fetch Jobs: ", error);
-  //     }
-  //   }
-
-  //   filterJobsBySkills();
-  // }, [selectedSkills]);
-
+  //Filters the jobs if the user is using the jobs filter, the AI will also recommend jobs to the freelancer that is best suited to them according to skills
   useEffect(() => {
     async function filterJobs() {
       try {
         const activeJobs = await getAllJobs();
+
+        recommendJobs(user as ActiveUser, activeJobs).then(res => {
+          setRecommended(res);
+        });
   
         const filtered = activeJobs.filter((job) => {
           if (job.jobData.status !== JobStatus.Posted) return false;
@@ -109,7 +94,7 @@ export default function Page() {
   }, [selectedSkills, jobNameFilter]);
   
 
-  // Click handler for clicking on a job card
+  // Click handler for clicking on a job card, opens the modal to read more information on the job and submit an application
   function handleCardClick(job: ActiveJob): void {
     if(job?.jobData && job.jobId){
       setData(job);
@@ -164,6 +149,9 @@ export default function Page() {
                 deadline={formatDateAsString(job.jobData.deadline)}
                 skills={Object.values(job.jobData.skills).flat()}
                 onClick={() => handleCardClick(job)}
+                hired={job.jobData.status}
+                isAIRcommended={recommended.some(v => v.jobId == job.jobId)}
+                aiRecommendationReason={recommended.find(v => v.jobId == job.jobId)?.reason}
               />
             ))}
             {openModal && data && (

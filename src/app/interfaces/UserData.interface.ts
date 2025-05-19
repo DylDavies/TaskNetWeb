@@ -7,6 +7,12 @@ interface UserData {
     username: string;
     date: number;
     avatar?: string;
+    ratingAverage?: number;
+    ratingCount?: number;
+    ratings?: number[];
+        skills?: { 
+        [skillArea: string]: string[]
+    };
 }
 
 export default UserData;

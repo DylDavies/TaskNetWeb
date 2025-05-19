@@ -17,6 +17,7 @@ type UploadComponentProps = {
   fileType?: string; // Changed to lowercase to match convention
 };
 
+//This funciton will upload a file to the firebase bucket
 function UploadComponent({ 
   uploadFunction, 
   path, 
@@ -46,6 +47,7 @@ function UploadComponent({
 
     const toastId = toast.loading("Uploading File...");
 
+    //This will upload the file
     uploadFunction(file, path, name)
       .then((url) => {
         toast.dismiss(toastId);

@@ -22,6 +22,7 @@ const COLORS = [
   '#ec4899'  // pink-500
 ];
 
+//This funciton retuns competion rate info in a visually pleasing way
 const CompletionInfo: React.FC<CompletionInfoProps> = ({ stats, startDate, endDate }) => {
   const projectData = [
     { name: 'Completed', value: stats.completedProjects },
@@ -123,9 +124,6 @@ const CompletionInfo: React.FC<CompletionInfoProps> = ({ stats, startDate, endDa
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Projects Pie Chart */}
         <section className="bg-gray-800 p-4 rounded-lg border border-gray-700 group" id="CompletionPieChart">
-          <h3 className="text-lg font-semibold mb-4 text-center text-white">
-            Projects Breakdown
-          </h3>
           <PieChartComponent 
             data={projectData} 
             colors={COLORS} 
@@ -135,9 +133,6 @@ const CompletionInfo: React.FC<CompletionInfoProps> = ({ stats, startDate, endDa
 
         {/* Milestones Bar Chart */}
         <section className="bg-gray-800 p-4 rounded-lg border border-gray-700 group">
-          <h3 className="text-lg font-semibold mb-4 text-center text-white">
-            Milestones Progress
-          </h3>
           <BarChartComponent 
             data={milestoneData}
             colors={['#6366f1', '#f59e0b']}
@@ -146,8 +141,10 @@ const CompletionInfo: React.FC<CompletionInfoProps> = ({ stats, startDate, endDa
         </section>
       </section>
 
-      {/* Completion Rate Gauge */}
-      <CompletionBar value={completionRate} label="Overall Completion Rate" />
+      {/* Completion Bar */}
+      <section className="bg-gray-800 p-4 rounded-lg border border-gray-700 group mt-6">
+        <CompletionBar value={completionRate} label="Overall Completion Rate" />
+      </section>
 
     </section>
   );

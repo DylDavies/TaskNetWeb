@@ -44,7 +44,6 @@ const CreateJobModal = ({refetch}: Props) => {
     const fetchSkills = async () => {
       try {
         const skills = await getAllSkills();
-        //console.log(skills);
         setAllSkills(skills);
         setFilteredSkills(skills);
       } catch (err) {
@@ -141,7 +140,6 @@ const CreateJobModal = ({refetch}: Props) => {
       toast.error("Please select at least one skill");
       return;
     }
-    //console.log(skillAreaSkillMap);
 
     const job = {
       title,
@@ -154,8 +152,9 @@ const CreateJobModal = ({refetch}: Props) => {
       hiredUId: hiredUid,
       clientUId: clientUid,
       createdAt: currentDate,
+      hasClientRated: false,
+      hasFreelancerRated: false
     };
-    //console.log(job);
 
     // sanitize data
     let sanitizedJobData;
@@ -192,8 +191,10 @@ const CreateJobModal = ({refetch}: Props) => {
     setMaxBudget("");
     setSelectedSkills([]);
     setSkillInput("");
+    
   };
 
+  //Handles when the client selects wanted skills for the job
   const handleSkillSelect = (skill: string) => {
     if (!selectedSkills.includes(skill)) {
       const newSelected = [...selectedSkills, skill];
@@ -207,6 +208,7 @@ const CreateJobModal = ({refetch}: Props) => {
     }
   };
 
+  //The client can remove a skill if they dont want it anymore
   const handleSkillRemove = (skill: string) => {
     const updatedSelected = selectedSkills.filter((s) => s !== skill);
     const updatedAvailable = [
@@ -240,14 +242,17 @@ const CreateJobModal = ({refetch}: Props) => {
     setDeadline(newDate);
   };
 
+  //Opens the modal
   function openModal() {
     setIsOpen(true);
   }
 
+  //Closes the modal
   function closeModal() {
     setIsOpen(false);
   }
 
+  //fliters skills based on input
   const handleSkillInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSkillInput(value);

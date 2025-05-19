@@ -25,6 +25,7 @@ export default function Home() {
     LoginRedirect(router);
 
     setLoading(false);
+
   }
   return (
     <main className="flex h-screen">

@@ -1,5 +1,3 @@
-import { addDoc, and, collection, doc, getDocs, query, setDoc, updateDoc, where, writeBatch } from "firebase/firestore";
-import { db } from "../../firebase";
 import Notification from "@/app/interfaces/Notification.interface";
 import FSNotification from "@/app/interfaces/FSNotification.interface";
 
@@ -38,52 +36,60 @@ function toDB(notif: Notification): FSNotification {
     }
 }
 
-async function createNotification(notificationData: Omit<Notification, "uid" | "sentTime" | "deleted">) {
-    const docRef = await addDoc(collection(db, "notifications"), notificationData);
-
-    const data: Notification = { uid: docRef.id, sentTime: new Date(), deleted: false, ...notificationData };
-
-    await setDoc(docRef, toDB(data));
-}
-
-async function deleteNotification(uid: string) {
-    await updateDoc(doc(db, "notifications", uid), {
-        deleted: true
+//This function creates a notification for a user to see
+async function createNotification(notificationData: Omit<Notification, "uid" | "sentTime" | "deleted">): Promise<void> {
+    const response = await fetch("/api/notifications/create", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(notificationData)
     });
+
+    if (response.status == 500) console.error(await response.json());
 }
 
-async function setNotificationSeen(uid: string, seen: boolean) {
-    await updateDoc(doc(db, "notifications", uid), {
-        seen
+//This function deletes the notification, if a user chooses to delete it
+async function deleteNotification(uid: string): Promise<void> {
+    const response = await fetch("/api/notifications/delete", {
+        method: "DELETE",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({uid})
     });
+
+    if (response.status == 500) console.error(await response.json());
 }
 
-async function markAllNotificationsAsSeenForUser(uids: string[]) {
-    const batch = writeBatch(db);
+//This function sets that the notification has been seen if the user has seen it
+async function setNotificationSeen(uid: string, seen: boolean): Promise<void> {
+    const response = await fetch("/api/notifications/seen", {
+        method: "PATCH",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({uid, seen})
+    });
 
-    for (const uid of uids) {
-        const dc = doc(db, "notifications", uid);
-
-        batch.update(dc, {
-            seen: true
-        });
-    }
-
-    try {
-        await batch.commit();
-    } catch (error) {
-        console.error(error);
-    }
+    if (response.status == 500) console.error(await response.json());
 }
 
-async function getNotificationsForUser(userUId: string): Promise<Notification[]> {
-    const snapshot = await getDocs(query(collection(db, "notifications"), and(where("uidFor", "==", userUId), where("deleted", "==", false))));
+//The user can choose to mark all notifications as seen with a click of a button
+async function markAllNotificationsAsSeenForUser(uids: string[]): Promise<void> {
+    const response = await fetch("/api/notifications/aseen", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({uids})
+    });
 
-    const results: Notification[] = [];
+    if (response.status == 500) console.error(await response.json());
+}
 
-    snapshot.forEach(s => results.push(fromDB(s.data() as FSNotification)));
+//This function gets all of the notifications for a user
+async function getNotificationsForUser(uid: string): Promise<Notification[]> {
+    const response = await fetch(`/api/notifications/get/${uid}`, {
+        method: "GET",
+        headers: { 'Content-Type': 'application/json' }
+    });
 
-    return results;
+    if (response.status == 500) console.error(await response.json());
+
+    return (await response.json()).results.map((v: FSNotification) => fromDB(v));
 }
 
 export { createNotification, setNotificationSeen, getNotificationsForUser, fromDB, deleteNotification, markAllNotificationsAsSeenForUser, toDB }

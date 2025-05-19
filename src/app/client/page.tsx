@@ -91,11 +91,9 @@ export default function Page() {
           />
         </header>
 
-        {/* Generate Job cards dynamically  */}
-
         <main className="flex-1 flex bg-[#cdd5f6] bg-color">
           <section className="w-64">
-            <SideBar items={links} myfunction={CreateJobModal({ refetch })} />
+            <SideBar items={links} buttons={[CreateJobModal({ refetch })]} />
           </section>
 
           <section className="flex-1 p-4 flex flex-col items-center gap-6 overflow-y-auto">
@@ -109,8 +107,10 @@ export default function Page() {
                 My job postings:{" "}
               </h2>
               <h3 className="text-2xl italic text-gray-300 flex justify-center">
-                Click to see applicants:{" "}
+                Click to see applicants if open to applicants and to create milestones if  someone has been hired:{" "}
               </h3>
+              
+               {/* Generate Job cards dynamically  */}
               <section className="border-2 border-gray-600 rounded-lg p-4 flex flex-wrap justify-center gap-6">
                 {jobCards.length > 0 ? (
                   jobCards.map((job, index) => (
@@ -126,6 +126,7 @@ export default function Page() {
                       skills={Object.values(job.jobData.skills).flat()}
                       onClick={() => handleCardClick(job)}
                       hired={job.jobData.status}
+                      redactRating={true}
                     />
                   ))
                 ) : (

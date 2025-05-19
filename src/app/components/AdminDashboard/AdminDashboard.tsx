@@ -3,34 +3,41 @@ import React, { useEffect, useState } from "react";
 import AdminTable from "../AdminTable/AdminTable";
 import { getPendingUsers } from "@/app/server/services/DatabaseService";
 import InputBar from "../inputbar/InputBar";
-
-interface User {
-  uid: string;
-  username: string;
-  status: number;
-  type: number;
-  date: number;
-}
-
-
+import PendingUser from "@/app/interfaces/PendingUser.interface";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "@/app/firebase";
 
   export default function DashboardContent() {
 
-    const [pendingUsers, setPendingUsers] = useState<User[]>([]);
+    const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
     const [SearchQuery, setSearchQuery] = useState<string>("");
-    const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+    const [filteredUsers, setFilteredUsers] = useState<PendingUser[]>([]);
+
+
 
   // To update the admin table after the Admin approves or denies user
     useEffect(() => {
     async function fetchPendingUsers() {
       const pendingUsers = await getPendingUsers();
-      //console.log("Pending users: ", pendingUsers);
       setPendingUsers(pendingUsers);
     }
 
     fetchPendingUsers();
   }, []);
 
+  //This will set pending users when they load the page
+  useEffect(() => {
+    const usersRef = collection(db, "users");
+  
+    const unsubscribe = onSnapshot(usersRef, async () => {
+      const updated = await getPendingUsers();
+      setPendingUsers([...updated]);
+    });
+  
+    return () => unsubscribe();
+  }, []);
+  
+//This will set pending users in the table when there is a change in perding users or searched for users
 useEffect(() => {
   let filtered = pendingUsers;
   const query = SearchQuery.toLowerCase();
@@ -60,7 +67,7 @@ useEffect(() => {
           </section>
         </section>
   
-        {/* AdminTable */}
+        {/* Pending users table */}
         <section className="w-full max-w-8xl mt-16">
           <AdminTable data={filteredUsers} />
         </section>

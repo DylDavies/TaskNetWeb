@@ -1,60 +1,43 @@
-'use server';
-
-import { getDoc, doc, collection, where, query, getDocs, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase";
 import ApplicantData from "../../interfaces/ApplicationData.interface";
-import ApplicationStatus from "@/app/enums/ApplicationStatus.enum";
-import { getUsername } from "./DatabaseService";
 
+//Getting an applicant based on ID
 async function getApplicant(ApplicantID: string): Promise<ApplicantData | null> {
-    const userDoc = await getDoc(doc(db, "applications", ApplicantID));
+    const response = await fetch(`/api/application/get/${ApplicantID}`, {
+        method: "GET",
+        headers: { 'Content-Type': 'application/json' }
+    }); 
 
-    if (!userDoc.exists()) return null;
-
-    return userDoc.data() as ApplicantData;
+    return (await response.json()).result;
 };
 
 // Fetch pending applicants Endpoint:
 async function getPendingApplicants(JobID: string): Promise<ApplicantData[]>{
-    const dbRef = collection(db,'applications'); 
-    const pending = query(dbRef,where('Status', '==', ApplicationStatus.Pending), where('JobID', '==', JobID));
+    const response = await fetch(`/api/application/get/pending/${JobID}`, {
+        method: "GET",
+        headers: { 'Content-Type': 'application/json' }
+    });
 
-    const snapshot = await getDocs(pending);
-
-    const pendingApplicants = snapshot.docs.map(doc => ({
-        
-        ApplicationID: doc.id,
-        ApplicantID: doc.data().ApplicantID,
-        ApplicationDate: doc.data().ApplicationDate,
-        BidAmount: doc.data().BidAmount,
-        CVURL: doc.data().CVURL,
-        EstimatedTimeline: doc.data().EstimatedTimeline,
-        JobID: doc.data().JobID,
-        Status: doc.data().Status,
-        username:getUsername(doc.data().ApplicantID)
-        
-        
-    }));
-
-    return pendingApplicants;
+    return (await response.json()).results;
 };  
 
 // Accept applicant Endpoint - Sets applicant status in database to 1 (permission granted)
-async function acceptApplicant(aid:string):Promise<void>{
-    const dbRef = doc(db,'applications', aid);
+async function acceptApplicant(aid: string):Promise<void>{
+    const response = await fetch(`/api/application/accept/${aid}`, {
+        method: "PATCH",
+        headers: { 'Content-Type': 'application/json' }
+    }); 
 
-    await updateDoc(dbRef,{
-        Status: ApplicationStatus.Approved
-    });
+    if (response.status == 500) console.error(await response.json());
 };
 
 // Reject applicant Endpoint - Sets applicant status in database to 2 (permission denied)
 async function rejectApplicant(aid:string):Promise<void>{
-    const dbRef = doc(db,'applications', aid);
+    const response = await fetch(`/api/application/deny/${aid}`, {
+        method: "PATCH",
+        headers: { 'Content-Type': 'application/json' }
+    }); 
 
-    await updateDoc(dbRef,{
-        Status: ApplicationStatus.Denied
-    });
+    if (response.status == 500) console.error(await response.json());
 };
 
 

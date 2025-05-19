@@ -13,15 +13,14 @@ import { AuthContext, AuthContextType } from "../AuthContext";
 import { getJob } from "../server/services/JobDatabaseService";
 import { JobContext, JobContextType } from "../JobContext";
 
+//On this page, clients can view freelancers applications to their jobs
+
 const links = [
   { name: "Home", href: "/client", selected: false }];
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
   const { jobID } = useContext(JobContext) as JobContextType;
-
-  //const [searchQuery, setSearchQuery] = useState("");
-
   const [jobTitle, setJobTitle] = useState<string>("");
 
   //To set the job title of the page
@@ -47,8 +46,6 @@ export default function Page() {
           <Header name={user?.userData.username || "Client"} usertype="Client" />
         </header>
 
-        
-
         <main className="flex flex-1 bg-[#cdd5f6] bg-color">
           <aside className="w-64">
             <SideBar items={links} />
@@ -63,7 +60,6 @@ export default function Page() {
                 </h1>
                 </section>
 
-              {/* FATable moved down */}
               <section className="w-full max-w-8xl mt-36">
                 <FATable jobName={jobTitle} />
               </section>

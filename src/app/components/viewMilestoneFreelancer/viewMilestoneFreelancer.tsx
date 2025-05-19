@@ -24,12 +24,14 @@ import { createNotification } from "@/app/server/services/NotificationService";
 import ChatLink from "../ChatLink/ChatLink";
 import { useChatStore } from "@/app/stores/chatStore";
 import JobWithUser from "@/app/interfaces/JobWithOtherUser.interface";
+import JobStatus from "@/app/enums/JobStatus.enum";
 
 type JobData = {
-  jobId: string;
-  clientUID: string;
-  milestone: MilestoneData;
-};
+    jobId: string;
+    jobStatus:JobStatus;
+    clientUID: string;
+    milestone: MilestoneData;
+  };
 
 type Props = {
   data: JobData;
@@ -47,9 +49,7 @@ const ViewMilestones: React.FC<Props> = ({
 }) => {
   const { user } = useContext(AuthContext) as AuthContextType;
   const [status, setStatus] = useState<MilestoneStatus>(data.milestone.status);
-  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | undefined>(
-    data.milestone.paymentStatus
-  );
+  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | undefined>(data.milestone.paymentStatus);
   const [role, setRole] = useState("client");
   const [reportURL, setreportURL] = useState("");
   const [isApproving, setIsApproving] = useState(false);
@@ -58,6 +58,7 @@ const ViewMilestones: React.FC<Props> = ({
   const { jobsWithUsers } = useChatStore();
   const [jobWithUser, setJobWithUser] = useState<JobWithUser | null>(null);
 
+  //Set the role of the user for this modal depending on user type
   useEffect(() => {
     if (user?.authUser?.uid == data.clientUID) {
       setRole("client");
@@ -72,6 +73,7 @@ const ViewMilestones: React.FC<Props> = ({
     refetch();
   }, [data.milestone]);
 
+  //Handles when the status of the milestone changes
   const handleStatusChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedStatus = e.target.value as keyof typeof MilestoneStatus;
     const confirmed = window.confirm(
@@ -87,9 +89,11 @@ const ViewMilestones: React.FC<Props> = ({
       setStatus(enumValue);
       refetch();
     } catch (err) {
-      console.log("Error updating milestone:", err);
+      console.error("Error updating milestone:", err);
     }
   };
+
+  //Converts the status of the milestone to a string to be displayed
   function MilestoneStatusToString(value: MilestoneStatus | undefined): string {
     if (value === undefined) return "Unknown";
     return MilestoneStatus[value] || "...";
@@ -97,7 +101,6 @@ const ViewMilestones: React.FC<Props> = ({
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function handleSuccessfulPayment(details: any) {
-    console.log(details);
     if (details.status == "COMPLETED") {
       updateMilestonePaymentStatus(
         data.jobId,
@@ -109,28 +112,34 @@ const ViewMilestones: React.FC<Props> = ({
     }
   }
 
+  //Sets the payment status if the payment is successful
   function handleSuccessfulPayout() {
     setPaymentStatus(PaymentStatus.Paid);
     refetch();
   }
 
+  //Uploads the job completion report of the freelancer
   const handleUploadComplete = (url: string, file: File) => {
     setreportURL(url);
     setFileName(file.name);
-    // You can do more with the URL here, like save it to your database
   };
+
+  //Shows a preview of the job completion report if necessary
   const togglePdfPreview = () => {
     setShowPdfPreview(!showPdfPreview);
   };
+
+  //Removes the report if the freelancer chooses to remove it
   const handleRemoveFile = () => {
     setreportURL("");
     setFileName("");
   };
 
+  //Handles when the freelancer wants to submit the report and vlidates that they have actually uploaded something to submit
   const handleReportSubmit = async () => {
     try {
       if (!reportURL) {
-        toast.error("Please upload your CV first");
+        toast.error("Please upload your Report first");
         return;
       }
 
@@ -154,7 +163,6 @@ const ViewMilestones: React.FC<Props> = ({
 
   // get this jobWithUser
   useEffect(() => {
-    // Since jobId is fixed, we find the jobWithUser when the component mounts or when jobsWithUsers changes
     const foundJobWithUser = jobsWithUsers.find(
       (job: { job: { jobId: string; }; }) => job.job.jobId === data.jobId
     );
@@ -204,9 +212,12 @@ const ViewMilestones: React.FC<Props> = ({
                 $ {data.milestone.payment}
               </p>
             </section>
+
+            {/*What is displayed on the modal changes depending on the status of job completion as well as the user type, this is seen behow by the rest of the code*/}
             {role === "freelancer" &&
-              status !== MilestoneStatus.Completed &&
-              status !== MilestoneStatus.Approved && (
+              (status !== MilestoneStatus.Completed &&
+              status !== MilestoneStatus.Approved)
+              && (data && data.jobStatus === JobStatus.InProgress) && (
                 <section>
                   <fieldset>
                     <legend>Select Status</legend>
@@ -372,9 +383,7 @@ const ViewMilestones: React.FC<Props> = ({
                 <h4 className="font-semibold text-sm mb-1 mt-3">
                   Send the freelancer feedback with this link:
                 </h4>
-                {/*Pls put link to chat system here*/}
                 <section>
-                      {/* Link to chat with freelancer */}
                       {jobWithUser && jobWithUser.userData ? (
                         <>
                           <ChatLink

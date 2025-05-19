@@ -60,6 +60,6 @@ export default function PayPalCheckout({
     }
   };
 
-  if (isPending) return <div>Loading PayPal…</div>;
+  if (isPending) return <section>Loading PayPal…</section>;
   return <PayPalButtons {...buttonProps} />;
 }

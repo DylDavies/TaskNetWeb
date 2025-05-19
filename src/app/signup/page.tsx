@@ -17,12 +17,12 @@ import Loader from "../components/Loader/Loader";
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;
-
   const [inputText, setInputText] = useState("");
   const [type, setType] = useState(UserType.Client.toString());
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  //Gets input from the user on their username and the type of user they would like to be
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputText(e.target.value);
   };
@@ -31,25 +31,25 @@ export default function Page() {
     setType(e.target.value);
   };
 
+  //Handles when a user clicks on the sign up button
   const handleSignupClick = async () => {
     try {
+
       if (user) {
         const userEmail = user.authUser.email;
         const userName = user.authUser.displayName;
-        console.log(userEmail);
-        console.log(userName);
 
+        //Validates the user has an email
         if (!userEmail) {
           alert("No email found for the current user.");
           return;
         }
 
+        //Validates the user has a username
         if (!userName) {
           alert("No username found for the current user.");
           return;
         }
-
-        console.log("Sending email to:", userEmail);
 
         // Send the signup confirmation email
         const subject = "Welcome to TaskNet! You're on the Waiting List";
@@ -78,6 +78,7 @@ export default function Page() {
     }
   };
 
+  //If the user is already signed up, they will be asked to just log in instead using google
   async function LoginClick(usertype: number, username: string) {
     setLoading(true);
 
@@ -88,6 +89,7 @@ export default function Page() {
       await SetUserName(uid, username);
     }
 
+    //Right after signing up, before the account status has been approved or denied by the admin, the user will re redirected to a pending page
     await handleSignupClick();
     LoginRedirect(router);
 

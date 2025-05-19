@@ -1,99 +1,74 @@
-'use server'
-
-import { doc, setDoc, getDocs,addDoc,collection,updateDoc } from 'firebase/firestore';
-import { db } from '@/app/firebase';
 import MilestoneData from '@/app/interfaces/Milestones.interface';
 import PaymentStatus from '@/app/enums/PaymentStatus.enum';
 
   // Get all milestones for a specific job
 async function getMilestones(jobID: string): Promise<MilestoneData[]> {
-    try {
-      const milestoneCollectionRef = collection(db, "Jobs", jobID, "milestones");
-      const milestoneSnapshot = await getDocs(milestoneCollectionRef);
+  const response = await fetch(`/api/milestones/get/${jobID}`, {
+    method: "GET",
+    headers: { 'Content-Type': 'application/json' }
+  });
+
+  if (response.status == 500) console.error(await response.json());
+
+  return (await response.json()).results;
+}
   
-      const milestones: MilestoneData[] = [];
-      milestoneSnapshot.forEach((doc) => {
-        milestones.push({
-          id: doc.id,
-          ...(doc.data() as Omit<MilestoneData, "id">)
-        });
-      });
+// Add a new milestone to a specific job
+async function addMilestone(jobID: string, milestoneData: MilestoneData): Promise<string> {
+  const response = await fetch(`/api/milestones/add`, {
+    method: "POST",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({jobID, milestoneData})
+  });
+
+  if (response.status == 500) console.error(await response.json());
+
+  return (await response.json()).result;
+}
   
-      return milestones;
-    } catch (error) {
-      console.error("Error fetching milestones:", error);
-      throw error;
-    }
-  }
+// Update a specific milestone's completion (status)
+async function updateMilestoneStatus(jobID: string, milestoneID: string, status: number) {
+  const response = await fetch(`/api/milestones/status`, {
+    method: "PATCH",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({jobID, milestoneID, status})
+  });
+
+  if (response.status == 500) console.error(await response.json());
+}
   
-  // Add a new milestone to a specific job
-  async function addMilestone(jobID: string, milestoneData: MilestoneData): Promise<string> {
-    try {
-      const milestoneCollectionRef = collection(db, "Jobs", jobID, "milestones");
-      const milestoneDocRef = await addDoc(milestoneCollectionRef, milestoneData);
-  
-      return milestoneDocRef.id;
-    } catch (error) {
-      console.error("Error adding milestone:", error);
-      throw error;
-    }
-  }
-  
-  // Update a specific milestone's completion (status)
-  async function updateMilestoneStatus(jobID: string, milestoneID: string, status: number) {
-    try {
-      const milestoneDocRef = doc(db, "Jobs", jobID, "milestones", milestoneID);
-      await updateDoc(milestoneDocRef, {
-        status: status,
-      });
-  
-    } catch (error) {
-      console.error("Error updating milestone status:", error);
-      throw error;
-    }
-  }
-  
-  // Set (overwrite) a milestone if needed (optional, not always needed)
-  async function setMilestone(jobID: string, milestoneID: string, milestoneData: MilestoneData) {
-    try {
-      const milestoneDocRef = doc(db, "Jobs", jobID, "milestones", milestoneID);
-      await setDoc(milestoneDocRef, milestoneData);
-  
-    } catch (error) {
-      console.error("Error setting milestone:", error);
-      throw error;
-    }
-  }
+// Set (overwrite) a milestone if needed (optional, not always needed)
+async function setMilestone(jobID: string, milestoneID: string, milestoneData: MilestoneData) {
+  const response = await fetch(`/api/milestones/set`, {
+    method: "PUT",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({jobID, milestoneID, milestoneData})
+  });
+
+  if (response.status == 500) console.error(await response.json());
+}
 
 
-  //Freelancer can upload work for milestone that client can view
-  async function addReportURL( jobID:string ,milestoneID: string , reportURL :string){
-    try {
-      const milestoneDocRef = doc(db, "Jobs", jobID, "milestones", milestoneID);
-      await updateDoc(milestoneDocRef, {
-        reportURL:reportURL,
-      });
-  
-    } catch (error) {
-      console.error("Error adding milestone report url:", error);
-      throw error;
-    }
-  }
+//Freelancer can upload work for milestone that client can view
+async function addReportURL( jobID:string ,milestoneID: string , reportURL :string){
+  const response = await fetch(`/api/milestones/report/add`, {
+    method: "PATCH",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({jobID, milestoneID, reportURL})
+  });
 
-  
+  if (response.status == 500) console.error(await response.json());
+}
 
-  async function updateMilestonePaymentStatus(jobID: string, milestoneID: string, status: PaymentStatus) {
-    try {
-      const milestoneDocRef = doc(db, "Jobs", jobID, "milestones", milestoneID);
-      await updateDoc(milestoneDocRef, {
-        paymentStatus: status
-      })
-  
-    } catch (error) {
-      console.error("Error setting milestone:", error);
-      throw error;
-    }
-  }
-  
-  export { getMilestones, addMilestone, updateMilestoneStatus, setMilestone, updateMilestonePaymentStatus ,addReportURL};
+//Updates the payment status of a milestone according to job and milestone id and the new payment status
+async function updateMilestonePaymentStatus(jobID: string, milestoneID: string, status: PaymentStatus) {
+  const response = await fetch(`/api/milestones/payment`, {
+    method: "PATCH",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({jobID, milestoneID, status})
+  });
 
+  if (response.status == 500) console.error(await response.json());
+}
+  
+export { getMilestones, addMilestone, updateMilestoneStatus, setMilestone, updateMilestonePaymentStatus, addReportURL};

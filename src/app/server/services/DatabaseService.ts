@@ -4,11 +4,15 @@ import { getDoc, doc, collection, where, query, getDocs, updateDoc } from "fireb
 import { db, storage } from "../../firebase";
 import UserData from "../../interfaces/UserData.interface";
 import UserStatus from "@/app/enums/UserStatus.enum";
-//import AuthService from "../../services/AuthService";
 import nodemailer from 'nodemailer';
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
+//This function will return the user data for a given user id
 async function getUser(uid: string): Promise<UserData | null> {
+   if (!uid || typeof uid !== 'string' || uid.trim() === '') {
+    console.warn('Invalid UID provided to getUser:', uid);
+    return null;
+  }
     const userDoc = await getDoc(doc(db, "users", uid));
 
     if (!userDoc.exists()) return null;
@@ -83,6 +87,7 @@ async function SetUserName(uid: string, username: string){
   };
 };
 
+//This funciton will set hte avatar as the google profile picture
 async function setAvatar(uid: string, avatar: string | null) {
   try {
     const userRef = doc(db, "users", uid);
@@ -104,6 +109,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+//This function creats and sends an email to a user
 const sendEmail = (to: string, subject: string, text: string) => {
   const mailOptions = {
     from: '"TaskNet" <no-reply@tasknet.tech>', // sender name + email
@@ -160,5 +166,105 @@ async function getUsername(uid: string): Promise<string>{
     return "No username";
 } 
 
-export { getUser, getPendingUsers, approveUser, denyUser, setUserType, SetUserName, sendEmail, getUsername, uploadFile, setAvatar };
+
+// Add Skills for a freelancer
+async function addSkillsToFreelancer(uid: string, skillAreaSkillMap: { [skillArea: string]: string[] }): Promise<void> {
+  const userRef = doc(db, "users", uid);
+  const userDoc = await getDoc(userRef);
+
+  if (!userDoc.exists()) {
+    console.error("Users Doc doesnt exist");
+    return;
+  }
+
+  const userData = userDoc.data();
+  const currentSkills = userData?.skills || {}; 
+  const updatedSkills = { ...currentSkills }; // make copy
+  
+  Object.entries(skillAreaSkillMap).forEach(([skillArea, skills]) => {
+    if (!updatedSkills[skillArea]) {
+      updatedSkills[skillArea] = []; // Create new skill area if it doesn't exist
+    }
+
+    // Add skills to array for that skill area
+    skills.forEach((skill) => {
+      if (!updatedSkills[skillArea].includes(skill)) {
+        updatedSkills[skillArea].push(skill); 
+      }
+    });
+  });
+
+  // Update
+  try {
+    await updateDoc(userRef, {
+      skills: updatedSkills
+    });
+
+  } catch (err) {
+    console.error("Error updating user skills:", err);
+    throw new Error("Error updating skills");
+  }
+}
+
+// Get skills from freelancer
+async function getSkillsForFreelancer(uid: string): Promise<{ [skillArea: string]: string[] }> {
+  const userRef = doc(db, "users", uid);
+  const userDoc = await getDoc(userRef);
+
+  if (userDoc.exists()) {    
+    return userDoc.data()?.skills || {};
+  } else {
+    return {};
+  }
+}
+
+// Remove Skill for a freelancer
+async function removeSkillFromFreelancer(uid: string, skillName: string): Promise<void> {
+  const userRef = doc(db, "users", uid);
+  const userDoc = await getDoc(userRef);
+
+  if (!userDoc.exists()) {
+    console.error("Users doc doesnt exist");
+    return;
+  }
+
+  const userData = userDoc.data() as UserData;
+  const currentSkills = userData.skills || {}; 
+  const updatedSkills = { ...currentSkills }; // Make copy
+
+  let skillFound = false;
+
+  // find skill in that skill area
+  Object.entries(currentSkills).forEach(([skillArea, skills]) => {
+    if (skills.includes(skillName)) {
+      const filteredSkills = skills.filter((skill) => skill !== skillName);
+
+      if (filteredSkills.length === 0) {
+        delete updatedSkills[skillArea];
+      } else {
+        updatedSkills[skillArea] = filteredSkills;
+      }
+
+      skillFound = true;
+    }
+  });
+
+  if (!skillFound) {
+    console.warn(`Skill "${skillName}" not found for user`);
+    return;
+  }
+
+
+  try {
+    await updateDoc(userRef, {
+      skills: updatedSkills
+    });
+
+  } catch (err) {
+    console.error("Error removing user skill:", err);
+    throw new Error("Error removing skill");
+  }
+}
+
+export { getUser, getPendingUsers, approveUser, denyUser, setUserType, SetUserName, sendEmail, getUsername, uploadFile, setAvatar, addSkillsToFreelancer, getSkillsForFreelancer, removeSkillFromFreelancer };
 

@@ -17,15 +17,10 @@ interface Props {
   data: User[];
 }
 const AdminTable: React.FC<Props> = ({ data }) => {
-  //console.log(`The data is: ${JSON.stringify(data, null, 2)}`); //sanity check
   const [pendingUsers, setPendingUsers] = useState<User[]>(data);
 
   useEffect(() => {
     setPendingUsers(data);
-    console.log(
-      "new Updated pending users with new data:",
-      JSON.stringify(data, null, 3)
-    );
   }, [data]);
 
   const handleApprove = async (uid: string) => {
@@ -34,7 +29,6 @@ const AdminTable: React.FC<Props> = ({ data }) => {
       setPendingUsers((currentUser) =>
         currentUser.filter((user) => user.uid != uid)
       ); // for updating table when approved
-      console.log(`Successfully approved user ${uid}`);
     } catch (error) {
       console.error(`Error when trying to approve user ${error}`);
     }
@@ -46,7 +40,6 @@ const AdminTable: React.FC<Props> = ({ data }) => {
       setPendingUsers((currentUser) =>
         currentUser.filter((user) => user.uid != uid)
       ); // for updating table when approved
-      console.log(`Successfully Denied user ${uid}`);
     } catch (error) {
       console.error(`Error when trying to deny user ${error}`);
     }

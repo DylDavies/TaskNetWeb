@@ -18,24 +18,38 @@ import { useRouter } from "next/navigation";
 import { JobContext, JobContextType } from "@/app/JobContext";
 import { createChat } from "@/app/server/services/MessageDatabaseServices";
 import { AuthContext, AuthContextType } from "@/app/AuthContext";
+import { getUser } from "@/app/server/services/DatabaseService";
+import UserData from "@/app/interfaces/UserData.interface";
+import StarRatingDisplay from "../RatingStars/RatingStars";
 
+interface ApplicantWithRating extends ApplicationData {
+  userData?: UserData | null;
+}
 interface Props {
   jobName: string;
 }
 
 const FATable = ({ jobName }: Props) => {
   const router = useRouter();
-
   const { jobID } = useContext(JobContext) as JobContextType;
   const { user } = useContext(AuthContext) as AuthContextType;
+  const [applicantsWithRatings, setApplicantsWithRatings] = useState<ApplicantWithRating[]>([]);
+  const [pendingApplicants, setPendingApplicants] = useState<ApplicationData[]>([]);
 
-  const [pendingApplicants, setPendingApplicants] = useState<ApplicationData[]>(
-    []
-  );
-
+  //Get all pending applicants for the job to populate the applicants table
   async function fetchPendingApplicants() {
     const pendingApplicants = await getPendingApplicants(jobID as string);
     setPendingApplicants(pendingApplicants);
+
+    // Fetch user data for each applicant
+    const applicantsWithUserData = await Promise.all(
+      pendingApplicants.map(async (applicant) => {
+        const userData = await getUser(applicant.ApplicantID);
+        return { ...applicant, userData };
+      })
+    );
+    
+    setApplicantsWithRatings(applicantsWithUserData);
   }
 
   // To update the table after the client accepts or rejects applicants
@@ -43,27 +57,30 @@ const FATable = ({ jobName }: Props) => {
     fetchPendingApplicants();
   }, [jobID]);
 
-  const [selectedApplicant, setSelectedApplicant] =
-    useState<ApplicationData | null>(null);
+  const [selectedApplicant, setSelectedApplicant] = useState<ApplicationData | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  //Opens the modal displaying the applicants full application to the client
   const handleApplicationView = (ApplicantID: ApplicationData) => {
     setSelectedApplicant(ApplicantID);
     setModalOpen(true);
   };
 
+  //Closes the application modal
   const closeModal = () => {
     setModalOpen(false);
     setSelectedApplicant(null);
   };
 
+  //If a client accepts a freelancers application for a job, then that freelancer is accepted and is hired and all the other applicants are rejected
   const handleAccept = async (aid: string, uid: string, jid: string) => {
     try {
-      await acceptApplicant(aid);
-      await updateHiredUId(jid, uid);
-      await updateJobStatus(jid, JobStatus.Employed);
+      await acceptApplicant(aid); // accept the freelancers applicaion
+      await updateHiredUId(jid, uid); //Hire the freelancer
+      await updateJobStatus(jid, JobStatus.Employed); //change the status of the job to having someone employed
       await createChat(jid, jobName); // Create a chat for this job
 
+      //Reject all applicants that were not accepted and send them a notification
       for await (const applicant of pendingApplicants) {
         if (applicant.ApplicantID == uid) continue;
         await rejectApplicant(applicant.ApplicationID);
@@ -75,6 +92,7 @@ const FATable = ({ jobName }: Props) => {
         });
       }
 
+      //Send the freelancer that was accepted for the job a notification
       await createNotification({
         message: `${jobName} - Your application has been accepted`,
         seen: false,
@@ -101,6 +119,7 @@ const FATable = ({ jobName }: Props) => {
     }
   };
 
+  //If a client physically rejects the freelancers application by clicking reject on the table, that freelancers application status changes to rejected and the yrecieve a notification that they have been rejected
   const handleReject = async (aid: string, uid: string) => {
     try {
       await rejectApplicant(aid);
@@ -128,13 +147,13 @@ const FATable = ({ jobName }: Props) => {
             <thead>
               <tr className="text-xs font-semibold tracking-wide text-left uppercase border-b border-gray-700 bg-gray-800 text-gray-400">
                 <th className="px-4 py-3">Applicant</th>
+                <th className="px-4 py-3">Rating</th>
                 <th className="px-4 py-3">Status</th>
-                {/*<th className="px-4 py-3">Date</th>*/}
                 <th className="px-4 py-3">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700 bg-gray-800">
-              {pendingApplicants.map((item, index) => (
+              {applicantsWithRatings.map((item, index) => (
                 <tr
                   key={index}
                   className="text-gray-400 hover:bg-gray-700 transition duration-150"
@@ -162,7 +181,17 @@ const FATable = ({ jobName }: Props) => {
 
                   {/* Always show Pending in orange */}
                   <td className="px-4 py-3 text-xs">
-                    <strong className="px-2 py-1 font-semibold leading-tight rounded-full text-white bg-orange-600">
+                  {item.userData && (
+                      <StarRatingDisplay 
+                      averageRating={item.userData.ratingAverage || 0}
+                      totalRatings={item.userData.ratingCount || 0}
+                      />
+                    )}
+                      {!item.userData && <article>Not rated</article>}
+                    
+                  </td>
+                  <td className="px-4 py-3 text-xs space-x-2">
+                  <strong className="px-2 py-1 font-semibold leading-tight rounded-full text-white bg-orange-600">
                       Pending
                     </strong>
                   </td>
@@ -183,6 +212,7 @@ const FATable = ({ jobName }: Props) => {
                         onClose={closeModal}
                       />
                     )}
+                    {/*Button to accept a freelancers application*/}
                     <button
                       onClick={() =>
                         handleAccept(
@@ -195,6 +225,7 @@ const FATable = ({ jobName }: Props) => {
                     >
                       Accept
                     </button>
+                    {/*Button to reject a freelancers application*/}
                     <button
                       onClick={() =>
                         handleReject(item.ApplicationID, item.ApplicantID)

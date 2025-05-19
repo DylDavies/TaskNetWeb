@@ -14,7 +14,7 @@ interface Applicants {
   BidAmount: number;
   EstimatedTimeline: number;
   Status: number;
-  username: Promise<string>;
+  username: string;
 }
 
 interface Props {
@@ -27,13 +27,11 @@ const ClientModal: React.FC<Props> = ({ data, isOpen, onClose }) => {
   const [modalIsOpen, setIsOpen] = React.useState(isOpen);
   const [jobTitle, setJobTitle] = React.useState<string>("");
 
-  /*useEffect(() => {
-    Modal.setAppElement("#root");
-  }, []);*/
   if (typeof window !== "undefined") {
     Modal.setAppElement(document.body); // You can also use "#__next" if your layout root uses that
   }
 
+  //Sets the job title for the client modal
   useEffect(() => {
     const fetchJobTitle = async () => {
       if (data.JobID) {
@@ -49,10 +47,12 @@ const ClientModal: React.FC<Props> = ({ data, isOpen, onClose }) => {
     }
   }, [isOpen, data.JobID]);
 
+  //Opens the modal
   useEffect(() => {
     setIsOpen(isOpen);
   }, [isOpen]);
 
+  //closes the modal
   function closeModal() {
     setIsOpen(false);
     onClose();
@@ -85,6 +85,7 @@ const ClientModal: React.FC<Props> = ({ data, isOpen, onClose }) => {
                 <p>{jobTitle || data.JobID}</p>
               </section>
 
+              {/*The following is taking in data from the modal*/}
               <section>
                 <h3 className="font-semibold">Estimated Timeline</h3>
                 <p>{formatDateAsString(data.EstimatedTimeline)}</p>

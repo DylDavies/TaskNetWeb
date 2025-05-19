@@ -16,6 +16,7 @@ interface JobData {
   skills: string[]; // Added skills array
 }
 
+//A modal that shows more information about a job
 const ViewJobModal = ({ job, onClose, onApply, applied }: { job: JobData, onClose: () => void, onApply: () => void, applied: boolean}) => {
 
 return (
@@ -35,15 +36,6 @@ return (
           {/* Title */}
           <h3 className="text-2xl font-semibold">{job.title}</h3>
 
-          {/* Company info */}
-          {/* <section className="flex items-center gap-3">
-            <img
-              src={job.companyImage}
-              alt={`${job.company} logo`}
-              className="w-10 h-10 rounded-full object-cover"
-            />
-            <span className="text-lg font-medium">{job.company}</span>
-          </section> */}
 
           {/* Description */}
           <section>

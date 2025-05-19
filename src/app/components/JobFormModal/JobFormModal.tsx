@@ -73,10 +73,11 @@ const JobForm: React.FC<Props> = ({data, onClose}) => {
         setEstismatedTimeline(newDate);
       };
     
-
+    //Handles when a freelancer wants to submit an application to a job
     const handleApplicationSubmit = async () => 
     {
       try {
+        //Validating that there has been input in every field
         if (!CVURL) {
           toast.error("Please upload your CV first");
           return;
@@ -104,6 +105,7 @@ const JobForm: React.FC<Props> = ({data, onClose}) => {
           return;
         }
 
+        //Adding the actual application
         await AddApplication(
             applicantID, 
             Number(bidAmount), 
@@ -112,7 +114,7 @@ const JobForm: React.FC<Props> = ({data, onClose}) => {
             jobID
         );
 
-
+        //Letting the freelancer know that their application is successful and their status is pending
         await createNotification({
             message: `Pending Application for ${data.jobTitle}`, 
             seen: false, 
@@ -126,11 +128,13 @@ const JobForm: React.FC<Props> = ({data, onClose}) => {
     }
     }
 
+    //Handles if the freelancer wants to upload a different CV document
     const handleRemoveFile = () => {
       setCVURL("");
       setFileName("");
     };
 
+    //Shows a preview of the CV pdf the freelnacer submitted
     const togglePdfPreview = () => {
       setShowPdfPreview(!showPdfPreview);
     };

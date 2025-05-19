@@ -1,6 +1,7 @@
 export default class ApiService {
     static BASE_URL = process.env.NEXT_PUBLIC_DEV ? process.env.NEXT_PUBLIC_API_URL : "https://api.tasknet.tech";
 
+    //This function checks whether there is an active cookie session to login with and then will log you in if you do
     static async sessionExists(): Promise<{presence: boolean, customToken?: string}> {
         try {
             const result = await fetch(`${ApiService.BASE_URL}/auth/session`, {
@@ -22,6 +23,7 @@ export default class ApiService {
         }
     }
 
+    //This funciton will logout the user from the session of view
     static async logout(): Promise<void> {
         try {
             await fetch(`${ApiService.BASE_URL}/auth/logout`, {
@@ -38,6 +40,7 @@ export default class ApiService {
         }
     }
 
+    //This will log the user in and update the session to show this
     static async login(idToken: string): Promise<void> {
         try {
             const result = await fetch(`${ApiService.BASE_URL}/auth/login`, {

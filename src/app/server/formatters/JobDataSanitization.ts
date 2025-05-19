@@ -62,9 +62,6 @@ const sanitizeJobData = (jobData: Partial<JobData>): JobData => {
     console.error(errorMessage);
     throw new Error(errorMessage);
   }
-  else {
-    console.log("Data is safe to send to the DB!");
-  }
 
 
   return {
