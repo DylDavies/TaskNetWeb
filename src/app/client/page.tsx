@@ -91,8 +91,6 @@ export default function Page() {
           />
         </header>
 
-        {/* Generate Job cards dynamically  */}
-
         <main className="flex-1 flex bg-[#cdd5f6] bg-color">
           <section className="w-64">
             <SideBar items={links} buttons={[CreateJobModal({ refetch })]} />
@@ -111,6 +109,8 @@ export default function Page() {
               <h3 className="text-2xl italic text-gray-300 flex justify-center">
                 Click to see applicants if open to applicants and to create milestones if  someone has been hired:{" "}
               </h3>
+              
+               {/* Generate Job cards dynamically  */}
               <section className="border-2 border-gray-600 rounded-lg p-4 flex flex-wrap justify-center gap-6">
                 {jobCards.length > 0 ? (
                   jobCards.map((job, index) => (

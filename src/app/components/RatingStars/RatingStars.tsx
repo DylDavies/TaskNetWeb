@@ -1,7 +1,8 @@
 "use client";
-
 import { Star } from "lucide-react";
 import React from "react";
+
+/*This component is used to display a persons rating in the form of coloured in out of 5 stars*/
 
 interface StarRatingDisplayProps {
   averageRating: number;  

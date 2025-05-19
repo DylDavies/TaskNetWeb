@@ -36,6 +36,7 @@ function toDB(notif: Notification): FSNotification {
     }
 }
 
+//This function creates a notification for a user to see
 async function createNotification(notificationData: Omit<Notification, "uid" | "sentTime" | "deleted">): Promise<void> {
     const response = await fetch("/api/notifications/create", {
         method: "POST",
@@ -46,6 +47,7 @@ async function createNotification(notificationData: Omit<Notification, "uid" | "
     if (response.status == 500) console.error(await response.json());
 }
 
+//This function deletes the notification, if a user chooses to delete it
 async function deleteNotification(uid: string): Promise<void> {
     const response = await fetch("/api/notifications/delete", {
         method: "DELETE",
@@ -56,6 +58,7 @@ async function deleteNotification(uid: string): Promise<void> {
     if (response.status == 500) console.error(await response.json());
 }
 
+//This function sets that the notification has been seen if the user has seen it
 async function setNotificationSeen(uid: string, seen: boolean): Promise<void> {
     const response = await fetch("/api/notifications/seen", {
         method: "PATCH",
@@ -66,6 +69,7 @@ async function setNotificationSeen(uid: string, seen: boolean): Promise<void> {
     if (response.status == 500) console.error(await response.json());
 }
 
+//The user can choose to mark all notifications as seen with a click of a button
 async function markAllNotificationsAsSeenForUser(uids: string[]): Promise<void> {
     const response = await fetch("/api/notifications/aseen", {
         method: "POST",
@@ -76,6 +80,7 @@ async function markAllNotificationsAsSeenForUser(uids: string[]): Promise<void> 
     if (response.status == 500) console.error(await response.json());
 }
 
+//This function gets all of the notifications for a user
 async function getNotificationsForUser(uid: string): Promise<Notification[]> {
     const response = await fetch(`/api/notifications/get/${uid}`, {
         method: "GET",

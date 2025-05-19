@@ -60,6 +60,7 @@ async function addReportURL( jobID:string ,milestoneID: string , reportURL :stri
   if (response.status == 500) console.error(await response.json());
 }
 
+//Updates the payment status of a milestone according to job and milestone id and the new payment status
 async function updateMilestonePaymentStatus(jobID: string, milestoneID: string, status: PaymentStatus) {
   const response = await fetch(`/api/milestones/payment`, {
     method: "PATCH",

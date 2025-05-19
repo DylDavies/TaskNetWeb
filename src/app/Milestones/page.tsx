@@ -55,7 +55,7 @@ export default function Page() {
   const [ratedName, setRatedName] = useState("");
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
   
-
+  //Refetches information for the page so no need to refresh when something changes
   function refetch() {
     setRefreshFlag((prev) => !prev);
   }

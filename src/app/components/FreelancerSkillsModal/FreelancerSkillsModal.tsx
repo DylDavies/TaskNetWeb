@@ -63,7 +63,7 @@ const FreelancerSkillsModal: React.FC<SkillsModalProps> = ({
     return Object.values(skillsMap).flat();
   };
 
-  // Add a skill for freelancer
+  //Validates that a freelancer has selected a skill and then adds that skill if they have
   const confirmSkillSave = async () => {
     if (selectedSkills.length === 0) {
       toast.error("Please ensure that you have selected skills");
@@ -99,6 +99,7 @@ const FreelancerSkillsModal: React.FC<SkillsModalProps> = ({
     setConfirmOpen(true);
   };
 
+  //Confirming a skills has been deleted and updating the necesary functions
   const confirmSkillDelete = async () => {
     if (!user || !skillToDelete) return;
     try {
@@ -121,11 +122,13 @@ const FreelancerSkillsModal: React.FC<SkillsModalProps> = ({
     }
   };
 
+  //Cancels deleting a skill if it was an accident
   const cancelSkillDelete = () => {
     setConfirmOpen(false);
     setSkillToDelete(null);
   };
 
+  //Hadles the area of skills that was selected
   const handleAreaSelect = (area: string | null) => {
     if (area !== selectedArea) {
       setSelectedArea(area);

@@ -204,10 +204,10 @@ const MilestonesTable = ({
                   ${
                     item.paymentStatus == PaymentStatus.Unpaid ||
                     item.paymentStatus == undefined
-                      ? "bg-red-500"
+                      ? "bg-red-500" //Red if not payed
                       : item.paymentStatus == PaymentStatus.Escrow
-                      ? "bg-orange-600"
-                      : "bg-green-600"
+                      ? "bg-orange-600" //Orange if in escrow
+                      : "bg-green-600" //green if paid
                   }`}
                       >
                         {PaymentStatusToString(item.paymentStatus)}

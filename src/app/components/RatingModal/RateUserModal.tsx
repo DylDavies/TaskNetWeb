@@ -109,6 +109,7 @@ const RateUserModal = ({ data, uid,ratedName,isOpen }: RateUserModalProps) => {
                   onMouseLeave={() => setHoverRating(0)}
                   className="text-3xl transition-colors"
                 >
+                  {/*The person rating will choose out of 5 stars the rating, stars get coloured in yellow as the user hovers the mouse over it*/}
                   <AiFillStar
                       className={`text-4xl ${
                         star <= (hoverRating || rating) 

@@ -1,5 +1,6 @@
 import ApplicantData from "../../interfaces/ApplicationData.interface";
 
+//Getting an applicant based on ID
 async function getApplicant(ApplicantID: string): Promise<ApplicantData | null> {
     const response = await fetch(`/api/application/get/${ApplicantID}`, {
         method: "GET",

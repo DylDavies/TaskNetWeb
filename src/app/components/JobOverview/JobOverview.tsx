@@ -17,13 +17,13 @@ interface JobCardProps {
   redactRating?: boolean;
 }
 
-// Simple Tooltip Wrapper Component
 interface TooltipWrapperProps {
   tooltipText: string;
   children: React.ReactNode;
   className?: string;
 }
 
+// Simple Tooltip Wrapper Component
 const TooltipWrapper: React.FC<TooltipWrapperProps> = ({ tooltipText, children, className }) => {
   const [isVisible, setIsVisible] = useState(false);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -92,6 +92,7 @@ const JobCard: React.FC<JobCardProps> = ({
     })();
   }, [clientId]);
 
+  //Star icon to display on the AI recommended jobs
   const StarIcon = () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -193,11 +194,13 @@ const JobCard: React.FC<JobCardProps> = ({
             )}
             <address className="not-italic font-medium text-gray-300">{name}</address>
 
+            {/*Only showing the rating on the job card on the job search page, client cant see their rating on their job card*/}
             {!redactRating && (aveRating !== undefined && totalRating !== undefined && aveRating && totalRating) && (
                   <StarRatingDisplay averageRating={aveRating} totalRatings={totalRating} />
             )}
           </section>
 
+          {/*The colour and test of the status of the job changes depending on the jobs status*/}
           {hired === JobStatus.Posted && (
             <output className="font-medium text-orange-400">Open to applicants</output>
           )}

@@ -13,6 +13,8 @@ import { AuthContext, AuthContextType } from "../AuthContext";
 import { getJob } from "../server/services/JobDatabaseService";
 import { JobContext, JobContextType } from "../JobContext";
 
+//On this page, clients can view freelancers applications to their jobs
+
 const links = [
   { name: "Home", href: "/client", selected: false }];
 
