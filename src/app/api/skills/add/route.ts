@@ -8,7 +8,7 @@ export async function POST(req: NextRequest){
         
         await setDoc(doc(db, "skills", SkillArea), {
             SkillArea: SkillArea,
-            name: arrayUnion(skillName)
+            names: arrayUnion(skillName)
         }, { merge: true });   
 
         return NextResponse.json({ success: true }, { status: 200 });
