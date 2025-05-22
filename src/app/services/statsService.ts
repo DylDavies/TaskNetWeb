@@ -1,22 +1,14 @@
-import { collection, getDocs, query,  where } from "firebase/firestore"; 
-import { db } from "../../firebase";
-import formatDateAsNumber from "../formatters/FormatDates";
 import JobStatus from "@/app/enums/JobStatus.enum";
-import { getJob } from "./JobDatabaseService";
-import { getUsername } from "./DatabaseService";
-import { getCompletionStatsPerJob, getPaymentStatsPerJob } from "./adminService";
+import { getJobsBydate } from "../server/services/JobDatabaseService";
+import { getUsername } from "../server/services/DatabaseService";
 import SkillAreaAnalysis from "@/app/interfaces/SkillAreaAnalysis.interface";
+import { getCompletionStatsPerJob, getPaymentStatsPerJob } from "../server/services/adminService";
 
 //This function will return the completion stats for the given date range
 async function getCompletionStats(StartDate: Date, EndDate: Date) {
-  // Calculate date range
-  const startDateNum = formatDateAsNumber(StartDate);
-  const endDateNum = formatDateAsNumber(EndDate);
 
-  // Query projects
-  const dbRef = collection(db,'Jobs');
-  const InTimeFrame = query(dbRef,where('createdAt', '>=',startDateNum), where('createdAt', '<=',endDateNum));
-  const snapshot = await getDocs(InTimeFrame);
+  // Query projects for the given timeframe
+  const Jobs = await getJobsBydate(StartDate, EndDate);
 
   let totalProjects = 0;
   let completedProjects = 0;
@@ -24,20 +16,20 @@ async function getCompletionStats(StartDate: Date, EndDate: Date) {
   let CompletedMilestones = 0;
   let hiredProjects = 0;
  
-  for(const doc of snapshot.docs){
-    if (doc.data().status != JobStatus.Deleted){
+  for(const doc of Jobs){
+    if (doc.jobData.status != JobStatus.Deleted){
 
     totalProjects++;
-    if(doc.data().status == JobStatus.Completed){
+    if(doc.jobData.status == JobStatus.Completed){
       completedProjects++;
     }
-    if(doc.data().status == JobStatus.Employed){
+    if(doc.jobData.status == JobStatus.Employed){
       hiredProjects++;
       
     }
 
     //Completion stats for each job
-    const JobStats = await getCompletionStatsPerJob(doc.id)
+    const JobStats = await getCompletionStatsPerJob(doc.jobId)
     if(JobStats){
         totalMilestones = totalMilestones + JobStats.TotalMilestones;
         CompletedMilestones = CompletedMilestones + JobStats.CompletedMilestones;
@@ -59,14 +51,9 @@ async function getCompletionStats(StartDate: Date, EndDate: Date) {
 
 //This funciton will return the payment stats for the given date range
 async function getPaymentStats(StartDate: Date, EndDate: Date) {
-  // Calculate date range
-  const startDateNum = formatDateAsNumber(StartDate);
-  const endDateNum = formatDateAsNumber(EndDate);
 
-  // Query projects
-  const dbRef = collection(db,'Jobs');
-  const InTimeFrame = query(dbRef,where('createdAt', '>=',startDateNum), where('createdAt', '<=',endDateNum));
-  const snapshot = await getDocs(InTimeFrame);
+  //getting the projects in the given timeframe
+  const Jobs = await getJobsBydate(StartDate, EndDate);
 
   let totalPayed = 0;
   let totalESCROW = 0;
@@ -74,22 +61,22 @@ async function getPaymentStats(StartDate: Date, EndDate: Date) {
   const tabelInfo: string[][]= [];
   
   //Getting paymetn stats for each job in the db
-  for(const doc of snapshot.docs){
-    if (doc.data().status === JobStatus.Employed || doc.data().status === JobStatus.Completed ){
+  for(const doc of Jobs){
+    if (doc.jobData.status === JobStatus.Employed || doc.jobData.status === JobStatus.Completed ){
 
-    const JobStats = await getPaymentStatsPerJob(doc.id);
+    const JobStats = await getPaymentStatsPerJob(doc.jobId);
       
     totalPayed += JobStats.totalPaid;
     totalESCROW += JobStats.totalESCROW;
     totalUnpaid += JobStats.totalUnpaid;
     
 
-    const JobData = await getJob(doc.id) ;
+    const JobData = doc.jobData
     const totalAmount = JobStats.totalESCROW + JobStats.totalPaid + JobStats.totalUnpaid;
     if(JobData){
       const ClientName = await getUsername(JobData.clientUId);
       const FreelanceName = await getUsername(JobData.hiredUId);
-      tabelInfo.push([doc.id, JobData.title, ClientName, FreelanceName, JobData.clientUId, totalAmount.toString(), JobStats.totalPaid.toString(), JobStats.totalUnpaid.toString(), JobStats.totalESCROW.toString()])
+      tabelInfo.push([doc.jobId, JobData.title, ClientName, FreelanceName, JobData.clientUId, totalAmount.toString(), JobStats.totalPaid.toString(), JobStats.totalUnpaid.toString(), JobStats.totalESCROW.toString()])
     }
   } 
 }
@@ -104,19 +91,14 @@ async function getPaymentStats(StartDate: Date, EndDate: Date) {
 
 //This funciton will return the skill stats for the given date range
 async function getSkillStats(StartDate: Date, EndDate: Date) {
-  // Calculate date range
-  const startDateNum = formatDateAsNumber(StartDate);
-  const endDateNum = formatDateAsNumber(EndDate);
-
-  // Query projects
-  const dbRef = collection(db,'Jobs');
-  const InTimeFrame = query(dbRef,where('createdAt', '>=',startDateNum), where('createdAt', '<=',endDateNum));
-  const snapshot = await getDocs(InTimeFrame);
+ 
+  //getting the projects in the given timeframe
+  const Jobs = await getJobsBydate(StartDate, EndDate);
 
   const skillAreaMap: { [skillArea: string]: SkillAreaAnalysis } = {};
   
-  for(const doc of snapshot.docs){
-    const job = doc.data();
+  for(const doc of Jobs){
+    const job = doc.jobData;
     for (const skillArea in job.skills) {
             if (job.skills.hasOwnProperty(skillArea)) {
                 // Initialize skill area data if it doesn't exist

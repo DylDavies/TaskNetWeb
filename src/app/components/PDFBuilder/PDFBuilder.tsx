@@ -336,7 +336,7 @@ type ChartType = 'pie' | 'bar';
     
       //metadata 
       doc.setProperties({
-        title: 'Project Payment Report',
+        title: 'Skills Report',
         subject: 'Generated project metrics and charts',
         author: 'ProjectTracker',
         keywords: 'project, report, stats, pdf',
@@ -419,7 +419,7 @@ type ChartType = 'pie' | 'bar';
       //Title
       doc.setFontSize(18);
       doc.setTextColor(40, 40, 40);
-      doc.text('Payment Report', 105, y, { align: 'center' });
+      doc.text('Skills Area Report', 105, y, { align: 'center' });
       y += 10;
     
       //Date

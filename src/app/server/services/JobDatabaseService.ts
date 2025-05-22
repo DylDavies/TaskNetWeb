@@ -2,6 +2,7 @@ import JobStatus from "@/app/enums/JobStatus.enum";
 import UserType from "@/app/enums/UserType.enum";
 import ActiveJob from "@/app/interfaces/ActiveJob.interface";
 import JobData from "@/app/interfaces/JobData.interface";
+import formatDateAsNumber from "../formatters/FormatDates";
 
 // Endpoint to get the Job by its JobID
 async function getJob(jid: string): Promise<JobData | null> {
@@ -128,4 +129,18 @@ async function getJobsByFreelancerID(FreelancerID: string): Promise<ActiveJob[]>
   return (await response.json()).results;
 }
 
-export { getJob, createJob, getAllJobs, searchByTitle, updateHiredUId, updateJobStatus, searchJobsBySkills, getJobsByClientID, getJobByClientIdAndHiredId, getContracted, getJobsByFreelancerID };
+async function getJobsBydate(startDate: Date, endDate: Date): Promise<ActiveJob[]>{
+
+  const startDateNum = formatDateAsNumber(startDate);
+  const endDateNum = formatDateAsNumber(endDate);
+
+  const response = await fetch(`/api/jobs/date?startDate=${startDateNum}&endDate=${endDateNum}`, {
+    method: "GET",
+    headers: { 'Content-Type': 'application/json' }
+  });
+
+  if (!response.ok) throw new Error("Failed to get jobs by date");
+  return (await response.json()).results;
+ }
+
+export {getJobsBydate, getJob, createJob, getAllJobs, searchByTitle, updateHiredUId, updateJobStatus, searchJobsBySkills, getJobsByClientID, getJobByClientIdAndHiredId, getContracted, getJobsByFreelancerID };
