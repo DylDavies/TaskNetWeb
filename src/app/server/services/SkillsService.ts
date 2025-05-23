@@ -1,6 +1,19 @@
 import SkillData from "@/app/interfaces/SkillData.interface";
 import { getJob } from "./JobDatabaseService";
 
+
+//return skills in a skill area
+async function getSkillByArea(SkillArea: string): Promise<string[]>{
+ const response = await fetch(`/api/jobs/${SkillArea}`, {
+    method: "GET",
+    headers: { 'Content-Type': 'application/json' }
+  });
+  
+  if (!response.ok) console.error("Failed to get Skill area");
+  return (await response.json()).result;
+
+}
+
 //This funciton will add a skill to the skill database
 async function AddSkill(SkillArea: string, skillName: string) {
   try {
@@ -103,4 +116,4 @@ async function mapSkillsToAreas(skillNames: string[]): Promise<{ [skillArea: str
   }
 }
 
-export {AddSkill, getSkillArray, getAllSkillIDs, getAllSkills, mapSkillsToAreas, getSkillsForJob};
+export {AddSkill, getSkillArray, getAllSkillIDs, getAllSkills, mapSkillsToAreas, getSkillsForJob, getSkillByArea};

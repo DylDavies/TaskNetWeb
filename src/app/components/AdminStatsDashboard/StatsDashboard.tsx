@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 
 import { RefreshCw } from 'lucide-react';
 import CompletionStats from '@/app/interfaces/CompletionStatsInterface';
-import { getCompletionStats } from '@/app/server/services/statsService';
+import { getCompletionStats } from '@/app/services/statsService';
 import { EmptyState } from '../EmptyState/EmptyState';
 import { ErrorBoundary } from 'react-error-boundary';
 import CompletionInfo from '../CompletionRateInfo/CompletionRateInfo';

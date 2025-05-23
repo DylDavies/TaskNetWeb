@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 
 import { RefreshCw } from 'lucide-react';
-import { getPaymentStats } from '@/app/server/services/statsService';
+import { getPaymentStats } from '@/app/services/statsService';
 import { EmptyState } from '../EmptyState/EmptyState';
 import { ErrorBoundary } from 'react-error-boundary';
 import { format } from 'date-fns';

@@ -1,16 +1,10 @@
 
+import { getJobsBydate } from "@/app/server/services/JobDatabaseService";
 import {
-  getSkillByID,
   getCompletionStatsPerJob,
   getPaymentStatsPerJob,
 } from "../../src/app/server/services/adminService";
 
-import {
-  doc,
-  getDoc,
-
-} from "firebase/firestore";
-import { db } from "../../src/app/firebase";
 import { getMilestones } from "../../src/app/server/services/MilestoneService";
 import MilestoneStatus from "@/app/enums/MilestoneStatus.enum";
 import PaymentStatus from "@/app/enums/PaymentStatus.enum";
@@ -50,6 +44,7 @@ jest.mock("../../src/app/server/services/MilestoneService", () => ({
 
 jest.mock("../../src/app/server/services/JobDatabaseService", () => ({
   getJob: jest.fn(),
+  getJobsBydate: jest.fn()
 }));
 
 //what the test will be called
@@ -58,33 +53,6 @@ describe("StatsDatabaseService", () => {
     jest.clearAllMocks();
   });
 
-  //Tests for getSkillByID
-  describe("getSkillByID", () => {
-    it("should return skill data if the document exists", async () => {
-      const SkillArea = "Design";
-      const mockSkillData = { SkillArea: "Design", name: ["UI/UX", "Graphic"] };
-      (doc as jest.Mock).mockReturnValue({});
-      (getDoc as jest.Mock).mockResolvedValue({ exists: () => true, data: () => mockSkillData });
-
-      const result = await getSkillByID(SkillArea);
-
-      expect(doc).toHaveBeenCalledWith(db, "skills", SkillArea);
-      expect(getDoc).toHaveBeenCalledWith({});
-      expect(result).toEqual(mockSkillData);
-    });
-
-    it("should return null if the document does not exist", async () => {
-      const SkillArea = "Marketing";
-      (doc as jest.Mock).mockReturnValue({});
-      (getDoc as jest.Mock).mockResolvedValue({ exists: () => false });
-
-      const result = await getSkillByID(SkillArea);
-
-      expect(doc).toHaveBeenCalledWith(db, "skills", SkillArea);
-      expect(getDoc).toHaveBeenCalledWith({});
-      expect(result).toBeNull();
-    });
-  });
 
   //Tests for get Completion Stats per job
   describe("getCompletionStatsPerJob", () => {
