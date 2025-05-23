@@ -1,5 +1,4 @@
 import { getCompletionStats, getPaymentStats } from "../../src/app/services/statsService";
-import formatDateAsNumber from "../../src/app/server/formatters/FormatDates"; 
 import JobStatus from "@/app/enums/JobStatus.enum";
 import { getJobsBydate } from "../../src/app/server/services/JobDatabaseService"; 
 import { getUsername } from "../../src/app/server/services/DatabaseService";
@@ -23,7 +22,7 @@ jest.mock("../../src/app/server/formatters/FormatDates", () => ({
     if (date instanceof Date) {
         return parseInt(`${date.getFullYear()}${("0" + (date.getMonth() + 1)).slice(-2)}${("0" + date.getDate()).slice(-2)}`);
     }
-    return 20230101; // Fallback
+    return 20230101; 
   }),
 }));
 
@@ -42,7 +41,7 @@ jest.mock("../../src/app/server/services/adminService", () => ({
 }));
 
 //Name for the testsuite
-describe("AdminService - Integration Tests", () => {
+describe("Statistic service tests", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
