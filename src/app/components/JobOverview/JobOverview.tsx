@@ -46,10 +46,10 @@ const TooltipWrapper: React.FC<TooltipWrapperProps> = ({ tooltipText, children, 
         <section
           ref={tooltipRef}
           role="tooltip"
-          className={`absolute ${tooltipPositionClasses} z-20 w-max max-w-xs p-2 text-xs font-normal text-white bg-gray-900 rounded-md shadow-lg transition-opacity duration-300 dark:bg-gray-700`}
+          className={`absolute ${tooltipPositionClasses} z-20 w-max max-w-xs p-2 text-xs font-normal text-white rounded-md shadow-lg transition-opacity duration-300 bg-gray-700`}
         >
           {tooltipText}
-          <section className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-gray-900 dark:border-t-gray-700"></section>
+          <section className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-gray-700"></section>
         </section>
       )}
     </section>

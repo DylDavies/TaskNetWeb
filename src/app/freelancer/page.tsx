@@ -74,7 +74,7 @@ export default function Page() {
   }, [user, fetchJobsWithUsers]);
 
   return (
-    <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
+    <section className="min-h-screen flex flex-col bg-[#27274b] text-white font-sans">
       <header className="w-full bg-orange-500 ">
         <Header
           name={user?.userData.username || "Username"}
@@ -82,7 +82,7 @@ export default function Page() {
         />
       </header>
 
-      <main className="flex flex-1 dark:bg-[#cdd5f6] bg-color">
+      <main className="flex flex-1 bg-[#cdd5f6] bg-color">
         {/* Sidebar */}
         <section className="w-64">
           <SideBar items={links} />

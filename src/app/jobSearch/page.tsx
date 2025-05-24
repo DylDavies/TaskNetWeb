@@ -106,7 +106,7 @@ export default function Page() {
   }
 
   return (
-    <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans">
+    <section className="min-h-screen flex flex-col bg-[#27274b] text-white font-sans">
       <header className="w-full bg-orange-500">
         <Header
           name={user?.userData.username || "Username"}
@@ -114,7 +114,7 @@ export default function Page() {
         />
       </header>
   
-      <main className="flex flex-1 bg-color dark:bg-[#cdd5f6]">
+      <main className="flex flex-1 bg-color bg-[#cdd5f6]">
         {/* Sidebar */}
         <section className="w-64">
           <SideBar items={links} />

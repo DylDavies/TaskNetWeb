@@ -12,7 +12,7 @@ export default function Page() {
 
   return (
     <>
-      <section className="min-h-screen flex flex-col dark:bg-[#27274b] text-white font-sans body outer-background">
+      <section className="min-h-screen flex flex-col bg-[#27274b] text-white font-sans body outer-background">
         <Loader loading={loading} />
         <section className="container">
           <UserList />
