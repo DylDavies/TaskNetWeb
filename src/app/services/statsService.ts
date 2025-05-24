@@ -92,55 +92,84 @@ async function getPaymentStats(StartDate: Date, EndDate: Date) {
 //This funciton will return the skill stats for the given date range
 async function getSkillStats(StartDate: Date, EndDate: Date) {
  
-  //getting the projects in the given timeframe
+ //getting the projects in the given timeframe
   const Jobs = await getJobsBydate(StartDate, EndDate);
 
-  const skillAreaMap: { [skillArea: string]: SkillAreaAnalysis } = {};
-  
-  for(const doc of Jobs){
+  type SkillAreaMapEntry = SkillAreaAnalysis & { skillCounts: { [skill: string]: number } };
+  const skillAreaMap: { [skillArea: string]: SkillAreaMapEntry } = {};
+
+  for (const doc of Jobs) {
     const job = doc.jobData;
+    if (!job || !job.skills) { // Basic check for valid job and skills data
+        console.warn('Skipping job due to missing jobData or skills:', doc);
+        continue;
+    }
+
     for (const skillArea in job.skills) {
-            if (job.skills.hasOwnProperty(skillArea)) {
-                // Initialize skill area data if it doesn't exist
-                if (!skillAreaMap[skillArea]) {
-                    skillAreaMap[skillArea] = {
-                        skillArea: skillArea,
-                        totalProjects: 0,
-                        hiredProjects: 0,
-                        completedProjects: 0,
-                        mostInDemandSkills: [],
-                    };
-                }
-
-                // Increment total projects for the skill area
-                skillAreaMap[skillArea].totalProjects++;
-
-                // Increment hired projects if the job is hired
-                if (job.status === JobStatus.Employed ) {
-                    skillAreaMap[skillArea].hiredProjects++;
-                }
-
-                if (job.status === JobStatus.Completed ) {
-                    skillAreaMap[skillArea].completedProjects++;
-                }
-
-                // Count skill occurrences for most in demand
-                const skills = job.skills[skillArea];
-                const skillCounts: { [skill: string]: number } = {};
-                for (const skill of skills) {
-                    skillCounts[skill] = (skillCounts[skill] || 0) + 1;
-                }
-
-                // Convert skill counts to sorted array for most in demand
-                const sortedSkills = Object.entries(skillCounts)
-                    .map(([skill, count]) => ({ skill, count }))
-                    .sort((a, b) => b.count - a.count);  
-                skillAreaMap[skillArea].mostInDemandSkills = sortedSkills;
-            }
+      if (job.skills.hasOwnProperty(skillArea)) {
+        // Initialize skill area 
+        if (!skillAreaMap[skillArea]) {
+          skillAreaMap[skillArea] = {
+            skillArea: skillArea,
+            totalProjects: 0,
+            hiredProjects: 0,
+            completedProjects: 0,
+            mostInDemandSkills: [],
+            skillCounts: {}, 
+          };
         }
-}
-  
-  return Object.values(skillAreaMap);
+
+        // Increment total projects for the skill area
+        skillAreaMap[skillArea].totalProjects++;
+
+        // Increment hired projects if the job is hired
+        if (job.status === JobStatus.Employed) {
+          skillAreaMap[skillArea].hiredProjects++;
+        }
+
+        if (job.status === JobStatus.Completed) {
+          skillAreaMap[skillArea].completedProjects++;
+        }
+
+        // Aggregate skill occurrences for the skill area
+        const skillsInput = job.skills[skillArea];
+        let skillsToProcess: string[] = [];
+
+        if (typeof skillsInput === 'string') {
+          // If it's a single string it is treated as an array with one skill. 
+          skillsToProcess = [skillsInput];
+        } else if (Array.isArray(skillsInput)) {
+          skillsToProcess = skillsInput.filter((s): s is string => typeof s === 'string');
+        } else if (skillsInput) { // Check if skillsInput is not null/undefined before logging
+            console.warn(`Unexpected skills data type for job's skillArea "${skillArea}". Expected string or array, got: ${typeof skillsInput}`, skillsInput);
+        }
+
+        for (const rawSkill of skillsToProcess) {
+          const skill = rawSkill.trim(); // Trim unneeded whitespace and newline characters
+          if (skill) { 
+            skillAreaMap[skillArea].skillCounts[skill] = (skillAreaMap[skillArea].skillCounts[skill] || 0) + 1;
+          }
+        }
+      }
+    }
+  }
+
+  // calculate mostInDemandSkills for each skillArea 
+  for (const skillArea in skillAreaMap) {
+    if (skillAreaMap.hasOwnProperty(skillArea)) {
+      const skillCounts = skillAreaMap[skillArea].skillCounts;
+      const sortedSkills = Object.entries(skillCounts)
+        .map(([skill, count]) => ({ skill, count }))
+        .sort((a, b) => b.count - a.count);
+      skillAreaMap[skillArea].mostInDemandSkills = sortedSkills;
+    }
+  }
+
+  //Had to disable the lint checker here as it sees skillCounts as unused here in the destructuring
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const result = Object.values(skillAreaMap).map(({ skillCounts, ...rest }) => rest); // This is removing skill counts from skillArea map
+
+  return result;
 }
 
 export {getPaymentStats, getCompletionStats, getSkillStats}
