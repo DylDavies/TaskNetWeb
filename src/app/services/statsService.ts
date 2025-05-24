@@ -166,10 +166,8 @@ async function getSkillStats(StartDate: Date, EndDate: Date) {
   }
 
   //Had to disable the lint checker here as it sees skillCounts as unused here in the destructuring
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const result = Object.values(skillAreaMap).map(({ skillCounts, ...rest }) => rest); // This is removing skill counts from skillArea map
 
-  console.log(result);
   return result;
 }
 

@@ -35,7 +35,6 @@ export async function POST(req: NextRequest) {
             
               break;
             case "running":
-              // console.log("Upload is running"); 
               break;
           }
         },
