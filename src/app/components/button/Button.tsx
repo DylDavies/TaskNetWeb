@@ -1,30 +1,6 @@
 import React from "react";
 import "./Button.css";
 
-/*
---- NOTE ON USE ---
-
-import Button, { Sizes } from "./components/button/Button"; 
-
-example:
-
-<Button 
-  caption="Click Me" 
-  onClick={() => console.log("Button clicked!")} 
-  size={Sizes.Big} 
-  style={{ backgroundColor: "#f87171" }} 
-
-
-  You must pass the Button :
-  - caption: string
-  - function: () => void
-  - style: 	React.CSSProperties	{OPTIONAL} ->custom inline styles (e.g., background color, width, etc.)
-  - size: Sizes enum
-/>
-
-
-*/
-
 export enum Sizes {
   Normal = "normal",
   Big = "big",
@@ -54,7 +30,7 @@ const Button = ({
   size = Sizes.Normal,
   disabled = false,
   icon,
-  type = "button"
+  type = "button",
 }: Props) => {
   const sizeClass = sizeClasses[size];
 

@@ -18,12 +18,12 @@ type UploadComponentProps = {
 };
 
 //This funciton will upload a file to the firebase bucket
-function UploadComponent({ 
-  uploadFunction, 
-  path, 
-  name, 
-  onUploadComplete, 
-  fileType 
+function UploadComponent({
+  uploadFunction,
+  path,
+  name,
+  onUploadComplete,
+  fileType,
 }: UploadComponentProps) {
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
@@ -32,11 +32,11 @@ function UploadComponent({
     const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
     // Validate file type first
-    if(fileType){
-    if (!file.type.includes(fileType.toLowerCase())) {
-      toast.error(`Only ${fileType} files are allowed`);
-      return;
-    }
+    if (fileType) {
+      if (!file.type.includes(fileType.toLowerCase())) {
+        toast.error(`Only ${fileType} files are allowed`);
+        return;
+      }
     }
 
     // Then validate file size
