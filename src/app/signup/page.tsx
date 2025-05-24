@@ -9,11 +9,11 @@ import { SetUserName, setUserType } from "../server/services/DatabaseService";
 import UserType from "../enums/UserType.enum";
 import { LoginRedirect } from "../Navigation/navigation";
 import { useRouter } from "next/navigation";
-import { sendEmail } from "../server/services/DatabaseService";
 import { AuthContext, AuthContextType } from "../AuthContext";
 import Image from "next/image";
 import signupImage from "../../../public/images/signup-freelance.jpg";
 import Loader from "../components/Loader/Loader";
+import { sendEmail } from "../server/services/Mail";
 
 export default function Page() {
   const { user } = useContext(AuthContext) as AuthContextType;

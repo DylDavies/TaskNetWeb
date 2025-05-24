@@ -1,11 +1,5 @@
-'use server';
-
-import { getDoc, doc, collection, where, query, getDocs, updateDoc } from "firebase/firestore";
-import { db, storage } from "../../firebase";
 import UserData from "../../interfaces/UserData.interface";
-import UserStatus from "@/app/enums/UserStatus.enum";
-import nodemailer from 'nodemailer';
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import PendingUser from "@/app/interfaces/PendingUser.interface";
 
 //This function will return the user data for a given user id
 async function getUser(uid: string): Promise<UserData | null> {
@@ -13,30 +7,45 @@ async function getUser(uid: string): Promise<UserData | null> {
     console.warn('Invalid UID provided to getUser:', uid);
     return null;
   }
-    const userDoc = await getDoc(doc(db, "users", uid));
+  
+   try {
+    
+    const response = await fetch(`/api/database/user?userID=${encodeURIComponent(uid)}`);
 
-    if (!userDoc.exists()) return null;
+    if (!response.ok) {
+      console.error(`API error: ${response.status} - ${await response.text()}`);
+      return null;
+    }
 
-    return userDoc.data() as UserData;
+    const data: { result: UserData | null } = await response.json();
+
+    return data.result; // This will be the UserData object or null
+
+  } catch (error) {
+    console.error('Failed to fetch user data from API:', error);
+    return null;
+  }
 };
+
 
 // Fetch pending users Endpoint:
 async function getPendingUsers(): Promise<{uid:string; status:number, type:number, username:string, date:number}[]>{
-    const dbRef = collection(db,'users');  //db.collection('users');
-    const pending = query(dbRef,where('status', '==', UserStatus.Pending));
+     try {
+    const response = await fetch('/api/database/pending'); 
 
-    const snapshot = await getDocs(pending);
+    if (!response.ok) {
+      console.error(`API error fetching pending users: ${response.status} - ${await response.text()}`);
+      return []; 
+    }
 
-    const pendingUsers = snapshot.docs.map(doc => ({
-        uid: doc.id,
-        status: doc.data().status,
-        type: doc.data().type,
-        username: doc.data().username,
-        date: doc.data().date
-        
-    }));
+    const data: { result: PendingUser[] } = await response.json();
 
-    return pendingUsers;
+    return data.result || []; // Return the users, or an empty array if result is null/undefined
+
+  } catch (error) {
+    console.error('Failed to fetch pending users from API:', error);
+    return []; // Return empty array on network error or other exceptions
+  }
 };
 
 //Set the current users type to the given parameters:
@@ -44,118 +53,215 @@ async function getPendingUsers(): Promise<{uid:string; status:number, type:numbe
 // 1 = Client
 // 2 = Freelancer
 // 3 = Admin
-async function setUserType(uid: string, type: number){
+async function setUserType(uid: string, type: number): Promise<boolean> {
     try {
-        const userRef = doc(db, "users", uid);
-        await updateDoc(userRef, {
-          type: type
+        // Construct the URL with query parameters
+        const params = new URLSearchParams();
+        params.append("userID", uid);
+        params.append("type", String(type)); // Convert number to string for URLSearchParams
+
+        const response = await fetch(`/api/database/type?${params.toString()}`, {
+            method: 'PATCH',
+            headers: {},
         });
 
-      } catch (error) {
-        console.error("Could not set user type", error);
-        throw error;
-      };
-};
+        if (!response.ok) {
+            let errorDetails = '';
+            try {
+                const errorData = await response.json();
+                errorDetails = errorData.message || JSON.stringify(errorData);
+                if (errorData.error) {
+                    errorDetails += ` - Details: ${JSON.stringify(errorData.error)}`;
+                }
+            } catch {
+                try {
+                    errorDetails = await response.text();
+                } catch {
+                    errorDetails = "Could not read error response body.";
+                }
+            }
+            console.error(`API error setting user type for UID '${uid}' to type '${type}': ${response.status} - ${response.statusText}. Response: ${errorDetails}`);
+            return false; 
+        }
+
+        return true; // Return true on success
+
+    } catch (error) {
+        
+        console.error(`Failed to set user type for UID '${uid}' to type '${type}' due to client-side/network error:`, error);
+        return false; 
+    }
+}
 
 // Approve user Endpoint - Sets user status in database to 1 (permission granted)
 async function approveUser(uid:string):Promise<void>{
-    const dbRef = doc(db,'users', uid);
+    try {
+    // Construct the URL with query parameters for the API call
+    const params = new URLSearchParams();
+    params.append("userID", uid);
+    params.append("status", "1"); // Status 1 for approve
 
-    await updateDoc(dbRef,{
-        status:1, // 1 : Approve (temp)
+     await fetch(`/api/database/status?${params.toString()}`, {
+      method: 'PATCH',
+      headers: {},
     });
+    
+    } catch (error) {
+    console.error(`Error in approveUser function for UID ${uid}:`, error);
+    throw error;
+  }
+
 };
 
 // Deny user Endpoint - Sets user status in database to 2 (permission denied)
 async function denyUser(uid:string):Promise<void>{
-    const dbRef = doc(db,'users', uid);
+    try {
+    // Construct the URL with query parameters for the API call
+    const params = new URLSearchParams();
+    params.append("userID", uid);
+    params.append("status", "2"); // Status 2 for deny
 
-    await updateDoc(dbRef,{
-        status:2, // 2 : Deny (temp)
+    await fetch(`/api/database/status?${params.toString()}`, {
+      method: 'PATCH',
+      headers: {},
     });
+    
+    } catch (error) {
+    console.error(`Error in denyUser function for UID ${uid}:`, error);
+    throw error;
+  }
 };
 
 //  This function will take in a username as a string and set update it to the current user in the database
-async function SetUserName(uid: string, username: string){
+async function SetUserName(uid: string, username: string): Promise<boolean> {
   try {
-    const userRef = doc(db, "users", uid);
-    await updateDoc(userRef, {
-      username: username
+    // Ensure the username is not null or undefined before encoding.
+    if (username === null || typeof username === 'undefined') {
+        console.error("Username cannot be null or undefined.");
+        return false;
+    }
+
+    const params = new URLSearchParams();
+    params.append("userID", uid);
+    params.append("name", username);
+
+    const response = await fetch(`/api/database/username?${params.toString()}`, {
+      method: 'PATCH',
+      headers: {},
     });
+
+    if (!response.ok) {
+      let errorMessage = `API error: ${response.status} - ${response.statusText}`;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorMessage; 
+        if (errorData.error) {
+            errorMessage += ` (Details: ${JSON.stringify(errorData.error)})`;
+        }
+      } catch (e) {
+        console.warn("Could not parse error response as JSON for SetUserName.", e);
+      }
+      console.error(`Could not set username for UID ${uid}. ${errorMessage}`);
+      return false; 
+    }
+    return true; 
+
   } catch (error) {
-    console.error("Could not set username", error);
-  };
-};
+    console.error(`Client-side error in SetUserName for UID ${uid} with username "${username}":`, error);
+    return false; // Indicate failure
+  }
+}
 
 //This funciton will set hte avatar as the google profile picture
-async function setAvatar(uid: string, avatar: string | null) {
+async function setAvatar(uid: string, avatar: string | null): Promise<boolean> {
   try {
-    const userRef = doc(db, "users", uid);
-    await updateDoc(userRef, {
-      avatar
+    const avatarUrlToSend = avatar === null ? "" : avatar;
+
+    if (!uid) {
+        console.error("User ID (uid) cannot be empty or null when setting avatar.");
+        return false;
+    }
+
+    const params = new URLSearchParams();
+    params.append("userID", uid);
+    params.append("avatar", avatarUrlToSend);
+
+    const response = await fetch(`/api/database/avatar?${params.toString()}`, {
+      method: 'PATCH',
+      headers: {},
     });
+
+    if (!response.ok) {
+      let errorMessage = `API error: ${response.status} - ${response.statusText}`;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorMessage; 
+        if (errorData.error) {
+            errorMessage += ` (Details: ${JSON.stringify(errorData.error)})`;
+        }
+      } catch (e) {
+        console.warn("Could not parse error response as JSON for setAvatar.", e);
+      }
+      console.error(`Could not set avatar for UID ${uid}. ${errorMessage}`);
+      return false; 
+    }
+
+    return true; // Indicate success
+
   } catch (error) {
-    console.error("Could not set username", error);
-  };
+    console.error(`Client-side error in setAvatar for UID ${uid}:`, error);
+    return false; // Indicate failure
+  }
 }
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.zoho.com', //  Zoho SMTP server
-  port: 465,             // Use 465 for secure connection
-  secure: true,          // True for port 465 (SSL)
-  auth: {
-    user: 'no-reply@tasknet.tech', // Tasknet mail
-    pass: 'no-reply@TaskNet1'//process.env.ZOHO_MAIL_PASS    - maybe do this to be safe
-  }
-});
 
-//This function creats and sends an email to a user
-const sendEmail = (to: string, subject: string, text: string) => {
-  const mailOptions = {
-    from: '"TaskNet" <no-reply@tasknet.tech>', // sender name + email
-    to: to,
-    subject: subject,
-    text: text
-  };
-
-  return new Promise((resolve, reject) => {
-    transporter.sendMail(mailOptions, (error: Error | null, info: { response: string }) => {
-      if (error) {
-        console.error('Email send error:', error);
-        reject(error);
-      } else {
-        resolve(info.response);
-      }
-    });
-  });
-};
 
 //this fucntion will take in a file, the path in which the file must be stored and file name, it will then store the file in the database in the given path and return the url at which the file can be accessed
-const uploadFile = (file: File, path: string, name: string): Promise<string> => {
-  //promises to return a string this will be the url at which the file can be accessed
-  return new Promise((resolve, reject) => {
-    const storageRef = ref(storage, `${path}/${name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-    uploadTask.on(
-      "state_changed",
-      () => {},
-      (error) => {
-        console.error("Upload failed", error);
-        reject(error);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref)
-          .then((downloadURL) => {
-            resolve(downloadURL);
-          })
-          .catch((error) => {
-            console.error("Failed to retrieve download URL:", error);
-            reject("Failed to retrieve download url");
-          });
+const uploadFile = async (file: File, path: string, name: string): Promise<string> => {
+  try {
+    // Create FormData to send the file and its metadata
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("path", path);
+    formData.append("name", name);
+
+    // Make the POST request to the API endpoint
+    const response = await fetch(`/api/database/file`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    // Check if the request was successful
+    if (!response.ok) {
+      let errorMessage = `API error: ${response.status} - ${response.statusText}`;
+      try {
+        // Attempt to parse the error message from the API response body
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorMessage; 
+        if (errorData.error) {
+          errorMessage += ` (Details: ${errorData.error})`;
+        }
+      } catch (e) {
+        console.warn("Could not parse error response as JSON for uploadFile.", e);
       }
-    );
-  });
-}
+      console.error(`Failed to upload file "${name}" to path "${path}": ${errorMessage}`);
+      throw new Error(`Failed to upload file. ${errorMessage}`);
+    }
+
+    // Parse the successful JSON response to get the downloadURL
+    const successData = await response.json();
+    if (successData && successData.downloadURL) {
+      return successData.downloadURL;
+    } else {
+      console.error(`Failed to upload file "${name}": API response did not include a downloadURL.`);
+      throw new Error("File upload succeeded but did not receive a download URL.");
+    }
+
+  } catch (error) {
+    console.error(`Client-side error in uploadFile for file "${name}", path "${path}":`, error);
+    throw error;
+  }
+};
 
 //this function will take in a users uid and return their username
 async function getUsername(uid: string): Promise<string>{
@@ -169,102 +275,125 @@ async function getUsername(uid: string): Promise<string>{
 
 // Add Skills for a freelancer
 async function addSkillsToFreelancer(uid: string, skillAreaSkillMap: { [skillArea: string]: string[] }): Promise<void> {
-  const userRef = doc(db, "users", uid);
-  const userDoc = await getDoc(userRef);
-
-  if (!userDoc.exists()) {
-    console.error("Users Doc doesnt exist");
-    return;
+  
+  //Validaytion
+  if (!uid || typeof uid !== 'string' || uid.trim() === '') {
+    throw new Error("User ID is missing or not in correct format");
   }
 
-  const userData = userDoc.data();
-  const currentSkills = userData?.skills || {}; 
-  const updatedSkills = { ...currentSkills }; // make copy
-  
-  Object.entries(skillAreaSkillMap).forEach(([skillArea, skills]) => {
-    if (!updatedSkills[skillArea]) {
-      updatedSkills[skillArea] = []; // Create new skill area if it doesn't exist
+  if (!skillAreaSkillMap || Object.keys(skillAreaSkillMap).length === 0) {
+    throw new Error("Skills are missing");
+  }
+
+  try {
+    const response = await fetch(`api/database/skills?userID=${encodeURIComponent(uid)}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(skillAreaSkillMap),
+    });
+
+    if (!response.ok) {
+      let errorMessage = `API error: ${response.status} ${response.statusText}`;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorMessage;
+      } catch (e) {
+        console.warn("Could not parse error response as JSON", e);  
+      }
+      throw new Error(errorMessage);
     }
 
-    // Add skills to array for that skill area
-    skills.forEach((skill) => {
-      if (!updatedSkills[skillArea].includes(skill)) {
-        updatedSkills[skillArea].push(skill); 
-      }
-    });
-  });
-
-  // Update
-  try {
-    await updateDoc(userRef, {
-      skills: updatedSkills
-    });
-
-  } catch (err) {
-    console.error("Error updating user skills:", err);
-    throw new Error("Error updating skills");
+  } catch (error) {
+    console.error("Error calling addSkillsToFreelancer API:", error);
+    if (error instanceof Error) {
+        throw error; 
+    }
+    throw new Error("An unknown error occurred while adding skills.");
   }
 }
 
 // Get skills from freelancer
 async function getSkillsForFreelancer(uid: string): Promise<{ [skillArea: string]: string[] }> {
-  const userRef = doc(db, "users", uid);
-  const userDoc = await getDoc(userRef);
+  // Replace '/api/user-skills' with the actual path to your API route
 
-  if (userDoc.exists()) {    
-    return userDoc.data()?.skills || {};
-  } else {
+
+  if (!uid || typeof uid !== 'string' || uid.trim() === '') {
+    console.warn('Invalid UID provided to getSkillsForFreelancer client function:', uid);
+    // Consistent with API returning {result: null} which we then convert to {}
     return {};
+  }
+
+  try {
+    const response = await fetch(`/api/database/skills?userID=${encodeURIComponent(uid)}`, {
+      method: 'GET',
+      headers: {},
+    });
+
+    if (!response.ok) {
+      let errorMessage = `API error: ${response.status} ${response.statusText}`;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorMessage;
+      } catch (e) {
+        console.warn("Could not parse error response as JSON.", e); 
+      }
+      throw new Error(errorMessage);
+    }
+
+    const data = await response.json();
+
+   
+    return data.result || {};
+
+  } catch (error) {
+    console.error("Error calling getSkillsForFreelancer API:", error);
+     if (error instanceof Error) {
+        throw error;
+    }
+    throw new Error("An unknown error occurred while fetching skills.");
   }
 }
 
 // Remove Skill for a freelancer
 async function removeSkillFromFreelancer(uid: string, skillName: string): Promise<void> {
-  const userRef = doc(db, "users", uid);
-  const userDoc = await getDoc(userRef);
-
-  if (!userDoc.exists()) {
-    console.error("Users doc doesnt exist");
-    return;
+  //Validation
+  if (!uid || typeof uid !== 'string' || uid.trim() === '') {
+    throw new Error("User ID (uid) is required and must be a non-empty string.");
   }
 
-  const userData = userDoc.data() as UserData;
-  const currentSkills = userData.skills || {}; 
-  const updatedSkills = { ...currentSkills }; // Make copy
-
-  let skillFound = false;
-
-  // find skill in that skill area
-  Object.entries(currentSkills).forEach(([skillArea, skills]) => {
-    if (skills.includes(skillName)) {
-      const filteredSkills = skills.filter((skill) => skill !== skillName);
-
-      if (filteredSkills.length === 0) {
-        delete updatedSkills[skillArea];
-      } else {
-        updatedSkills[skillArea] = filteredSkills;
-      }
-
-      skillFound = true;
-    }
-  });
-
-  if (!skillFound) {
-    console.warn(`Skill "${skillName}" not found for user`);
-    return;
+  if (!skillName || typeof skillName !== 'string' || skillName.trim() === '') {
+    throw new Error("Skill name (skillName) is required and must be a non-empty string.");
   }
 
 
+  //calling api route with errors messages if there is a problem
   try {
-    await updateDoc(userRef, {
-      skills: updatedSkills
+    const response = await fetch(`/api/database/removeSkill?userID=${encodeURIComponent(uid)}&skillName=${encodeURIComponent(skillName)}`, {
+      method: 'PATCH', 
+      headers: {},
     });
 
-  } catch (err) {
-    console.error("Error removing user skill:", err);
-    throw new Error("Error removing skill");
+    if (!response.ok) {
+      let errorMessage = `API error: ${response.status} ${response.statusText}`;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorMessage;
+      } catch (e) {
+         console.warn("Could not parse error response as JSON.", e); 
+      }
+      throw new Error(errorMessage);
+    }
+
+  } catch (error) {
+    console.error(`Error calling removeSkillFromFreelancer API for UID ${uid}, Skill ${skillName}:`, error);
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error("An unknown error occurred while removing the skill.");
   }
 }
 
-export { getUser, getPendingUsers, approveUser, denyUser, setUserType, SetUserName, sendEmail, getUsername, uploadFile, setAvatar, addSkillsToFreelancer, getSkillsForFreelancer, removeSkillFromFreelancer };
+export { getUser, getPendingUsers, approveUser, denyUser, setUserType, SetUserName, getUsername, uploadFile, setAvatar, addSkillsToFreelancer, getSkillsForFreelancer, removeSkillFromFreelancer };
 
