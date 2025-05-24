@@ -1,6 +1,5 @@
-// __tests__/app/api/skills-and-paypal-routes.test.ts
 import { NextRequest } from 'next/server';
-import { db } from '../../../src/app/firebase'; 
+import { db } from '../../../src/app/firebase';
 import * as firestore from 'firebase/firestore';
 import SkillData from '../../../src/app/interfaces/SkillData.interface';
 
@@ -12,7 +11,6 @@ import { POST as postPaypalPayout } from '@/app/api/paypal/payout/route';
 import { POST as postPaypalCreateOrder } from '@/app/api/paypal/create-order/route';
 import { POST as postPaypalCaptureOrder } from '@/app/api/paypal/capture-order/route';
 
-// --- Mocks ---
 jest.mock('next/server', () => {
   const actualNextServer = jest.requireActual('next/server');
   return {
@@ -33,7 +31,7 @@ jest.mock('next/server', () => {
 });
 
 jest.mock('../../../src/app/firebase', () => ({
-  db: jest.fn(), 
+  db: jest.fn(),
 }));
 
 jest.mock('firebase/firestore', () => {
@@ -58,13 +56,13 @@ jest.mock('../../../src/app/paypalClient', () => ({
 jest.mock('@paypal/checkout-server-sdk', () => ({
   orders: {
     OrdersCreateRequest: jest.fn().mockImplementation(() => ({
-        prefer: jest.fn(),
-        requestBody: jest.fn(),
+      prefer: jest.fn(),
+      requestBody: jest.fn(),
     })),
     OrdersCaptureRequest: jest.fn().mockImplementation((orderId) => ({
-        prefer: jest.fn(),
-        requestBody: jest.fn(),
-        orderID: orderId, 
+      prefer: jest.fn(),
+      requestBody: jest.fn(),
+      orderID: orderId,
     })),
   },
 }));
@@ -101,9 +99,9 @@ describe('API Routes: Skills and PayPal', () => {
     it('should map skill names to areas successfully', async () => {
       (mockRequest.json as jest.Mock).mockResolvedValue({ skillNames: ['SkillA', 'SkillC'] });
       const mockDocs = [
-        { data: () => ({ skillArea: 'Area1', names: ['SkillA', 'SkillB'] }) },
-        { data: () => ({ skillArea: 'Area2', names: ['SkillC', 'SkillD'] }) },
-        { data: () => ({ skillArea: 'Area3', names: ['SkillE'] }) },
+        { data: () => ({ SkillArea: 'Area1', names: ['SkillA', 'SkillB'] }) },
+        { data: () => ({ SkillArea: 'Area2', names: ['SkillC', 'SkillD'] }) },
+        { data: () => ({ SkillArea: 'Area3', names: ['SkillE'] }) },
       ];
       (firestore.getDocs as jest.Mock).mockResolvedValue({ docs: mockDocs, forEach: (cb: any) => mockDocs.forEach(cb) });
 
@@ -128,10 +126,10 @@ describe('API Routes: Skills and PayPal', () => {
     it('should return empty map if no skills match', async () => {
       (mockRequest.json as jest.Mock).mockResolvedValue({ skillNames: ['SkillX'] });
       const mockDocs = [
-        { data: () => ({ skillArea: 'Area1', names: ['SkillA', 'SkillB'] }) },
+        { data: () => ({ SkillArea: 'Area1', names: ['SkillA', 'SkillB'] }) },
       ];
       (firestore.getDocs as jest.Mock).mockResolvedValue({ docs: mockDocs, forEach: (cb: any) => mockDocs.forEach(cb) });
-      
+
       await postSkillsMap(mockRequest);
       const mockCallArgs = (MockNextResponse.json as jest.Mock).mock.calls[0];
       const responseBody = mockCallArgs[0];
@@ -140,25 +138,25 @@ describe('API Routes: Skills and PayPal', () => {
       expect(responseInit.status).toBe(200);
       expect(responseBody.results).toEqual({});
     });
-    
-    it('should handle skills documents with missing or empty "names" field gracefully', async () => {
-        (mockRequest.json as jest.Mock).mockResolvedValue({ skillNames: ['SkillA'] });
-        const mockDocs = [
-          { data: () => ({ skillArea: 'Area1', names: ['SkillA'] }) },
-          { data: () => ({ skillArea: 'Area2', names: null }) },
-          { data: () => ({ skillArea: 'Area3', names: [] }) },
-          { data: () => ({ skillArea: 'Area4' }) },
-        ];
-        (firestore.getDocs as jest.Mock).mockResolvedValue({ docs: mockDocs, forEach: (cb: any) => mockDocs.forEach(cb) });
-  
-        await postSkillsMap(mockRequest);
-        const mockCallArgs = (MockNextResponse.json as jest.Mock).mock.calls[0];
-        const responseBody = mockCallArgs[0];
-        const responseInit = mockCallArgs[1];
 
-        expect(responseInit.status).toBe(200);
-        expect(responseBody.results).toEqual({ Area1: ['SkillA'] });
-      });
+    it('should handle skills documents with missing or empty "names" field gracefully', async () => {
+      (mockRequest.json as jest.Mock).mockResolvedValue({ skillNames: ['SkillA'] });
+      const mockDocs = [
+        { data: () => ({ SkillArea: 'Area1', names: ['SkillA'] }) },
+        { data: () => ({ SkillArea: 'Area2', names: null }) },
+        { data: () => ({ SkillArea: 'Area3', names: [] }) },
+        { data: () => ({ SkillArea: 'Area4' }) },
+      ];
+      (firestore.getDocs as jest.Mock).mockResolvedValue({ docs: mockDocs, forEach: (cb: any) => mockDocs.forEach(cb) });
+
+      await postSkillsMap(mockRequest);
+      const mockCallArgs = (MockNextResponse.json as jest.Mock).mock.calls[0];
+      const responseBody = mockCallArgs[0];
+      const responseInit = mockCallArgs[1];
+
+      expect(responseInit.status).toBe(200);
+      expect(responseBody.results).toEqual({ Area1: ['SkillA'] });
+    });
 
     it('should return 500 if Firestore operation fails', async () => {
       (mockRequest.json as jest.Mock).mockResolvedValue({ skillNames: ['SkillA'] });
@@ -176,28 +174,29 @@ describe('API Routes: Skills and PayPal', () => {
     });
 
     it('should return 500 if request body parsing fails', async () => {
-        const jsonError = new Error('Invalid JSON');
-        (mockRequest.json as jest.Mock).mockRejectedValue(jsonError);
-  
-        await postSkillsMap(mockRequest);
-        const mockCallArgs = (MockNextResponse.json as jest.Mock).mock.calls[0];
-        const responseBody = mockCallArgs[0];
-        const responseInit = mockCallArgs[1];
-  
-        expect(responseInit.status).toBe(500);
-        expect(responseBody.message).toBe('Error mapping skills to areas');
-        expect(responseBody.error).toEqual(jsonError);
-      });
+      const jsonError = new Error('Invalid JSON');
+      (mockRequest.json as jest.Mock).mockRejectedValue(jsonError);
+
+      await postSkillsMap(mockRequest);
+      const mockCallArgs = (MockNextResponse.json as jest.Mock).mock.calls[0];
+      const responseBody = mockCallArgs[0];
+      const responseInit = mockCallArgs[1];
+
+      expect(responseInit.status).toBe(500);
+      expect(responseBody.message).toBe('Error mapping skills to areas');
+      expect(responseBody.error).toEqual(jsonError);
+    });
   });
 
+  // --- Test Suite for /api/skills/ids ---
   describe('/api/skills/ids (GET)', () => {
-    const mockCollectionRef = { id: 'mockSkillCollection' }; 
-     beforeEach(() => {
+    const mockCollectionRef = { id: 'mockSkillCollection' };
+    beforeEach(() => {
       (firestore.collection as jest.Mock).mockReturnValue(mockCollectionRef);
     });
 
     it('should return all skill IDs successfully', async () => {
-      const mockDocs = [ { id: 'id1' }, { id: 'id2' } ];
+      const mockDocs = [{ id: 'id1' }, { id: 'id2' }];
       (firestore.getDocs as jest.Mock).mockResolvedValue({ docs: mockDocs });
 
       await getSkillsIds();
@@ -205,7 +204,7 @@ describe('API Routes: Skills and PayPal', () => {
       const responseBody = mockCallArgs[0];
       const responseInit = mockCallArgs[1];
 
-      expect(firestore.collection).toHaveBeenCalledWith(db, "skill"); 
+      expect(firestore.collection).toHaveBeenCalledWith(db, "skill");
       expect(firestore.getDocs).toHaveBeenCalledWith(mockCollectionRef);
       expect(responseInit.status).toBe(200);
       expect(responseBody.results).toEqual(['id1', 'id2']);
@@ -213,7 +212,7 @@ describe('API Routes: Skills and PayPal', () => {
 
     it('should return empty array if no skill IDs found', async () => {
       (firestore.getDocs as jest.Mock).mockResolvedValue({ docs: [] });
-      
+
       await getSkillsIds();
       const mockCallArgs = (MockNextResponse.json as jest.Mock).mock.calls[0];
       const responseBody = mockCallArgs[0];
@@ -268,11 +267,11 @@ describe('API Routes: Skills and PayPal', () => {
 
     it('should handle skills with no "names" (default to empty array)', async () => {
       const mockDocs = [
-        { id: 'area1', data: () => ({}) }, 
-        { id: 'area2', data: () => ({ names: null }) }, 
+        { id: 'area1', data: () => ({}) },
+        { id: 'area2', data: () => ({ names: null }) },
       ];
       (firestore.getDocs as jest.Mock).mockResolvedValue({ docs: mockDocs });
-      
+
       await getSkillsAll();
       const mockCallArgs = (MockNextResponse.json as jest.Mock).mock.calls[0];
       const responseBody = mockCallArgs[0];
@@ -284,20 +283,20 @@ describe('API Routes: Skills and PayPal', () => {
         { id: 'area2', skills: [] },
       ]);
     });
-    
+
     it('should return 500 if Firestore operation fails', async () => {
-        const error = new Error('Firestore failed');
-        (firestore.getDocs as jest.Mock).mockRejectedValue(error);
-  
-        await getSkillsAll();
-        const mockCallArgs = (MockNextResponse.json as jest.Mock).mock.calls[0];
-        const responseBody = mockCallArgs[0];
-        const responseInit = mockCallArgs[1];
-  
-        expect(responseInit.status).toBe(500);
-        expect(responseBody.message).toBe("Error fetching skills");
-        expect(responseBody.error).toEqual(error);
-      });
+      const error = new Error('Firestore failed');
+      (firestore.getDocs as jest.Mock).mockRejectedValue(error);
+
+      await getSkillsAll();
+      const mockCallArgs = (MockNextResponse.json as jest.Mock).mock.calls[0];
+      const responseBody = mockCallArgs[0];
+      const responseInit = mockCallArgs[1];
+
+      expect(responseInit.status).toBe(500);
+      expect(responseBody.message).toBe("Error fetching skills");
+      expect(responseBody.error).toEqual(error);
+    });
   });
 
   describe('/api/skills/add (POST)', () => {
@@ -312,7 +311,7 @@ describe('API Routes: Skills and PayPal', () => {
       const skillArea = 'NewArea';
       const skillName = 'NewSkill';
       (mockRequest.json as jest.Mock).mockResolvedValue({ SkillArea: skillArea, skillName: skillName });
-      
+
       await postSkillsAdd(mockRequest);
       const mockCallArgs = (MockNextResponse.json as jest.Mock).mock.calls[0];
       const responseBody = mockCallArgs[0];
@@ -322,42 +321,42 @@ describe('API Routes: Skills and PayPal', () => {
       expect(firestore.doc).toHaveBeenCalledWith(db, "skills", skillArea);
       expect(firestore.setDoc).toHaveBeenCalledWith(
         mockDocRef,
-        { SkillArea: skillArea, names: { type: 'arrayUnion', value: skillName } }, 
+        { SkillArea: skillArea, names: { type: 'arrayUnion', value: skillName } },
         { merge: true }
       );
       expect(firestore.arrayUnion).toHaveBeenCalledWith(skillName);
       expect(responseInit.status).toBe(200);
       expect(responseBody.success).toBe(true);
     });
-    
+
     it('should return 500 if Firestore operation fails', async () => {
-        (mockRequest.json as jest.Mock).mockResolvedValue({ SkillArea: 'Test', skillName: 'TestSkill' });
-        const error = new Error('Firestore setDoc failed');
-        (firestore.setDoc as jest.Mock).mockRejectedValue(error);
-  
-        await postSkillsAdd(mockRequest);
-        const mockCallArgs = (MockNextResponse.json as jest.Mock).mock.calls[0];
-        const responseBody = mockCallArgs[0];
-        const responseInit = mockCallArgs[1];
-  
-        expect(responseInit.status).toBe(500);
-        expect(responseBody.message).toBe("Error adding skill");
-        expect(responseBody.error).toEqual(error);
-      });
+      (mockRequest.json as jest.Mock).mockResolvedValue({ SkillArea: 'Test', skillName: 'TestSkill' });
+      const error = new Error('Firestore setDoc failed');
+      (firestore.setDoc as jest.Mock).mockRejectedValue(error);
+
+      await postSkillsAdd(mockRequest);
+      const mockCallArgs = (MockNextResponse.json as jest.Mock).mock.calls[0];
+      const responseBody = mockCallArgs[0];
+      const responseInit = mockCallArgs[1];
+
+      expect(responseInit.status).toBe(500);
+      expect(responseBody.message).toBe("Error adding skill");
+      expect(responseBody.error).toEqual(error);
+    });
 
     it('should return 500 if request body parsing fails', async () => {
-        const jsonError = new Error('Invalid JSON');
-        (mockRequest.json as jest.Mock).mockRejectedValue(jsonError);
-  
-        await postSkillsAdd(mockRequest);
-        const mockCallArgs = (MockNextResponse.json as jest.Mock).mock.calls[0];
-        const responseBody = mockCallArgs[0];
-        const responseInit = mockCallArgs[1];
+      const jsonError = new Error('Invalid JSON');
+      (mockRequest.json as jest.Mock).mockRejectedValue(jsonError);
 
-        expect(responseInit.status).toBe(500);
-        expect(responseBody.message).toBe("Error adding skill");
-        expect(responseBody.error).toEqual(jsonError);
-      });
+      await postSkillsAdd(mockRequest);
+      const mockCallArgs = (MockNextResponse.json as jest.Mock).mock.calls[0];
+      const responseBody = mockCallArgs[0];
+      const responseInit = mockCallArgs[1];
+
+      expect(responseInit.status).toBe(500);
+      expect(responseBody.message).toBe("Error adding skill");
+      expect(responseBody.error).toEqual(jsonError);
+    });
   });
 
   describe('/api/paypal/payout (POST)', () => {
@@ -417,37 +416,37 @@ describe('API Routes: Skills and PayPal', () => {
       expect(responseBody.batch).toEqual(mockPaypalResponseData);
       expect(consoleErrorSpy).not.toHaveBeenCalled();
     });
-    
+
     it('should process payout successfully with live env', async () => {
-        process.env.PAYPAL_ENV = 'live';
-        (mockRequest.json as jest.Mock).mockResolvedValue(mockPayoutDetails);
-        const mockPaypalResponseData = { batch_header: { payout_batch_id: 'batchLive123' } };
-        (global.fetch as jest.Mock).mockResolvedValue({
-          ok: true,
-          json: async () => mockPaypalResponseData,
-        });
-  
-        await postPaypalPayout(mockRequest);
-        const mockCallArgs = (MockNextResponse.json as jest.Mock).mock.calls[0];
-        // const responseBody = mockCallArgs[0]; // Already checked in sandbox
-        const responseInit = mockCallArgs[1]; // This will be undefined
-          
-        expect(global.fetch).toHaveBeenCalledWith(
-          'https://api-m.paypal.com/v1/payments/payouts',
-          expect.anything()
-        );
-        // Corrected status check
-        const status = responseInit?.status || 200;
-        expect(status).toBe(200);
+      process.env.PAYPAL_ENV = 'live';
+      (mockRequest.json as jest.Mock).mockResolvedValue(mockPayoutDetails);
+      const mockPaypalResponseData = { batch_header: { payout_batch_id: 'batchLive123' } };
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => mockPaypalResponseData,
       });
+
+      await postPaypalPayout(mockRequest);
+      const mockCallArgs = (MockNextResponse.json as jest.Mock).mock.calls[0];
+      // const responseBody = mockCallArgs[0];
+      const responseInit = mockCallArgs[1]; // This will be undefined
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        'https://api-m.paypal.com/v1/payments/payouts',
+        expect.anything()
+      );
+      // Corrected status check
+      const status = responseInit?.status || 200;
+      expect(status).toBe(200);
+    });
 
     it('should return 500 and log error if PayPal API call fails', async () => {
       (mockRequest.json as jest.Mock).mockResolvedValue(mockPayoutDetails);
       const mockErrorData = { name: 'PAYPAL_API_ERROR', message: 'Insufficient funds' };
       (global.fetch as jest.Mock).mockResolvedValue({
-        ok: false, 
+        ok: false,
         json: async () => mockErrorData,
-        status: 400 
+        status: 400
       });
 
       await postPaypalPayout(mockRequest);
@@ -455,36 +454,35 @@ describe('API Routes: Skills and PayPal', () => {
       const responseBody = mockCallArgs[0];
       const responseInit = mockCallArgs[1];
 
-      // responseInit will be { status: 500 } as passed by the route
-      expect(responseInit.status).toBe(500); 
+      expect(responseInit.status).toBe(500);
       expect(responseBody.error).toEqual(mockErrorData);
       expect(consoleErrorSpy).toHaveBeenCalledWith('PayPal payout error', mockErrorData);
     });
 
     it('should throw error if getAccessToken fails (route has no try-catch for it)', async () => {
-        (mockRequest.json as jest.Mock).mockResolvedValue(mockPayoutDetails);
-        const accessTokenError = new Error('Failed to get access token');
-        getAccessTokenMock.mockRejectedValue(accessTokenError);
-        await expect(postPaypalPayout(mockRequest)).rejects.toThrow(accessTokenError);
-      });
+      (mockRequest.json as jest.Mock).mockResolvedValue(mockPayoutDetails);
+      const accessTokenError = new Error('Failed to get access token');
+      getAccessTokenMock.mockRejectedValue(accessTokenError);
+      await expect(postPaypalPayout(mockRequest)).rejects.toThrow(accessTokenError);
+    });
 
     it('should throw error if fetch itself throws an error (route has no try-catch for it)', async () => {
-        (mockRequest.json as jest.Mock).mockResolvedValue(mockPayoutDetails);
-        const fetchError = new Error('Network connection failed');
-        (global.fetch as jest.Mock).mockRejectedValue(fetchError);
-        await expect(postPaypalPayout(mockRequest)).rejects.toThrow(fetchError);
+      (mockRequest.json as jest.Mock).mockResolvedValue(mockPayoutDetails);
+      const fetchError = new Error('Network connection failed');
+      (global.fetch as jest.Mock).mockRejectedValue(fetchError);
+      await expect(postPaypalPayout(mockRequest)).rejects.toThrow(fetchError);
     });
   });
-  
+
   describe('/api/paypal/create-order (POST)', () => {
     const mockOrderPayload = { amount: '100.00', milestoneId: 'ms001' };
     let mockPaypalClientExecute: jest.Mock;
 
-    beforeEach(()=> {
-        const paypalClientModule = require('../../../src/app/paypalClient');
-        mockPaypalClientExecute = paypalClientModule.paypalClient().execute;
+    beforeEach(() => {
+      const paypalClientModule = require('../../../src/app/paypalClient');
+      mockPaypalClientExecute = paypalClientModule.paypalClient().execute;
     });
-    
+
     it('should create a PayPal order successfully', async () => {
       (mockRequest.json as jest.Mock).mockResolvedValue(mockOrderPayload);
       const mockPaypalOrderResponse = { result: { id: 'paypalOrderId123', status: 'CREATED' } };
@@ -509,7 +507,6 @@ describe('API Routes: Skills and PayPal', () => {
         ])
       }));
 
-      // Corrected status check
       const status = responseInit?.status || 200;
       expect(status).toBe(200);
       expect(responseBody.orderID).toBe('paypalOrderId123');
@@ -527,16 +524,16 @@ describe('API Routes: Skills and PayPal', () => {
     const mockCapturePayload = { orderID: 'paypalOrderId123' };
     let mockPaypalClientExecute: jest.Mock;
 
-    beforeEach(()=> {
-        const paypalClientModule = require('../../../src/app/paypalClient');
-        mockPaypalClientExecute = paypalClientModule.paypalClient().execute;
+    beforeEach(() => {
+      const paypalClientModule = require('../../../src/app/paypalClient');
+      mockPaypalClientExecute = paypalClientModule.paypalClient().execute;
     });
 
     it('should capture a PayPal order successfully', async () => {
       (mockRequest.json as jest.Mock).mockResolvedValue(mockCapturePayload);
       const mockPaypalCaptureResponse = { result: { id: 'captureId456', status: 'COMPLETED' } };
       mockPaypalClientExecute.mockResolvedValue(mockPaypalCaptureResponse);
-      
+
       await postPaypalCaptureOrder(mockRequest);
       const mockCallArgs = (MockNextResponse.json as jest.Mock).mock.calls[0];
       const responseBody = mockCallArgs[0];
@@ -548,8 +545,7 @@ describe('API Routes: Skills and PayPal', () => {
       expect(sdkRequestInstance.orderID).toBe(mockCapturePayload.orderID);
       expect(sdkRequestInstance.prefer).toHaveBeenCalledWith('return=representation');
       expect(sdkRequestInstance.requestBody).toHaveBeenCalledWith({});
-      
-      // Corrected status check
+
       const status = responseInit?.status || 200;
       expect(status).toBe(200);
       expect(responseBody.capture).toEqual(mockPaypalCaptureResponse.result);

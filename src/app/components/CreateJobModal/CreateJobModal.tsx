@@ -19,10 +19,10 @@ import { sanitizeJobData } from "@/app/server/formatters/JobDataSanitization";
 import { createJob } from "@/app/server/services/JobDatabaseService";
 
 interface Props {
-  refetch: () => void
+  refetch: () => void;
 }
 
-const CreateJobModal = ({refetch}: Props) => {
+const CreateJobModal = ({ refetch }: Props) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [deadline, setDeadline] = useState<Date>(new Date());
@@ -153,7 +153,7 @@ const CreateJobModal = ({refetch}: Props) => {
       clientUId: clientUid,
       createdAt: currentDate,
       hasClientRated: false,
-      hasFreelancerRated: false
+      hasFreelancerRated: false,
     };
 
     // sanitize data
@@ -191,7 +191,6 @@ const CreateJobModal = ({refetch}: Props) => {
     setMaxBudget("");
     setSelectedSkills([]);
     setSkillInput("");
-    
   };
 
   //Handles when the client selects wanted skills for the job
@@ -222,22 +221,22 @@ const CreateJobModal = ({refetch}: Props) => {
   //This function will prevent crashing on invalid dates and instead warn the user
   const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    
+
     // Basic check if input is empty
     if (!inputValue) {
       toast.error("Please select a date");
       return;
     }
-    
+
     // Parse the date
     const newDate = new Date(inputValue);
-    
+
     // Check if date is valid
     if (isNaN(newDate.getTime())) {
       toast.error("Invalid date format");
       return;
     }
-    
+
     // If all checks pass
     setDeadline(newDate);
   };

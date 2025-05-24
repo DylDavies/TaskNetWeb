@@ -10,7 +10,7 @@ export async function POST(req: NextRequest){
 
         snapshot.forEach((docSnap) => {
             const data = docSnap.data();
-            const area = data.skillArea;
+            const area = data.SkillArea;
             const names: string[] = data.names || [];
 
             const matchedSkills = names.filter(skill => skillNames.includes(skill));
