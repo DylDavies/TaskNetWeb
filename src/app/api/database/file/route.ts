@@ -59,7 +59,6 @@ export async function POST(req: NextRequest) {
           // Handle successful uploads on complete
           try {
             const url = await getDownloadURL(uploadTask.snapshot.ref);
-            console.log(`File available at ${url}`);
             resolve(url);
           } catch (e) {
             const getUrlError = e instanceof Error ? e.message : String(e);
