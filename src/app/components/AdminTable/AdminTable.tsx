@@ -6,12 +6,9 @@ interface User {
   uid: string;
   username: string;
   status: number;
-  type: number; // Do we not need role like freelancer and client?
+  type: number;
   date: number;
 }
-/*
-  previously was name, role and date
-*/
 
 interface Props {
   data: User[];
@@ -60,66 +57,6 @@ const AdminTable: React.FC<Props> = ({ data }) => {
         return "Error";
     }
   }
-  /*
---- HOW TO USE ---
-  use case example:
-
-      <main className="p-4">
-        <h1 className="text-2xl font-bold mb-4">Admin Table Test</h1>
-        <AdminTable data={userData} />
-      </main>
-
-  - pass the AdminTable component an array of objects (prop)
-  -structure: 
-  {
-  name:string, 
-  role:string, 
-  date:string
-  }
-    
-
-  SAMPLE DATA BELOW
-
-  --- Testing Data ---
-  const userData = [
-  {
-    name: "Hans Burger",
-    role: "freelancer",
-    date: "6/10/2020",
-  },
-  {
-    name: "Jolina Angelie",
-    role: "client",
-    date: "6/10/2020",
-  },
-  {
-    name: "Sarah Curry",
-    role: "freelancer",
-    date: "6/10/2020",
-  },
-  {
-    name: "Rulia Joberts",
-    role: "client",
-    date: "6/10/2020",
-  },
-  {
-    name: "Wenzel Dashington",
-    role: "freelancer",
-    date: "6/10/2020",
-  },
-  {
-    name: "Dave Li",
-    role: "client",
-    date: "6/10/2020",
-  },
-  {
-    name: "Maria Ramovic",
-    role: "client",
-    date: "6/10/2020",
-  },
-];
-  
-  */
 
   return (
     <>

@@ -25,20 +25,15 @@ export default function Home() {
     LoginRedirect(router);
 
     setLoading(false);
-
   }
   return (
     <main className="flex h-screen">
       <Loader loading={loading}></Loader>
-      {/* Left Side */}
       <section className="w-1/2 bg-violet-700 text-neutral-900 flex items-center justify-center p-10">
         <article className="flex flex-col items-center text-center">
-          {/* Logo */}
           <section className=" -mt-19 mb-0">
             <Image src={logoImage} alt="Logo" className="logo" />
           </section>
-
-          {/* Main Text */}
           <section className="text-9xl font-bold -mt-14 mb-2">TASKNET</section>
           <section className="text-3xl mb-1">
             Powering the future of freelance
@@ -86,7 +81,6 @@ export default function Home() {
         </article>
       </section>
 
-      {/* Right Side */}
       <section className="w-1/2 bg-gray-900 flex justify-center items-center p-10">
         <article className="shadow-xl rounded-lg max-w-full h-auto">
           <Image
